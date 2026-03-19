@@ -1,6 +1,6 @@
 services:
 
-  ## Servicios transversales
+## Servicios transversales
   kafka:
     image: confluentinc/cp-kafka:7.7.7
     platform: linux/amd64
@@ -31,7 +31,17 @@ services:
       retries: 5
       start_period: 15s
 
-  ## Servicio de Base de datos
+  # Reinicia un contenedor si su estado para a ser "unhealthy"
+  autoheal:
+    image: willfarrell/autoheal
+    platform: linux/amd64
+    restart: always
+    environment:
+      - AUTOHEAL_CONTAINER_LABEL=all
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+## Servicio de Base de datos
 
   opodb:
     image: mariadb:11.4
@@ -47,6 +57,7 @@ services:
     volumes:
     - ./db-init:/docker-entrypoint-initdb.d
     - ./data/mariadb:/var/lib/mysql
+    - ./custom.cnf:/etc/mysql/conf.d/custom.cnf:ro
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       interval: 10s       
@@ -57,7 +68,7 @@ services:
 ## Microservicios
 
   opored:
-    image: ghcr.io/tonicm09/opored:latest
+    image: ghcr.io/acasadomarc/opored:latest
     platform: linux/amd64
     depends_on:
       opodb:
@@ -80,7 +91,7 @@ services:
       start_period: 30s
   
   opored-scraping:
-    image: ghcr.io/tonicm09/opored-scraping:latest
+    image: ghcr.io/acasadomarc/opored-scraping:latest
     platform: linux/amd64
     depends_on:
       kafka:                      
@@ -91,13 +102,28 @@ services:
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     ports:
       - "18082:18082"
+    healthcheck:
+      test: "wget --no-verbose --tries=1 --spider http://localhost:18082/actuator/health || exit 1"
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
 ## FRONTEND
   
-#  frontend:
-#    image: registry.gitlab.com/uoc/pdp-pds/pdp_pds_2025_2026/pds_2025_2026_a3/frontend:stable-release-prac4
-#    platform: linux/amd64
-#    depends_on:
-#      - opored
-#    ports:
-#      - "8080:80"
+  frontend:
+    image: ghcr.io/acasadomarc/opored-frontend:latest
+    platform: linux/amd64
+    depends_on:
+      - opored
+    environment:
+      API_HOST: ${API_HOST}
+    ports:
+      - "3000:3000"
+    restart: always
+    healthcheck:
+      test: "wget --no-verbose --tries=1 --spider http://127.0.0.1:3000/api/health || exit 1"
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s

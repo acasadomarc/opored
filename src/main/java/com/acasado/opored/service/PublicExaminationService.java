@@ -41,11 +41,12 @@ public class PublicExaminationService {
         }
         // Forum and BulletinBoard are forced to be created at the same time as the publicExamination.
         ForumEntity forum = new ForumEntity("Foro de " + publicExaminationDTO.getName(), publicExaminationDTO.getDescription());
-        BulletinBoardEntity bulletinBoard = new BulletinBoardEntity("Tablón de anuncios de " + publicExaminationDTO.getName(), publicExaminationDTO.getDescription());
         ForumEntity createdForum = forumService.createForum(forum);
-        BulletinBoardEntity createdBulletinBoard = bulletinBoardService.createBulletinBoard(bulletinBoard);
+        // We use the id of the forum to have the same id for all the entities
+        BulletinBoardEntity bulletinBoard = new BulletinBoardEntity(createdForum.getId(), "Tablón de anuncios de " + publicExaminationDTO.getName(), publicExaminationDTO.getDescription());
 
-        PublicExaminationEntity publicExamination = convertToPublicExamination(publicExaminationDTO, createdForum, createdBulletinBoard);
+        BulletinBoardEntity createdBulletinBoard = bulletinBoardService.createBulletinBoard(bulletinBoard);
+        PublicExaminationEntity publicExamination = convertToPublicExamination(createdForum.getId(), publicExaminationDTO, createdForum, createdBulletinBoard);
         PublicExaminationEntity savedPublicExamination = publicExaminationRepository.save(publicExamination);
         return convertToPublicExaminationDTO(savedPublicExamination);
     }
@@ -93,8 +94,9 @@ public class PublicExaminationService {
                 publicExamination.getForum().getId());
     }
 
-    private PublicExaminationEntity convertToPublicExamination(PublicExaminationDTO publicExaminationDTO, ForumEntity forum, BulletinBoardEntity bulletinBoard) {
+    private PublicExaminationEntity convertToPublicExamination(Integer id, PublicExaminationDTO publicExaminationDTO, ForumEntity forum, BulletinBoardEntity bulletinBoard) {
         return new PublicExaminationEntity(
+                id,
                 publicExaminationDTO.getName(),
                 publicExaminationDTO.getDescription(),
                 categoryRepository.getReferenceById(publicExaminationDTO.getCategoryId()),

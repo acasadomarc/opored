@@ -40,8 +40,8 @@ class KafkaAnnouncementIntegrationTest extends BaseIntegrationTest {
     void When_KafkaAnnouncementMatchesTags_Expect_AssignedToMatchingBoard() {
         // Arrange
         CategoryEntity category = categoryRepository.save(new CategoryEntity("Cat", "Desc"));
-        BulletinBoardEntity bulletinBoard = bulletinBoardRepository.save(new BulletinBoardEntity("Board", "Desc"));
-        PublicExaminationEntity exam = new PublicExaminationEntity("Exam", "Desc", category, bulletinBoard, null);
+        BulletinBoardEntity bulletinBoard = bulletinBoardRepository.save(new BulletinBoardEntity(1, "Board", "Desc"));
+        PublicExaminationEntity exam = new PublicExaminationEntity(1, "Exam", "Desc", category, bulletinBoard, null);
         AnnouncementClassificationKeywords keywords = new AnnouncementClassificationKeywords();
         keywords.setMainTags("math,exam,notice");
         keywords.setSecondaryTags("");
@@ -73,8 +73,8 @@ class KafkaAnnouncementIntegrationTest extends BaseIntegrationTest {
         CategoryEntity category = categoryRepository.save(new CategoryEntity("Cat2", "Desc2"));
         BulletinBoardEntity fallbackBoard = null;
         for (int i = 0; i < 8; i++) {
-            BulletinBoardEntity board = bulletinBoardRepository.save(new BulletinBoardEntity("Board-" + i, "Desc"));
-            PublicExaminationEntity exam = new PublicExaminationEntity("Exam-" + i, "Desc", category, board, null);
+            BulletinBoardEntity board = bulletinBoardRepository.save(new BulletinBoardEntity(1, "Board-" + i, "Desc"));
+            PublicExaminationEntity exam = new PublicExaminationEntity(1, "Exam-" + i, "Desc", category, board, null);
             exam = publicExaminationRepository.save(exam);
             if (exam.getId() == 9) {
                 fallbackBoard = board;

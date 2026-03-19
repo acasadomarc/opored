@@ -38,7 +38,7 @@ class ModerationTopicIntegrationTest extends BaseIntegrationTest {
         StudentEntity follower = createStudent("follower@example.com");
         ModeratorEntity moderator = createModerator("moderator@example.com");
 
-        ForumEntity forum = forumRepository.save(new ForumEntity("Forum", "Desc"));
+        ForumEntity forum = forumRepository.save(new ForumEntity( "Forum", "Desc"));
         TopicEntity topic = new TopicEntity("Topic", StatusEnum.VISIBLE, forum, author);
         topic = topicRepository.save(topic);
 

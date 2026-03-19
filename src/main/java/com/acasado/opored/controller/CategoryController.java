@@ -67,11 +67,11 @@ public class CategoryController {
     @ApiResponse(responseCode = "200", description = "Category updated")
     @ApiResponse(responseCode = "404", description = "Not found")
     @PutMapping("/{id}")
-    public ResponseEntity<CategoryDTO> updateCategory(@RequestBody @NotNull @Valid CategoryDTO categoryDTO)
+    public ResponseEntity<CategoryDTO> updateCategory(@RequestBody @NotNull @Valid CategoryDTO categoryDTO, @PathVariable @NotNull Integer id)
     {
         log.info("updateCategory");
         CategoryDTO categoryDTOUpdated = categoryService.updateCategory(
-                categoryDTO.getId(),
+                id,
                 categoryDTO.getName(),
                 categoryDTO.getDescription()
         );
