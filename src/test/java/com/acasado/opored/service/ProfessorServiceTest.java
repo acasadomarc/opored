@@ -129,16 +129,15 @@ class ProfessorServiceTest {
     }
 
     @Test
-    void When_DeleteProfessor_Expect_LogicalDelete() {
+    void When_DeleteProfessor_Expect_LogicalDisable() {
         // Arrange
         ProfessorEntity entity = ProfessorFactory.createValidProfessorEntity();
         when(professorRepository.findById(1)).thenReturn(Optional.of(entity));
 
         // Act
-        professorService.deleteProfessor(1);
+        professorService.disableProfessor(1);
 
         // Assert
-        assertTrue(entity.getIsDeleted());
         assertFalse(entity.isEnabled());
         verify(professorRepository).save(entity);
     }

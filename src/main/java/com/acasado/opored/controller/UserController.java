@@ -32,13 +32,23 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
-    @PreAuthorize("hasAuthority(@authorities.ADMINISTRATION_DELETE)")
-    @Operation(summary = "Delete user")
-    @ApiResponse(responseCode = "204", description = "User deleted")
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable @NotNull Integer id) {
-        log.info("deleteUser");
-        userService.deleteUser(id);
+    @PreAuthorize("hasAuthority(@authorities.ADMINISTRATION_UPDATE)")
+    @Operation(summary = "Disable user")
+    @ApiResponse(responseCode = "204", description = "User disabled")
+    @PutMapping("/disable/{id}")
+    public ResponseEntity<Void> disableUser(@PathVariable @NotNull Integer id) {
+        log.info("disableUser");
+        userService.disableUser(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PreAuthorize("hasAuthority(@authorities.ADMINISTRATION_UPDATE)")
+    @Operation(summary = "Enable user")
+    @ApiResponse(responseCode = "204", description = "User enabled")
+    @PutMapping("/enable/{id}")
+    public ResponseEntity<Void> enableUser(@PathVariable @NotNull Integer id) {
+        log.info("enableUser");
+        userService.enableUser(id);
         return ResponseEntity.noContent().build();
     }
 

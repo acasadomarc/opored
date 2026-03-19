@@ -88,7 +88,7 @@ class StudentControllerTest extends BaseControllerTest {
     @Test
     void When_DeleteStudent_Expect_NoContent() throws Exception {
         // Arrange
-        doNothing().when(studentService).deleteStudent(anyInt());
+        doNothing().when(studentService).disableStudent(anyInt());
 
         // Act
         mockMvc.perform(delete("/api/students/{id}", 1)

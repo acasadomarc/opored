@@ -80,13 +80,21 @@ public class StudentService {
         return convertToStudentDTO(updatedStudent);
     }
 
-    public void deleteStudent(Integer id) {
+    public void disableStudent(Integer id) {
         StudentEntity toDeleteStudent = studentRepository.findById(id)
                 .orElseThrow(() -> notFoundById(id));
 
         // Logical delete
-        toDeleteStudent.setIsDeleted(true);
         toDeleteStudent.setEnabled(false);
+        studentRepository.save(toDeleteStudent);
+    }
+
+    public void enableStudent(Integer id) {
+        StudentEntity toDeleteStudent = studentRepository.findById(id)
+                .orElseThrow(() -> notFoundById(id));
+
+        // Logical delete
+        toDeleteStudent.setEnabled(true);
         studentRepository.save(toDeleteStudent);
     }
 

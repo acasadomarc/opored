@@ -92,7 +92,7 @@ public class ProfessorController {
             @Parameter(description = "Professor ID", example = "1")
             @PathVariable @NotNull Integer id) {
         log.info("deleteProfessor with id {}", id);
-        professorService.deleteProfessor(id);
+        professorService.disableProfessor(id);
         return ResponseEntity.noContent().build();
     }
 

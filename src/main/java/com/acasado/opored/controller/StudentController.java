@@ -93,7 +93,7 @@ public class StudentController {
             @Parameter(description = "Student ID", example = "1")
             @PathVariable @NotNull Integer id) {
         log.info("deleteStudent");
-        studentService.deleteStudent(id);
+        studentService.disableStudent(id);
         return ResponseEntity.noContent().build();
     }
 

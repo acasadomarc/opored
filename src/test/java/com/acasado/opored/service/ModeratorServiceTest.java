@@ -161,10 +161,9 @@ class ModeratorServiceTest {
         when(moderatorRepository.findById(1)).thenReturn(Optional.of(entity));
 
         // Act
-        moderatorService.deleteModerator(1);
+        moderatorService.disableModerator(1);
 
         // Assert
-        assertTrue(entity.getIsDeleted());
         assertFalse(entity.isEnabled());
         verify(moderatorRepository).save(entity);
     }

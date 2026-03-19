@@ -120,7 +120,7 @@ class ProfessorControllerTest extends BaseControllerTest {
     @Test
     void When_DeleteProfessor_Expect_NoContent() throws Exception {
         // Arrange
-        doNothing().when(professorService).deleteProfessor(anyInt());
+        doNothing().when(professorService).disableProfessor(anyInt());
 
         // Act
         mockMvc.perform(delete("/api/professors/{id}", 1)
@@ -129,7 +129,7 @@ class ProfessorControllerTest extends BaseControllerTest {
                 // Assert
                 .andExpect(status().isNoContent());
 
-        verify(professorService, times(1)).deleteProfessor(1);
+        verify(professorService, times(1)).disableProfessor(1);
     }
 
     @Test

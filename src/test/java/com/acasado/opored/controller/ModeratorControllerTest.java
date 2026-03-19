@@ -154,7 +154,7 @@ class ModeratorControllerTest extends BaseControllerTest {
     @Test
     void When_DeleteModerator_Expect_NoContent() throws Exception {
         // Arrange
-        doNothing().when(moderatorService).deleteModerator(anyInt());
+        doNothing().when(moderatorService).disableModerator(anyInt());
 
         // Act
         mockMvc.perform(delete("/api/moderators/{id}", 1)
@@ -163,7 +163,7 @@ class ModeratorControllerTest extends BaseControllerTest {
                 // Assert
                 .andExpect(status().isNoContent());
 
-        verify(moderatorService, times(1)).deleteModerator(1);
+        verify(moderatorService, times(1)).disableModerator(1);
     }
 
     @Test

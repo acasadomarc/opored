@@ -66,13 +66,21 @@ public class ProfessorService {
         return convertToProfessorDTO(updatedProfessor);
     }
 
-    public void deleteProfessor(Integer id) {
+    public void disableProfessor(Integer id) {
         ProfessorEntity toDeleteProfessor = professorRepository.findById(id)
                 .orElseThrow(() -> notFoundById(id));
 
         // Logical delete
-        toDeleteProfessor.setIsDeleted(true);
         toDeleteProfessor.setEnabled(false);
+        professorRepository.save(toDeleteProfessor);
+    }
+
+    public void enableProfessor(Integer id) {
+        ProfessorEntity toDeleteProfessor = professorRepository.findById(id)
+                .orElseThrow(() -> notFoundById(id));
+
+        // Logical delete
+        toDeleteProfessor.setEnabled(true);
         professorRepository.save(toDeleteProfessor);
     }
 

@@ -84,13 +84,19 @@ public class ModeratorService {
         return convertToModeratorDTO(updatedModerator);
     }
 
-    public void deleteModerator(Integer id) {
+    public void disableModerator(Integer id) {
         ModeratorEntity toDeleteModerator = moderatorRepository.findById(id)
                 .orElseThrow(() -> notFoundById(id));
-
         // Logical delete
-        toDeleteModerator.setIsDeleted(true);
         toDeleteModerator.setEnabled(false);
+        moderatorRepository.save(toDeleteModerator);
+    }
+
+    public void enableModerator(Integer id) {
+        ModeratorEntity toDeleteModerator = moderatorRepository.findById(id)
+                .orElseThrow(() -> notFoundById(id));
+        // Logical delete
+        toDeleteModerator.setEnabled(true);
         moderatorRepository.save(toDeleteModerator);
     }
 

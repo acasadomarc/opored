@@ -32,16 +32,29 @@ public class UserService {
         return users;
     }
 
-    public void deleteUser(Integer id) {
-        UserEntity toDeleteUser = userRepository.findById(id)
+    public void disableUser(Integer id) {
+        UserEntity toDisableUser = userRepository.findById(id)
                 .orElseThrow(() -> notFoundById(id));
 
-        switch (toDeleteUser.getRole().getName()) {
-            case MODERATOR -> moderatorService.deleteModerator(id);
-            case STUDENT -> studentService.deleteStudent(id);
-            case PROFESSOR -> professorService.deleteProfessor(id);
+        switch (toDisableUser.getRole().getName()) {
+            case MODERATOR -> moderatorService.disableModerator(id);
+            case STUDENT -> studentService.disableStudent(id);
+            case PROFESSOR -> professorService.disableProfessor(id);
         }
     }
+
+    public void enableUser(Integer id) {
+        UserEntity toEnableUser = userRepository.findById(id)
+                .orElseThrow(() -> notFoundById(id));
+
+        switch (toEnableUser.getRole().getName()) {
+            case MODERATOR -> moderatorService.enableModerator(id);
+            case STUDENT -> studentService.enableStudent(id);
+            case PROFESSOR -> professorService.enableProfessor(id);
+        }
+    }
+
+
 
     private EntityNotFoundException notFoundById(Integer id) {
         return new EntityNotFoundException(String.format("User with id %d not found", id));

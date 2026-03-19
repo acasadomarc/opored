@@ -105,7 +105,7 @@ public class ModeratorController {
             @Parameter(description = "Moderator ID", example = "1")
             @PathVariable @NotNull Integer id) {
         log.info("deleteModerator with id {}", id);
-        moderatorService.deleteModerator(id);
+        moderatorService.disableModerator(id);
         return ResponseEntity.noContent().build();
     }
 
