@@ -157,24 +157,24 @@ public class StudentController {
     @Operation(summary = "Sign up for a public examination")
     @ApiResponse(responseCode = "200", description = "Signed up successfully")
     @PostMapping("/me/publicExamination/{publicExaminationId}")
-    public ResponseEntity<String> signUpForPublicExamination(
+    public ResponseEntity<Void> signUpForPublicExamination(
             @Parameter(description = "Public Examination ID", example = "10")
             @PathVariable @NotNull Integer publicExaminationId) {
         log.info("signUpForPublicExamination");
         studentService.signUpForPublicExamination(publicExaminationId);
-        return ResponseEntity.ok("Relación creada correctamente");
+        return ResponseEntity.ok().build();
     }
 
     @PreAuthorize("hasAuthority(@authorities.STUDENT_DELETE)")
     @Operation(summary = "Withdraw from a public examination")
     @ApiResponse(responseCode = "200", description = "Withdrawn successfully")
     @DeleteMapping("/me/publicExamination/{publicExaminationId}")
-    public ResponseEntity<String> withdrawFromPublicExamination(
+    public ResponseEntity<Void> withdrawFromPublicExamination(
             @Parameter(description = "Public Examination ID", example = "10")
             @PathVariable @NotNull Integer publicExaminationId) {
         log.info("withdrawFromPublicExamination");
         studentService.withdrawFromPublicExamination(publicExaminationId);
-        return ResponseEntity.ok("Relación eliminada correctamente");
+        return ResponseEntity.ok().build();
     }
 
     // Student - Course/Purchase relation methods

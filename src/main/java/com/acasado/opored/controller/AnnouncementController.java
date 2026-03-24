@@ -57,7 +57,7 @@ public class AnnouncementController {
     @PostMapping
     public ResponseEntity<AnnouncementDTO> createAnnouncement(
             @RequestBody @NotNull @Valid AnnouncementDTO announcementDTO) {
-        log.info("createAnnouncement with id: {}", announcementDTO.getId());
+        log.info("createAnnouncement");
         AnnouncementDTO announcementDTOCreated = announcementService.createAnnouncement(announcementDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(announcementDTOCreated);
     }
@@ -67,10 +67,10 @@ public class AnnouncementController {
     @ApiResponse(responseCode = "200", description = "Announcement updated")
     @ApiResponse(responseCode = "404", description = "Not found")
     @PutMapping("/{id}")
-    public ResponseEntity<AnnouncementDTO> updateAnnouncement(@RequestBody @NotNull @Valid AnnouncementDTO announcementDTO) {
+    public ResponseEntity<AnnouncementDTO> updateAnnouncement(@PathVariable Integer id, @RequestBody @NotNull @Valid AnnouncementDTO announcementDTO) {
         log.info("updateAnnouncement");
         AnnouncementDTO announcementDTOUpdated = announcementService.updateAnnouncement(
-                announcementDTO.getId(),
+                id,
                 announcementDTO.getTitle(),
                 announcementDTO.getContent(),
                 announcementDTO.getRelatedLinks()
