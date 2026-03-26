@@ -4,6 +4,7 @@ import com.acasado.opored.dto.MessageDTO;
 import com.acasado.opored.enumeration.StatusEnum;
 import com.acasado.opored.exception.UserWithoutPermissionException;
 import com.acasado.opored.model.MessageEntity;
+import com.acasado.opored.model.UserEntity;
 import com.acasado.opored.repository.MessageRepository;
 import com.acasado.opored.repository.TopicRepository;
 import com.acasado.opored.repository.UserRepository;
@@ -12,7 +13,9 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -74,6 +77,15 @@ public class MessageService {
         MessageEntity message = messageRepository.findById(id).orElseThrow(() -> notFoundById(id));
         message.setStatus(StatusEnum.HIDDEN);
         messageRepository.save(message);
+    }
+
+    public void changeMessagesOwner(Set<MessageEntity> messages, UserEntity user) {
+        Set<MessageEntity> changedOwnershipMessages = new HashSet<>();
+        for (MessageEntity messageEntity : messages) {
+            messageEntity.setUser(user);
+            changedOwnershipMessages.add(messageEntity);
+        }
+        messageRepository.saveAll(changedOwnershipMessages);
     }
 
     private MessageDTO convertToMessageDTO(MessageEntity message) {

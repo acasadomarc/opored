@@ -1,7 +1,6 @@
 package com.acasado.opored.controller;
 
 import com.acasado.opored.dto.ModeratorDTO;
-import com.acasado.opored.dto.UserUpdateRequest;
 import com.acasado.opored.dto.auth.AuthResponse;
 import com.acasado.opored.service.ModeratorService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -65,16 +64,6 @@ public class ModeratorController {
         return ResponseEntity.ok(moderatorDTO);
     }
 
-    @PreAuthorize("hasAuthority(@authorities.MODERATION_READ)")
-    @Operation(summary = "Get current moderator")
-    @ApiResponse(responseCode = "200", description = "Moderator returned")
-    @GetMapping("/me")
-    public ResponseEntity<ModeratorDTO> getMe() {
-        log.info("getMe");
-        ModeratorDTO moderatorDTO = moderatorService.getMe();
-        return ResponseEntity.ok(moderatorDTO);
-    }
-
     @PreAuthorize("hasAuthority(@authorities.ADMINISTRATION_CREATE)")
     @Operation(summary = "Create moderator")
     @ApiResponse(responseCode = "201", description = "Moderator created")
@@ -86,17 +75,6 @@ public class ModeratorController {
         return ResponseEntity.status(HttpStatus.CREATED).body(authResponse);
     }
 
-    @PreAuthorize("hasAuthority(@authorities.MODERATION_UPDATE)")
-    @Operation(summary = "Update my profile")
-    @ApiResponse(responseCode = "200", description = "Profile updated")
-    @PutMapping("/me")
-    public ResponseEntity<ModeratorDTO> updateMe(
-            @RequestBody @NotNull @Valid UserUpdateRequest userUpdateRequest) {
-        log.info("updateMe");
-        ModeratorDTO moderatorDTOUpdated = moderatorService.updateMe(userUpdateRequest);
-        return ResponseEntity.ok(moderatorDTOUpdated);
-    }
-
     @PreAuthorize("hasAuthority(@authorities.ROOT)")
     @Operation(summary = "Delete moderator by ID")
     @ApiResponse(responseCode = "204", description = "Moderator deleted")
@@ -106,16 +84,6 @@ public class ModeratorController {
             @PathVariable @NotNull Integer id) {
         log.info("deleteModerator with id {}", id);
         moderatorService.disableModerator(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    @PreAuthorize("hasAuthority(@authorities.MODERATION_DELETE)")
-    @Operation(summary = "Delete my account")
-    @ApiResponse(responseCode = "204", description = "Account deleted")
-    @DeleteMapping("/me")
-    public ResponseEntity<String> deleteMe() {
-        log.info("deleteMe");
-        moderatorService.deleteMe();
         return ResponseEntity.noContent().build();
     }
 }

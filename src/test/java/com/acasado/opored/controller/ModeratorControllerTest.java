@@ -2,7 +2,6 @@ package com.acasado.opored.controller;
 
 import com.acasado.opored.controller.base.BaseControllerTest;
 import com.acasado.opored.dto.ModeratorDTO;
-import com.acasado.opored.dto.UserUpdateRequest;
 import com.acasado.opored.dto.auth.AuthResponse;
 import com.acasado.opored.service.ModeratorService;
 import com.acasado.opored.util.ModeratorFactory;
@@ -88,20 +87,6 @@ class ModeratorControllerTest extends BaseControllerTest {
     }
 
     @Test
-    void When_GetMe_Expect_OkAndDTO() throws Exception {
-        // Arrange
-        ModeratorDTO dto = ModeratorFactory.createValidModeratorDTO();
-        when(moderatorService.getMe()).thenReturn(dto);
-
-        // Act
-        mockMvc.perform(get("/api/moderators/me")
-                        .contentType(MediaType.APPLICATION_JSON))
-                // Assert
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.email").value(dto.getEmail()));
-    }
-
-    @Test
     void When_CreateModerator_Expect_CreatedAndAuthResponse() throws Exception {
         // Arrange
         ModeratorDTO inputDto = ModeratorFactory.createValidModeratorDTO();
@@ -130,54 +115,5 @@ class ModeratorControllerTest extends BaseControllerTest {
                 .andExpect(status().isBadRequest());
 
         verify(moderatorService, never()).createModerator(any());
-    }
-
-    @Test
-    void When_UpdateMe_Expect_OkAndUpdatedDTO() throws Exception {
-        // Arrange
-        UserUpdateRequest request = ModeratorFactory.createUserUpdateRequest();
-        ModeratorDTO updatedDto = ModeratorFactory.createValidModeratorDTO();
-        updatedDto.setName(request.getName());
-
-        when(moderatorService.updateMe(any(UserUpdateRequest.class)))
-                .thenReturn(updatedDto);
-
-        // Act
-        mockMvc.perform(put("/api/moderators/me")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                // Assert
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value(request.getName()));
-    }
-
-    @Test
-    void When_DeleteModerator_Expect_NoContent() throws Exception {
-        // Arrange
-        doNothing().when(moderatorService).disableModerator(anyInt());
-
-        // Act
-        mockMvc.perform(delete("/api/moderators/{id}", 1)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                // Assert
-                .andExpect(status().isNoContent());
-
-        verify(moderatorService, times(1)).disableModerator(1);
-    }
-
-    @Test
-    void When_DeleteMe_Expect_NoContent() throws Exception {
-        // Arrange
-        doNothing().when(moderatorService).deleteMe();
-
-        // Act
-        mockMvc.perform(delete("/api/moderators/me")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                // Assert
-                .andExpect(status().isNoContent());
-
-        verify(moderatorService, times(1)).deleteMe();
     }
 }

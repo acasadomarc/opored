@@ -22,6 +22,7 @@ public class CourseFactory {
                 100.0f,
                 0.0f,
                 false,
+                true,
                 LocalDate.now(),
                 new HashSet<>(),
                 new HashSet<>(),

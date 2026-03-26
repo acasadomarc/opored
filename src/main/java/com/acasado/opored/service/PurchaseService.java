@@ -13,7 +13,9 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -52,6 +54,15 @@ public class PurchaseService {
         purchase.setStudent(student);
         PurchaseEntity savedPurchase = purchaseRepository.save(purchase);
         return convertToPurchaseDTO(savedPurchase);
+    }
+
+    public void changePurchasesOwner(Set<PurchaseEntity> purchases, StudentEntity student) {
+        Set<PurchaseEntity> changedOwnershipPurchases = new HashSet<>();
+        for (PurchaseEntity purchaseEntity : purchases) {
+            purchaseEntity.setStudent(student);
+            changedOwnershipPurchases.add(purchaseEntity);
+        }
+        purchaseRepository.saveAll(changedOwnershipPurchases);
     }
 
     private PurchaseDTO convertToPurchaseDTO(PurchaseEntity purchase) {

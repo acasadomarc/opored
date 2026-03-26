@@ -1,7 +1,6 @@
 package com.acasado.opored.controller;
 
 import com.acasado.opored.dto.AdministratorDTO;
-import com.acasado.opored.dto.UserUpdateRequest;
 import com.acasado.opored.dto.auth.AuthResponse;
 import com.acasado.opored.service.AdministratorService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -52,15 +51,6 @@ public class AdministratorController {
         return ResponseEntity.ok(administratorService.getAdministratorById(id));
     }
 
-    @PreAuthorize("hasAuthority(@authorities.ADMINISTRATION_READ)")
-    @Operation(summary = "Get current administrator")
-    @ApiResponse(responseCode = "200", description = "Administrator returned")
-    @GetMapping("/me")
-    public ResponseEntity<AdministratorDTO> getMe() {
-        log.info("getMe");
-        return ResponseEntity.ok(administratorService.getMe());
-    }
-
     @PreAuthorize("hasAuthority(@authorities.ROOT)")
     @Operation(summary = "Get administrator by email")
     @ApiResponse(responseCode = "200", description = "Administrator found")
@@ -85,17 +75,6 @@ public class AdministratorController {
                 .body(administratorService.createAdministrator(administratorDTO));
     }
 
-    @PreAuthorize("hasAuthority(@authorities.ADMINISTRATION_UPDATE)")
-    @Operation(summary = "Update my profile")
-    @ApiResponse(responseCode = "200", description = "Profile updated")
-    @PutMapping("/me")
-    public ResponseEntity<AdministratorDTO> updateMe(
-            @RequestBody @NotNull @Valid UserUpdateRequest userUpdateRequest) {
-
-        log.info("updateMe");
-        return ResponseEntity.ok(administratorService.updateMe(userUpdateRequest));
-    }
-
     @PreAuthorize("hasAuthority(@authorities.ROOT)")
     @Operation(summary = "Delete administrator")
     @ApiResponse(responseCode = "204", description = "Administrator deleted")
@@ -103,16 +82,6 @@ public class AdministratorController {
     public ResponseEntity<Void> deleteAdministrator(@PathVariable @NotNull Integer id) {
         log.info("deleteAdministrator with id {}", id);
         administratorService.deleteAdministrator(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    @PreAuthorize("hasAuthority(@authorities.ADMINISTRATION_DELETE)")
-    @Operation(summary = "Delete my account")
-    @ApiResponse(responseCode = "204", description = "Account deleted")
-    @DeleteMapping("/me")
-    public ResponseEntity<Void> deleteMe() {
-        log.info("deleteMe");
-        administratorService.deleteMe();
         return ResponseEntity.noContent().build();
     }
 }

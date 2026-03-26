@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -84,6 +85,13 @@ public class RatingProfessorService {
         toDeleteRatingProfessor.setIsDeleted(true);
         ratingProfessorRepository.save(toDeleteRatingProfessor);
 
+    }
+
+    public void deleteMultipleRatingProfessor(Set<RatingProfessorEntity> ratingProfessors) {
+        for (RatingProfessorEntity ratingProfessorEntity : ratingProfessors) {
+            ratingProfessorEntity.setIsDeleted(true);
+            ratingProfessorRepository.save(ratingProfessorEntity);
+        }
     }
 
     private RatingProfessorDTO convertToRatingProfessorDTO(RatingProfessorEntity rating) {

@@ -42,6 +42,9 @@ public class CourseDTO {
     @Schema(description = "Indicates if the course currently has a discount", example = "true")
     private Boolean hasDiscount;
 
+    @Schema(description = "Indicas if the course can be purchased")
+    private Boolean isPurchasable;
+
     @Schema(example = "2026-10-01")
     private LocalDate updateDate;
 
@@ -63,6 +66,7 @@ public class CourseDTO {
         setDescription(course.getDescription());
         setPrice(course.getPrice(), course.getDiscountPercentage());
         setDiscountPercentage(course.getDiscountPercentage());
+        setIsPurchasable(course.getIsPurchasable());
         setUpdateDate(course.getUpdateDate());
         setContents(course.getContents());
         setRatings(course.getRatings().stream().map(RatingCourseDTO::new).collect(Collectors.toSet()));

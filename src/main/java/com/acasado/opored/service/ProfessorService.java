@@ -1,15 +1,11 @@
 package com.acasado.opored.service;
 
-import com.acasado.opored.dto.UserUpdateRequest;
-import com.acasado.opored.exception.AliasAlreadyRegisteredException;
 import com.acasado.opored.model.ProfessorEntity;
 import com.acasado.opored.repository.ProfessorRepository;
 import com.acasado.opored.dto.ProfessorDTO;
 import com.acasado.opored.util.SecurityUtils;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,9 +14,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProfessorService {
 
+    private final CourseService courseService;
+    private final RatingProfessorService ratingProfessorService;
     private final ProfessorRepository professorRepository;
 
-    private final PasswordEncoder passwordEncoder;
+    private final static Integer DEFAULT_DELETED_PROFESSOR_ID = 2;
 
     public List<ProfessorDTO> getAllProfessors() {
         return professorRepository.findAll().stream().map(this::convertToProfessorDTO).toList();
@@ -35,35 +33,6 @@ public class ProfessorService {
         ProfessorEntity professor = professorRepository.findByEmail(email).orElseThrow(() -> notFoundByEmail(email));
 
         return convertToProfessorDTO(professor);
-    }
-
-    public ProfessorDTO getMe() {
-        Integer currentId = getCurrentProfessorUserId();
-        ProfessorEntity professor = professorRepository.findById(currentId).orElseThrow(() -> notFoundById(currentId));
-        return convertToProfessorDTO(professor);
-    }
-
-    public ProfessorDTO updateMe(UserUpdateRequest userUpdateRequest) {
-        Integer currentId = getCurrentProfessorUserId();
-
-        ProfessorEntity toUpdateProfessor = professorRepository.findById(currentId).orElseThrow(() -> notFoundById(currentId));
-
-        if (professorRepository.findByAlias(userUpdateRequest.getAlias()).isPresent()) {
-            throw new AliasAlreadyRegisteredException("User with alias " + userUpdateRequest.getAlias() + " already exists");
-        }
-        // Password validation
-        if (!SecurityUtils.passwordValidation(userUpdateRequest.getPassword())) {
-            throw new BadCredentialsException("Password is not valid");
-        }
-
-        toUpdateProfessor.setName(userUpdateRequest.getName());
-        toUpdateProfessor.setSurname(userUpdateRequest.getSurname());
-        toUpdateProfessor.setAlias(userUpdateRequest.getAlias());
-        toUpdateProfessor.setPassword(passwordEncoder.encode(userUpdateRequest.getPassword()));
-        toUpdateProfessor.setProfilePhoto(userUpdateRequest.getProfilePhoto());
-
-        ProfessorEntity updatedProfessor = professorRepository.save(toUpdateProfessor);
-        return convertToProfessorDTO(updatedProfessor);
     }
 
     public void disableProfessor(Integer id) {
@@ -90,6 +59,23 @@ public class ProfessorService {
                 .orElseThrow(() -> notFoundById(currentId));
 
         // Logical delete
+        toDeleteProfessor.setIsDeleted(true);
+        toDeleteProfessor.setEnabled(false);
+        professorRepository.save(toDeleteProfessor);
+    }
+
+    public void deleteMe(ProfessorEntity toDeleteProfessor) {
+
+        // User to reference in the existent topics and messages
+        ProfessorEntity defaultDeletedProfessor = professorRepository.findById(14).orElseThrow(() -> notFoundById(DEFAULT_DELETED_PROFESSOR_ID));
+
+        if (!toDeleteProfessor.getCourses().isEmpty()) {
+            courseService.changeCoursesOwner(toDeleteProfessor.getCourses(), toDeleteProfessor);
+        }
+        if (!toDeleteProfessor.getRatings().isEmpty()) {
+            ratingProfessorService.deleteMultipleRatingProfessor(toDeleteProfessor.getRatings());
+        }
+
         toDeleteProfessor.setIsDeleted(true);
         toDeleteProfessor.setEnabled(false);
         professorRepository.save(toDeleteProfessor);

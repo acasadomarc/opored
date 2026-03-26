@@ -45,6 +45,9 @@ public class CourseEntity {
     @Column(name = "is_visible")
     private Boolean isVisible;
 
+    @Column(name = "is_purchasable")
+    private Boolean isPurchasable;
+
     @Column(name = "create_date")
     private LocalDate createDate;
 
@@ -70,6 +73,8 @@ public class CourseEntity {
 
     @OneToMany(mappedBy = "course")
     private Set<PurchaseEntity> purchases = new LinkedHashSet<>();
+
+
 
     public CourseEntity(String name, String description, Float price, Set<ContentEntity> contents, Set<RatingCourseEntity> ratings) {
         setName(name);

@@ -6,10 +6,7 @@ import com.acasado.opored.dto.RatingCourseDTO;
 import com.acasado.opored.dto.StudentSummaryDTO;
 import com.acasado.opored.exception.ProfessorWithoutPermissionException;
 import com.acasado.opored.exception.RestrictedDeleteException;
-import com.acasado.opored.model.ContentEntity;
-import com.acasado.opored.model.RatingCourseEntity;
-import com.acasado.opored.model.CourseEntity;
-import com.acasado.opored.model.PurchaseEntity;
+import com.acasado.opored.model.*;
 import com.acasado.opored.repository.CourseRepository;
 import com.acasado.opored.repository.StudentRepository;
 import com.acasado.opored.util.SecurityUtils;
@@ -102,6 +99,17 @@ public class CourseService {
         // Logical delete
         toDeleteCourse.setIsDeleted(true);
         courseRepository.save(toDeleteCourse);
+    }
+
+    public void changeCoursesOwner(Set<CourseEntity> courses, ProfessorEntity professor) {
+        Set<CourseEntity> changedOwnershipCourses = new HashSet<>();
+        for (CourseEntity courseEntity : courses) {
+            courseEntity.setProfessor(professor);
+            // Courses whose professor has deleted the account cannot be purchased anymore
+            courseEntity.setIsPurchasable(false);
+            changedOwnershipCourses.add(courseEntity);
+        }
+        courseRepository.saveAll(changedOwnershipCourses);
     }
 
     public Set<StudentSummaryDTO> getStudents(Integer courseId) {

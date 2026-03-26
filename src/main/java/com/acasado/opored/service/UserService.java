@@ -1,15 +1,21 @@
 package com.acasado.opored.service;
 
 import com.acasado.opored.dto.UserDTO;
+import com.acasado.opored.dto.UserUpdateRequest;
 import com.acasado.opored.enumeration.RoleEnum;
-import com.acasado.opored.model.UserEntity;
+import com.acasado.opored.exception.AliasAlreadyRegisteredException;
+import com.acasado.opored.model.*;
 import com.acasado.opored.repository.UserRepository;
+import com.acasado.opored.util.SecurityUtils;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -17,7 +23,14 @@ public class UserService {
     private final ModeratorService moderatorService;
     private final StudentService studentService;
     private final ProfessorService professorService;
+    private final AdministratorService administratorService;
+    private final TopicService topicService;
+    private final MessageService messageService;
     private final UserRepository userRepository;
+
+    private final PasswordEncoder passwordEncoder;
+
+    private final static Integer DEFAULT_DELETED_USER_ID = 1;
 
     public List<UserDTO> getAllUsers() {
         // Admins are not treated as normal users
@@ -32,6 +45,12 @@ public class UserService {
         return users;
     }
 
+    public UserDTO getMe() {
+        Integer currentId = getCurrentUserId();
+        UserEntity user = userRepository.findById(currentId).orElseThrow(() -> notFoundById(currentId));
+        return convertToUserDTO(user);
+    }
+
     public void disableUser(Integer id) {
         UserEntity toDisableUser = userRepository.findById(id)
                 .orElseThrow(() -> notFoundById(id));
@@ -41,6 +60,35 @@ public class UserService {
             case STUDENT -> studentService.disableStudent(id);
             case PROFESSOR -> professorService.disableProfessor(id);
         }
+    }
+
+    public UserDTO updateMe(UserUpdateRequest userUpdateRequest) {
+        Integer currentId = getCurrentUserId();
+
+        UserEntity toUpdateUser = userRepository.findById(currentId).orElseThrow(() -> notFoundById(currentId));
+
+        if (!userUpdateRequest.getAlias().equals(toUpdateUser.getAlias())) {
+            // We only validate the alias if it has changed
+            if (userRepository.findByAlias(userUpdateRequest.getAlias()).isPresent()) {
+                throw new AliasAlreadyRegisteredException("User with alias " + userUpdateRequest.getAlias() + " already exists");
+            }
+        }
+        toUpdateUser.setName(userUpdateRequest.getName());
+        toUpdateUser.setSurname(userUpdateRequest.getSurname());
+        toUpdateUser.setAlias(userUpdateRequest.getAlias());
+        // Password validation
+        if (!Objects.equals(userUpdateRequest.getPassword(), "")) {
+            if (!SecurityUtils.passwordValidation(userUpdateRequest.getPassword())) {
+                throw new BadCredentialsException("Password is not valid");
+            } else {
+                // We only update the password if a new one is sent
+                toUpdateUser.setPassword(passwordEncoder.encode(userUpdateRequest.getPassword()));
+            }
+        }
+        toUpdateUser.setProfilePhoto(userUpdateRequest.getProfilePhoto());
+
+        UserEntity updatedUser = userRepository.save(toUpdateUser);
+        return convertToUserDTO(updatedUser);
     }
 
     public void enableUser(Integer id) {
@@ -54,7 +102,31 @@ public class UserService {
         }
     }
 
+    public void deleteMe() {
+        Integer currentId = getCurrentUserId();
+        UserEntity toDeleteUser = userRepository.findById(currentId)
+                .orElseThrow(() -> notFoundById(currentId));
 
+        // Clean the actual tokens
+        toDeleteUser.getRefreshTokens().clear();
+
+        // User to reference in the existent topics and messages
+        UserEntity defaultDeletedUser = userRepository.findById(DEFAULT_DELETED_USER_ID).orElseThrow(() -> notFoundById(DEFAULT_DELETED_USER_ID));
+
+        if (!toDeleteUser.getMessages().isEmpty()) {
+            messageService.changeMessagesOwner(toDeleteUser.getMessages(), defaultDeletedUser);
+        }
+        else if (!toDeleteUser.getTopics().isEmpty()) {
+            topicService.changeTopicsOwner(toDeleteUser.getTopics(), defaultDeletedUser);
+        }
+
+        switch (toDeleteUser.getRole().getName()) {
+            case MODERATOR -> moderatorService.deleteMe((ModeratorEntity) toDeleteUser);
+            case STUDENT -> studentService.deleteMe((StudentEntity) toDeleteUser);
+            case PROFESSOR -> professorService.deleteMe((ProfessorEntity) toDeleteUser);
+            case ADMIN -> administratorService.deleteMe((AdministratorEntity) toDeleteUser);
+        }
+    }
 
     private EntityNotFoundException notFoundById(Integer id) {
         return new EntityNotFoundException(String.format("User with id %d not found", id));
@@ -76,6 +148,10 @@ public class UserService {
                 .accountNoLocked(user.isAccountNoLocked())
                 .credentialNoExpired(user.isCredentialNoExpired())
                 .build();
+    }
+
+    private Integer getCurrentUserId() {
+        return SecurityUtils.getCurrentUserId();
     }
 
 }

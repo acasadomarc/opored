@@ -1,7 +1,6 @@
 package com.acasado.opored.service;
 
 import com.acasado.opored.dto.AdministratorDTO;
-import com.acasado.opored.dto.UserUpdateRequest;
 import com.acasado.opored.dto.auth.AuthCreateUserRequest;
 import com.acasado.opored.dto.auth.AuthResponse;
 import com.acasado.opored.model.AdministratorEntity;
@@ -37,6 +36,9 @@ class AdministratorServiceTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private UserService userService;
 
     @InjectMocks
     private AdministratorService administratorService;
@@ -93,24 +95,6 @@ class AdministratorServiceTest {
     }
 
     @Test
-    void When_GetMe_Expect_DTO() {
-        // Arrange
-        int currentUserId = 1;
-        AdministratorEntity entity = AdministratorFactory.createValidAdministratorEntity();
-
-        try (MockedStatic<SecurityUtils> securityUtilsMock = mockStatic(SecurityUtils.class)) {
-            securityUtilsMock.when(SecurityUtils::getCurrentUserId).thenReturn(currentUserId);
-            when(administratorRepository.findById(currentUserId)).thenReturn(Optional.of(entity));
-
-            // Act
-            AdministratorDTO result = administratorService.getMe();
-
-            // Assert
-            assertEquals(entity.getEmail(), result.getEmail());
-        }
-    }
-
-    @Test
     void When_CreateAdministrator_Expect_AuthResponse() {
         // Arrange
         AdministratorDTO inputDto = AdministratorFactory.createValidAdministratorDTO();
@@ -129,36 +113,6 @@ class AdministratorServiceTest {
         ArgumentCaptor<AuthCreateUserRequest> captor = ArgumentCaptor.forClass(AuthCreateUserRequest.class);
         verify(userDetailsService).createUser(captor.capture());
         assertEquals("ADMIN", captor.getValue().getRole());
-    }
-
-    @Test
-    void When_UpdateMe_Expect_UpdatedDTO() {
-        // Arrange
-        int currentUserId = 1;
-        String newName = "AdministratorUpdated";
-        String newSurname = "UserUpdated";
-        String newPass = "newEncodedPass12A@d";
-
-        AdministratorEntity entity = AdministratorFactory.createValidAdministratorEntity();
-        UserUpdateRequest request = AdministratorFactory.createUserUpdateRequest();
-
-        try (MockedStatic<SecurityUtils> securityUtilsMock = mockStatic(SecurityUtils.class)) {
-            securityUtilsMock.when(SecurityUtils::getCurrentUserId).thenReturn(currentUserId);
-            securityUtilsMock.when(() -> SecurityUtils.passwordValidation(anyString())).thenReturn(true);
-
-            when(administratorRepository.findById(currentUserId)).thenReturn(Optional.of(entity));
-            when(administratorRepository.save(any(AdministratorEntity.class))).thenAnswer(i -> i.getArguments()[0]);
-
-            // Act
-            AdministratorDTO result = administratorService.updateMe(request);
-
-            // Assert
-            assertEquals(newName, result.getName());
-            assertEquals(newSurname, result.getSurname());
-
-            verify(passwordEncoder).encode(newPass);
-            verify(administratorRepository).save(entity);
-        }
     }
 
     @Test

@@ -383,6 +383,7 @@ CREATE TABLE `courses` (
                            `price` float NOT NULL,
                            `discount_percentage` float DEFAULT 0,
                            `is_visible` bit(1) DEFAULT b'0',
+                           `is_purchasable` bit(1) DEFAULT b'1',
                            `create_date` date DEFAULT curdate(),
                            `update_date` date DEFAULT curdate(),
                            `is_deleted` bit(1) NOT NULL DEFAULT b'0',
@@ -390,7 +391,7 @@ CREATE TABLE `courses` (
                            PRIMARY KEY (`id`),
                            KEY `professor_id` (`professor_id`),
                            CONSTRAINT `courses_ibfk_1` FOREIGN KEY (`professor_id`) REFERENCES `professors` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 
 --

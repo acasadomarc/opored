@@ -26,4 +26,6 @@ public interface ModeratorRepository extends JpaRepository<ModeratorEntity, Inte
 
     Optional<ModeratorEntity> findByAlias(String alias);
 
+    Optional<ModeratorEntity> findFirstByIdNot(Integer id);
+
 }

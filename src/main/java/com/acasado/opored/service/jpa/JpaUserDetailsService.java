@@ -77,6 +77,11 @@ public class JpaUserDetailsService implements UserDetailsService {
             throw new AliasAlreadyRegisteredException("User with alias " + authCreateUser.getAlias() + " already exists");
         }
 
+        // Alias validation
+        if (!SecurityUtils.aliasValidation(authCreateUser.getAlias())) {
+            throw new BadCredentialsException("Alias is not valid");
+        }
+
         // Email validation
         if (!SecurityUtils.emailValidation(username)) {
             throw new BadCredentialsException("Email is not valid");

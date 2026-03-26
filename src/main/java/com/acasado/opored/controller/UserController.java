@@ -1,9 +1,11 @@
 package com.acasado.opored.controller;
 
 import com.acasado.opored.dto.UserDTO;
+import com.acasado.opored.dto.UserUpdateRequest;
 import com.acasado.opored.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +34,26 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
+    @PreAuthorize("hasAuthority(@authorities.USER_READ)")
+    @Operation(summary = "Get current user")
+    @ApiResponse(responseCode = "200", description = "User returned")
+    @GetMapping("/me")
+    public ResponseEntity<UserDTO> getMe() {
+        log.info("getMe");
+        return ResponseEntity.ok(userService.getMe());
+    }
+
+    @PreAuthorize("hasAuthority(@authorities.USER_UPDATE)")
+    @Operation(summary = "Update my profile")
+    @ApiResponse(responseCode = "200", description = "Profile updated")
+    @PutMapping("/me")
+    public ResponseEntity<UserDTO> updateMe(
+            @RequestBody @NotNull @Valid UserUpdateRequest userUpdateRequest) {
+        log.info("updateMe");
+        UserDTO userDTOUpdated = userService.updateMe(userUpdateRequest);
+        return ResponseEntity.ok(userDTOUpdated);
+    }
+
     @PreAuthorize("hasAuthority(@authorities.ADMINISTRATION_UPDATE)")
     @Operation(summary = "Disable user")
     @ApiResponse(responseCode = "204", description = "User disabled")
@@ -49,6 +71,16 @@ public class UserController {
     public ResponseEntity<Void> enableUser(@PathVariable @NotNull Integer id) {
         log.info("enableUser");
         userService.enableUser(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PreAuthorize("hasAuthority(@authorities.USER_DELETE)")
+    @Operation(summary = "Delete my account")
+    @ApiResponse(responseCode = "204", description = "Account deleted")
+    @DeleteMapping("/me")
+    public ResponseEntity<String> deleteMe() {
+        log.info("deleteMe");
+        userService.deleteMe();
         return ResponseEntity.noContent().build();
     }
 

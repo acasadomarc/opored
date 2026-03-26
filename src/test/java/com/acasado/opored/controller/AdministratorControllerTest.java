@@ -2,7 +2,6 @@ package com.acasado.opored.controller;
 
 import com.acasado.opored.controller.base.BaseControllerTest;
 import com.acasado.opored.dto.AdministratorDTO;
-import com.acasado.opored.dto.UserUpdateRequest;
 import com.acasado.opored.dto.auth.AuthResponse;
 import com.acasado.opored.service.AdministratorService;
 import com.acasado.opored.util.AdministratorFactory;
@@ -75,20 +74,6 @@ class AdministratorControllerTest extends BaseControllerTest {
     }
 
     @Test
-    void When_GetMe_Expect_OkAndDTO() throws Exception {
-        // Arrange
-        AdministratorDTO dto = AdministratorFactory.createValidAdministratorDTO();
-        when(administratorService.getMe()).thenReturn(dto);
-
-        // Act
-        mockMvc.perform(get("/api/administrators/me")
-                        .contentType(MediaType.APPLICATION_JSON))
-                // Assert
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.email").value(dto.getEmail()));
-    }
-
-    @Test
     void When_GetAdministratorByEmail_Expect_OkAndDTO() throws Exception {
         // Arrange
         AdministratorDTO dto = AdministratorFactory.createValidAdministratorDTO();
@@ -138,25 +123,6 @@ class AdministratorControllerTest extends BaseControllerTest {
     }
 
     @Test
-    void When_UpdateMe_Expect_OkAndUpdatedDTO() throws Exception {
-        // Arrange
-        UserUpdateRequest request = AdministratorFactory.createUserUpdateRequest();
-        AdministratorDTO updatedDto = AdministratorFactory.createValidAdministratorDTO();
-        updatedDto.setName(request.getName());
-
-        when(administratorService.updateMe(any(UserUpdateRequest.class)))
-                .thenReturn(updatedDto);
-
-        // Act
-        mockMvc.perform(put("/api/administrators/me")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                // Assert
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value(request.getName()));
-    }
-
-    @Test
     void When_DeleteAdministrator_Expect_NoContent() throws Exception {
         // Arrange
         doNothing().when(administratorService).deleteAdministrator(anyInt());
@@ -169,20 +135,5 @@ class AdministratorControllerTest extends BaseControllerTest {
                 .andExpect(status().isNoContent());
 
         verify(administratorService, times(1)).deleteAdministrator(1);
-    }
-
-    @Test
-    void When_DeleteMe_Expect_NoContent() throws Exception {
-        // Arrange
-        doNothing().when(administratorService).deleteMe();
-
-        // Act
-        mockMvc.perform(delete("/api/administrators/me")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                // Assert
-                .andExpect(status().isNoContent());
-
-        verify(administratorService, times(1)).deleteMe();
     }
 }

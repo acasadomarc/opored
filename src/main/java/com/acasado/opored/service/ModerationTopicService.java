@@ -11,8 +11,10 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -85,6 +87,15 @@ public class ModerationTopicService {
 
         // Recover the messages
         topic.getMessages().forEach(message -> message.setStatus(StatusEnum.VISIBLE));
+    }
+
+    public void changeModerationTopicsOwner(Set<ModerationTopicEntity> moderationTopics, ModeratorEntity moderator) {
+        Set<ModerationTopicEntity> changedOwnershipModerationTopics = new HashSet<>();
+        for (ModerationTopicEntity moderationmoderationTopicEntity : moderationTopics) {
+            moderationmoderationTopicEntity.setModerator(moderator);
+            changedOwnershipModerationTopics.add(moderationmoderationTopicEntity);
+        }
+        moderationTopicRepository.saveAll(changedOwnershipModerationTopics);
     }
 
     private ModerationTopicDTO convertToModerationTopicDTO(ModerationTopicEntity moderationTopicEntity) {

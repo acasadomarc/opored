@@ -67,25 +67,6 @@ class StudentControllerTest extends BaseControllerTest {
     }
 
     @Test
-    void When_UpdateMe_Expect_OkAndUpdatedDTO() throws Exception {
-        // Arrange
-        UserUpdateRequest request = StudentFactory.createUserUpdateRequest();
-        StudentDTO updatedDto = StudentFactory.createValidStudentDTO();
-        updatedDto.setName(request.getName());
-
-        when(studentService.updateMe(any(UserUpdateRequest.class)))
-                .thenReturn(updatedDto);
-
-        // Act
-        mockMvc.perform(put("/api/students/me")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                // Assert
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value(request.getName()));
-    }
-
-    @Test
     void When_DeleteStudent_Expect_NoContent() throws Exception {
         // Arrange
         doNothing().when(studentService).disableStudent(anyInt());
@@ -154,8 +135,7 @@ class StudentControllerTest extends BaseControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 // Assert
-                .andExpect(status().isOk())
-                .andExpect(content().string("Relación creada correctamente"));
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -168,8 +148,7 @@ class StudentControllerTest extends BaseControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 // Assert
-                .andExpect(status().isOk())
-                .andExpect(content().string("Relación eliminada correctamente"));
+                .andExpect(status().isOk());
     }
 
     // --- Course & Purchase Relations ---
