@@ -1,0 +1,57 @@
+ package com.acasado.opored.service;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.UUID;
+
+@Service
+public class StorageService{
+
+    private final Path rootLocation;
+
+    // Get the path to upload the file
+    public StorageService(@Value("${image.storage.upload.dir}") String uploadDir) {
+        this.rootLocation = Paths.get(uploadDir);
+    }
+
+    public String store(MultipartFile file) {
+        // Path where the image can be searched for
+        String BASE_URL = "http://localhost:8080/uploads/";
+
+        try {
+            if (file.isEmpty()) {
+                throw new IllegalArgumentException("No se puede guardar un archivo vacío.");
+            }
+
+            // Generate name with random ID
+            String originalFilename = file.getOriginalFilename();
+            String extension = originalFilename != null ? originalFilename.substring(originalFilename.lastIndexOf(".")) : "";
+            String newFilename = UUID.randomUUID() + extension;
+
+            // It will be stored in the /storage/uploads directory in the root dir of the filesystem
+            Path destinationFile = this.rootLocation.resolve(Paths.get(newFilename)).normalize().toAbsolutePath();
+
+            // Security checks
+            if (!destinationFile.getParent().equals(this.rootLocation.toAbsolutePath())) {
+                throw new SecurityException("No se puede guardar el archivo fuera del directorio actual.");
+            }
+
+            // Save file
+            try (InputStream inputStream = file.getInputStream()) {
+                Files.copy(inputStream, destinationFile, StandardCopyOption.REPLACE_EXISTING);
+            }
+
+            return  BASE_URL + newFilename;
+
+        } catch (IOException e) {
+            throw new RuntimeException("Fallo al guardar el archivo.", e);
+        }
+    }
+}
