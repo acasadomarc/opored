@@ -1,5 +1,6 @@
 package com.acasado.opored.service;
 
+import com.acasado.opored.dto.CourseDTO;
 import com.acasado.opored.model.ProfessorEntity;
 import com.acasado.opored.repository.ProfessorRepository;
 import com.acasado.opored.dto.ProfessorDTO;
@@ -9,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -53,6 +56,12 @@ public class ProfessorService {
         professorRepository.save(toDeleteProfessor);
     }
 
+    public Set<CourseDTO> getCourses() {
+        Integer currentId = getCurrentProfessorUserId();
+        ProfessorEntity professor = professorRepository.findById(currentId).orElseThrow(() -> notFoundById(currentId));
+        return professor.getCourses().stream().map(CourseDTO::new).collect(Collectors.toSet());
+    }
+
     public void deleteMe() {
         Integer currentId = getCurrentProfessorUserId();
         ProfessorEntity toDeleteProfessor = professorRepository.findById(currentId)
@@ -70,8 +79,9 @@ public class ProfessorService {
         ProfessorEntity defaultDeletedProfessor = professorRepository.findById(14).orElseThrow(() -> notFoundById(DEFAULT_DELETED_PROFESSOR_ID));
 
         if (!toDeleteProfessor.getCourses().isEmpty()) {
-            courseService.changeCoursesOwner(toDeleteProfessor.getCourses(), toDeleteProfessor);
+            courseService.changeCoursesOwner(toDeleteProfessor.getCourses(), defaultDeletedProfessor);
         }
+        // Ratings are deleted
         if (!toDeleteProfessor.getRatings().isEmpty()) {
             ratingProfessorService.deleteMultipleRatingProfessor(toDeleteProfessor.getRatings());
         }

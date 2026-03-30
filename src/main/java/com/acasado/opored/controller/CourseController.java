@@ -39,7 +39,7 @@ public class CourseController {
         return ResponseEntity.ok(courses);
     }
 
-    @PreAuthorize("hasAuthority(@authorities.STUDENT_READ)")
+    @PreAuthorize("hasAuthority(@authorities.USER_READ)")
     @Operation(summary = "Get course by ID")
     @ApiResponse(responseCode = "200", description = "Course found")
     @ApiResponse(responseCode = "404", description = "Not found")
@@ -112,7 +112,7 @@ public class CourseController {
         return ResponseEntity.ok(priceWithDiscount);
     }
 
-    @PreAuthorize("hasAuthority(@authorities.PROFESSOR_DELETE)")
+    @PreAuthorize("hasAuthority(@authorities.PROFESSOR_DELETE) or hasAuthority(@authorities.ADMINISTRATION_DELETE)")
     @Operation(summary = "Delete course")
     @ApiResponse(responseCode = "204", description = "Course deleted")
     @DeleteMapping("/{id}")

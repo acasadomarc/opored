@@ -1,5 +1,6 @@
 package com.acasado.opored.controller;
 
+import com.acasado.opored.dto.CourseDTO;
 import com.acasado.opored.dto.ProfessorDTO;
 import com.acasado.opored.service.ProfessorService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,6 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping(
@@ -59,6 +61,15 @@ public class ProfessorController {
         log.info("getProfessorByEmail with email {}", email);
         ProfessorDTO professorDTO = professorService.getProfessorByEmail(email);
         return ResponseEntity.ok(professorDTO);
+    }
+
+    @PreAuthorize("hasAuthority(@authorities.PROFESSOR_READ)")
+    @Operation(summary = "Get my courses")
+    @ApiResponse(responseCode = "200", description = "Courses returned")
+    @GetMapping("/me/courses")
+    public ResponseEntity<Set<CourseDTO>> getCourses() {
+        log.info("getCourses");
+        return ResponseEntity.ok(professorService.getCourses());
     }
 
     @PreAuthorize("hasAuthority(@authorities.ROOT)")

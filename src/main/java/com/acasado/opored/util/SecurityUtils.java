@@ -27,6 +27,13 @@ public class SecurityUtils {
                 .anyMatch(a -> a.getAuthority().equals("ROOT"));
     }
 
+    public static boolean isUserAdmin() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        return auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().contains("ADMIN")) || isUserRoot();
+    }
+
     public static boolean isProvidedUser(Integer userId) {
         return userId.equals(getCurrentUserId());
     }

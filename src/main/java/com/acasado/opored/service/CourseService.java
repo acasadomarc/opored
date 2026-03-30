@@ -149,7 +149,7 @@ public class CourseService {
 
 
     private boolean isAuthorized(Integer userId) {
-        return SecurityUtils.isUserRoot() || SecurityUtils.isProvidedUser(userId);
+        return SecurityUtils.isUserAdmin() || SecurityUtils.isProvidedUser(userId);
     }
 
     private EntityNotFoundException notFoundById(Integer id) {
