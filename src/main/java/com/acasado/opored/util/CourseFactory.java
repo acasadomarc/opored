@@ -40,6 +40,7 @@ public class CourseFactory {
         course.setPrice(100.0f);
         course.setDiscountPercentage(0.0f);
         course.setUpdateDate(LocalDate.now());
+        course.setIsVisible(true);
         course.setIsDeleted(false);
         course.setContents(new HashSet<>());
         course.setRatings(new HashSet<>());
@@ -49,6 +50,7 @@ public class CourseFactory {
         ProfessorEntity professor = new ProfessorEntity();
         professor.setId(10); // Default Professor ID
         course.setProfessor(professor);
+
 
         return course;
     }

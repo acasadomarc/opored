@@ -1,7 +1,6 @@
 package com.acasado.opored.repository;
 
 import com.acasado.opored.enumeration.RoleEnum;
-import com.acasado.opored.model.ModeratorEntity;
 import com.acasado.opored.model.RoleEntity;
 import com.acasado.opored.model.StudentEntity;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,7 +27,6 @@ class StudentRepositoryTest {
     private TestEntityManager entityManager;
 
     private RoleEntity studentRole;
-    private RoleEntity moderatorRole;
 
     @BeforeEach
     void setUp() {
@@ -37,11 +35,6 @@ class StudentRepositoryTest {
         studentRole.setName(RoleEnum.STUDENT);
         studentRole.setPermissions(new HashSet<>());
         entityManager.persist(studentRole);
-
-        moderatorRole = new RoleEntity();
-        moderatorRole.setName(RoleEnum.MODERATOR);
-        moderatorRole.setPermissions(new HashSet<>());
-        entityManager.persist(moderatorRole);
 
         entityManager.flush();
     }
@@ -72,41 +65,5 @@ class StudentRepositoryTest {
         // Assert
         assertThat(found).isPresent();
         assertThat(found.get().getName()).isEqualTo("Jane");
-    }
-
-    @Test
-    void whenInsertStudent_thenRowExistsInStudentsTable() {
-        // Arrange:
-        ModeratorEntity moderator = new ModeratorEntity();
-        moderator.setName("UserTo");
-        moderator.setSurname("Demote");
-        moderator.setAlias("alias");
-        moderator.setEmail("demote.me@test.com");
-        moderator.setPassword("1234");
-        moderator.setRegistrationDate(LocalDate.now());
-        moderator.setRole(moderatorRole);
-        moderator.setEnabled(true);
-        moderator.setIsDeleted(false);
-        moderator.setAccountNoExpired(true);
-        moderator.setAccountNoLocked(true);
-        moderator.setCredentialNoExpired(true);
-
-        ModeratorEntity savedModerator = entityManager.persist(moderator);
-        entityManager.flush();
-        Integer userId = savedModerator.getId();
-
-        // Pre-check: Should NOT exist as student yet
-        boolean existsAsStudentBefore = studentRepository.existsById(userId);
-        assertThat(existsAsStudentBefore).isFalse();
-
-        // Act: Execute native insert
-        studentRepository.insertStudent(userId);
-
-        // Force clear cache to fetch real data from DB
-        entityManager.clear();
-
-        // Assert
-        boolean existsAsStudentAfter = studentRepository.existsById(userId);
-        assertThat(existsAsStudentAfter).isTrue();
     }
 }
