@@ -34,7 +34,7 @@ class RatingCourseIntegrationTest extends BaseIntegrationTest {
         StudentEntity student = createStudent("rating-student@example.com");
         ProfessorEntity professor = createProfessor("rating-prof@example.com");
 
-        CourseEntity course = new CourseEntity("Course", "Description", 40.0F, Set.of(), Set.of());
+        CourseEntity course = new CourseEntity("Course", "Description", 40.0F, Set.of(), Set.of(), professor);
         course.setDiscountPercentage(0.0F);
         course.setProfessor(professor);
         course = courseRepository.save(course);
@@ -60,7 +60,7 @@ class RatingCourseIntegrationTest extends BaseIntegrationTest {
         StudentEntity otherStudent = createStudent("rating-other@example.com");
         ProfessorEntity professor = createProfessor("rating-prof2@example.com");
 
-        CourseEntity course = new CourseEntity("Course", "Description", 40.0F, Set.of(), Set.of());
+        CourseEntity course = new CourseEntity("Course", "Description", 40.0F, Set.of(), Set.of(), professor);
         course.setDiscountPercentage(0.0F);
         course.setProfessor(professor);
         course = courseRepository.save(course);

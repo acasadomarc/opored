@@ -6,8 +6,10 @@ import com.acasado.opored.dto.RatingCourseDTO;
 import com.acasado.opored.dto.StudentSummaryDTO;
 import com.acasado.opored.exception.ProfessorWithoutPermissionException;
 import com.acasado.opored.exception.RestrictedDeleteException;
+import com.acasado.opored.exception.UserWithoutPermissionException;
 import com.acasado.opored.model.*;
 import com.acasado.opored.repository.CourseRepository;
+import com.acasado.opored.repository.ProfessorRepository;
 import com.acasado.opored.repository.StudentRepository;
 import com.acasado.opored.util.SecurityUtils;
 import jakarta.persistence.EntityNotFoundException;
@@ -26,6 +28,7 @@ public class CourseService {
     private final CourseRepository courseRepository;
     private final ContentService contentService;
     private final StudentRepository studentRepository;
+    private final ProfessorRepository professorRepository;
 
     public List<CourseDTO> getAllCourses(){
         return courseRepository.findAll().stream().map(this::convertToCourseDTO).toList();
@@ -33,6 +36,12 @@ public class CourseService {
 
     public CourseDTO getCourseById(Integer id) {
         CourseEntity course = courseRepository.findById(id).orElseThrow(() -> notFoundById(id));
+
+        if (!course.getIsVisible()) { // Block users trying to access the course by the id url
+            if (!getCurrentUserId().equals(course.getProfessor().getId())) {
+                throw new UserWithoutPermissionException("You are not authorized to view this course");
+            }
+        }
         return convertToCourseDTO(course);
     }
 
@@ -42,7 +51,7 @@ public class CourseService {
         return convertToCourseDTO(savedCourse);
     }
 
-    public CourseDTO updateCourse(Integer id, String name, String description, Float price) {
+    public CourseDTO updateCourse(Integer id, String name, String description, Float price, Float discountPercentage, Boolean isVisible) {
         CourseEntity toUpdateCourse = courseRepository.findById(id).orElseThrow(() -> notFoundById(id));
 
         if (!toUpdateCourse.getProfessor().getId().equals(getCurrentUserId())) {
@@ -52,7 +61,10 @@ public class CourseService {
         toUpdateCourse.setName(name);
         toUpdateCourse.setDescription(description);
         toUpdateCourse.setPrice(price);
-
+        toUpdateCourse.setDiscountPercentage(discountPercentage);
+        if (isVisible != null) {
+            toUpdateCourse.setIsVisible(isVisible);
+        }
         CourseEntity updatedCourse = courseRepository.save(toUpdateCourse);
         return convertToCourseDTO(updatedCourse);
     }
@@ -122,24 +134,36 @@ public class CourseService {
     }
 
     private CourseEntity convertToCourseEntity(CourseDTO courseDTO) {
+        Set<ContentDTO> contents = new HashSet<>();
+        if (courseDTO.getContents() != null) {
+            contents = courseDTO.getContents();
+        }
+
+        ProfessorEntity professor = professorRepository.findById(courseDTO.getProfessor().getId()).orElseThrow(() -> notFoundById(courseDTO.getProfessor().getId()));
+
         return new CourseEntity(
                 courseDTO.getName(),
                 courseDTO.getDescription(),
                 courseDTO.getPrice(),
-                courseDTO.getContents().stream().map(ContentDTO::toEntity).collect(Collectors.toSet()),
-                setRatingCoursesEntities(courseDTO.getRatings()));
+                contents.stream().map(ContentDTO::toEntity).collect(Collectors.toSet()),
+                setRatingCoursesEntities(courseDTO.getRatings()),
+                professor
+                );
     }
 
     private Set<RatingCourseEntity> setRatingCoursesEntities(Set<RatingCourseDTO> ratingCourseDTOS) {
         Set<RatingCourseEntity> ratingCourseEntities = new HashSet<>();
-        for (RatingCourseDTO dto : ratingCourseDTOS) {
-            ratingCourseEntities.add(new RatingCourseEntity(
+        if (ratingCourseDTOS != null) {
+            for (RatingCourseDTO dto : ratingCourseDTOS) {
+                ratingCourseEntities.add(new RatingCourseEntity(
                     dto.getTitle(),
                     dto.getScore(),
                     studentRepository.getReferenceById(dto.getStudentId()),
                     courseRepository.getReferenceById(dto.getCourseId()),
                     dto.getComment()));
+            }
         }
+
         return ratingCourseEntities;
     }
 

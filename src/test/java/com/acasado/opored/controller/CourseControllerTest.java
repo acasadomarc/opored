@@ -73,7 +73,7 @@ class CourseControllerTest extends BaseControllerTest {
         CourseDTO updatedDto = CourseFactory.createValidCourseDTO();
         updatedDto.setName("Updated Name");
 
-        when(courseService.updateCourse(anyInt(), anyString(), anyString(), anyFloat()))
+        when(courseService.updateCourse(anyInt(), anyString(), anyString(), anyFloat(), anyFloat(), anyBoolean()))
                 .thenReturn(updatedDto);
 
         // Act

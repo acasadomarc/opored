@@ -32,7 +32,7 @@ class ContentStorageIntegrationTest extends BaseIntegrationTest {
         ProfessorEntity professor = createProfessor("professor-docs@example.com");
         ProfessorEntity otherProfessor = createProfessor("other-professor@example.com");
 
-        CourseEntity course = new CourseEntity("Course", "Description", 10.0F, Set.of(), Set.of());
+        CourseEntity course = new CourseEntity("Course", "Description", 10.0F, Set.of(), Set.of(), professor);
         course.setDiscountPercentage(0.0F);
         course.setProfessor(professor);
         course = courseRepository.save(course);

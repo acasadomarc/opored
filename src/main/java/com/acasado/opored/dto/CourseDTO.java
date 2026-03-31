@@ -4,7 +4,6 @@ import com.acasado.opored.model.ContentEntity;
 import com.acasado.opored.model.CourseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,7 +22,6 @@ import java.util.stream.Collectors;
 public class CourseDTO {
 
     @Schema(example = "1")
-    @NotNull
     private Integer id;
 
     @Schema(example = "Advanced Java Programming")
@@ -41,6 +39,9 @@ public class CourseDTO {
 
     @Schema(description = "Indicates if the course currently has a discount", example = "true")
     private Boolean hasDiscount;
+
+    @Schema(description = "Indicas if the course is visible in the platform")
+    private Boolean isVisible;
 
     @Schema(description = "Indicas if the course can be purchased")
     private Boolean isPurchasable;
@@ -64,24 +65,18 @@ public class CourseDTO {
         setId(course.getId());
         setName(course.getName());
         setDescription(course.getDescription());
-        setPrice(course.getPrice(), course.getDiscountPercentage());
+        setPrice(course.getPrice());
         setDiscountPercentage(course.getDiscountPercentage());
+        setHasDiscount();
+        setIsVisible(course.getIsVisible());
         setIsPurchasable(course.getIsPurchasable());
         setUpdateDate(course.getUpdateDate());
         setContents(course.getContents());
-        setRatings(course.getRatings().stream().map(RatingCourseDTO::new).collect(Collectors.toSet()));
+        if (!course.getRatings().isEmpty()) {
+            setRatings(course.getRatings().stream().map(RatingCourseDTO::new).collect(Collectors.toSet()));
+        }
         setTotalScore();
         setProfessor(new ProfessorDTO(course.getProfessor()));
-    }
-
-    public void setPrice(Float price, Float discountPercentage) {
-        if (discountPercentage == null || discountPercentage == 0.0f) {
-            this.price = price;
-            this.hasDiscount = false;
-        } else {
-            this.price = (price * (100 - discountPercentage)) / 100;
-            this.hasDiscount = true;
-        }
     }
 
     public void setTotalScore() {
@@ -92,6 +87,10 @@ public class CourseDTO {
             int totalVotes = getRatings().size();
             this.totalScore = sumScore / totalVotes;
         }
+    }
+
+    public void setHasDiscount() {
+        this.hasDiscount = this.discountPercentage != null && this.discountPercentage > 0.0f;
     }
 
     public void setContents(Set<ContentEntity> contents) {

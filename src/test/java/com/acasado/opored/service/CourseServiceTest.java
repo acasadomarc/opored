@@ -92,7 +92,7 @@ class CourseServiceTest {
             when(courseRepository.save(any(CourseEntity.class))).thenAnswer(i -> i.getArguments()[0]);
 
             // Act
-            CourseDTO result = courseService.updateCourse(courseId, "New Name", "Desc", 50.0f);
+            CourseDTO result = courseService.updateCourse(courseId, "New Name", "Desc", 50.0f, 10.0f, false);
 
             // Assert
             assertEquals("New Name", result.getName());
@@ -113,7 +113,7 @@ class CourseServiceTest {
 
             // Act & Assert
             assertThrows(ProfessorWithoutPermissionException.class,
-                    () -> courseService.updateCourse(1, "Name", "Desc", 10f));
+                    () -> courseService.updateCourse(1, "Name", "Desc", 10f, 10.0f, false));
         }
     }
 

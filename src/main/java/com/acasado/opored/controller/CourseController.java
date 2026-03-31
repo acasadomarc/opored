@@ -68,14 +68,16 @@ public class CourseController {
     @ApiResponse(responseCode = "200", description = "Course updated")
     @ApiResponse(responseCode = "404", description = "Not found")
     @PutMapping("/me/id/{id}")
-    public ResponseEntity<CourseDTO> updateMyCourse(@RequestBody @NotNull @Valid CourseDTO courseDTO)
+    public ResponseEntity<CourseDTO> updateMyCourse(@PathVariable @NotNull Integer id, @RequestBody @NotNull @Valid CourseDTO courseDTO)
     {
         log.info("updateCourse");
         CourseDTO courseDTOUpdated = courseService.updateCourse(
-                courseDTO.getId(),
+                id,
                 courseDTO.getName(),
                 courseDTO.getDescription(),
-                courseDTO.getPrice()
+                courseDTO.getPrice(),
+                courseDTO.getDiscountPercentage(),
+                courseDTO.getIsVisible()
         );
         return ResponseEntity.ok(courseDTOUpdated);
     }
