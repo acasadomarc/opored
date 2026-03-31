@@ -7,7 +7,7 @@ import com.acasado.opored.model.AdministratorEntity;
 import com.acasado.opored.repository.AdministratorRepository;
 import com.acasado.opored.service.jpa.JpaUserDetailsService;
 import com.acasado.opored.util.AdministratorFactory;
-import com.acasado.opored.util.SecurityUtils;
+import com.acasado.opored.security.SecurityUtils;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

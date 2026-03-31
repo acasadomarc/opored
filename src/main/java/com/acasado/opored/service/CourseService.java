@@ -11,7 +11,7 @@ import com.acasado.opored.model.*;
 import com.acasado.opored.repository.CourseRepository;
 import com.acasado.opored.repository.ProfessorRepository;
 import com.acasado.opored.repository.StudentRepository;
-import com.acasado.opored.util.SecurityUtils;
+import com.acasado.opored.security.SecurityUtils;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -139,7 +139,7 @@ public class CourseService {
             contents = courseDTO.getContents();
         }
 
-        ProfessorEntity professor = professorRepository.findById(courseDTO.getProfessor().getId()).orElseThrow(() -> notFoundById(courseDTO.getProfessor().getId()));
+        ProfessorEntity professor = professorRepository.findById(courseDTO.getProfessor().getId()).orElseThrow(() -> new EntityNotFoundException("Professor not found"));
 
         return new CourseEntity(
                 courseDTO.getName(),

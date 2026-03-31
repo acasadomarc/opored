@@ -6,7 +6,7 @@ import com.acasado.opored.model.CourseEntity;
 import com.acasado.opored.model.DocumentEntity;
 import com.acasado.opored.repository.CourseRepository;
 import com.acasado.opored.repository.DocumentRepository;
-import com.acasado.opored.util.SecurityUtils;
+import com.acasado.opored.security.SecurityUtils;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

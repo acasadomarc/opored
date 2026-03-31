@@ -11,7 +11,7 @@ import com.acasado.opored.repository.ForumRepository;
 import com.acasado.opored.repository.StudentRepository;
 import com.acasado.opored.repository.TopicRepository;
 import com.acasado.opored.repository.UserRepository;
-import com.acasado.opored.util.SecurityUtils;
+import com.acasado.opored.security.SecurityUtils;
 import com.acasado.opored.util.TopicFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

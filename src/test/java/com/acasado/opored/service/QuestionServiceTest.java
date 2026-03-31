@@ -9,7 +9,7 @@ import com.acasado.opored.model.QuizEntity;
 import com.acasado.opored.repository.QuestionRepository;
 import com.acasado.opored.repository.QuizRepository;
 import com.acasado.opored.util.QuestionFactory;
-import com.acasado.opored.util.SecurityUtils;
+import com.acasado.opored.security.SecurityUtils;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

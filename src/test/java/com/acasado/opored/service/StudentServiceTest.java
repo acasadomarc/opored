@@ -7,7 +7,7 @@ import com.acasado.opored.enumeration.RoleEnum;
 import com.acasado.opored.model.*;
 import com.acasado.opored.repository.*;
 import com.acasado.opored.service.jpa.JpaUserDetailsService;
-import com.acasado.opored.util.SecurityUtils;
+import com.acasado.opored.security.SecurityUtils;
 import com.acasado.opored.util.StudentFactory;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;

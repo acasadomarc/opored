@@ -6,7 +6,7 @@ import com.acasado.opored.model.*;
 import com.acasado.opored.repository.ModeratorRepository;
 import com.acasado.opored.repository.MessageRepository;
 import com.acasado.opored.repository.ModerationMessageRepository;
-import com.acasado.opored.util.SecurityUtils;
+import com.acasado.opored.security.SecurityUtils;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

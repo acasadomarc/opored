@@ -5,9 +5,11 @@ import com.acasado.opored.dto.CourseDTO;
 import com.acasado.opored.exception.ProfessorWithoutPermissionException;
 import com.acasado.opored.exception.RestrictedDeleteException;
 import com.acasado.opored.model.CourseEntity;
+import com.acasado.opored.model.ProfessorEntity;
 import com.acasado.opored.repository.CourseRepository;
+import com.acasado.opored.repository.ProfessorRepository;
 import com.acasado.opored.util.CourseFactory;
-import com.acasado.opored.util.SecurityUtils;
+import com.acasado.opored.security.SecurityUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -30,6 +32,9 @@ class CourseServiceTest {
 
     @Mock
     private ContentService contentService;
+
+    @Mock
+    private ProfessorRepository professorRepository;
 
     @InjectMocks
     private CourseService courseService;
@@ -69,9 +74,11 @@ class CourseServiceTest {
     @Test
     void When_CreateCourse_Expect_DTO() {
         CourseDTO inputDto = CourseFactory.createValidCourseDTO();
+        inputDto.getProfessor().setId(10);
         CourseEntity savedEntity = CourseFactory.createValidCourseEntity();
 
         when(courseRepository.save(any(CourseEntity.class))).thenReturn(savedEntity);
+        when(professorRepository.findById(10)).thenReturn(Optional.of(new ProfessorEntity()));
 
         CourseDTO result = courseService.createCourse(inputDto);
         assertNotNull(result);

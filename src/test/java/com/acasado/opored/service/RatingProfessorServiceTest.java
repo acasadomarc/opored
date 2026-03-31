@@ -9,7 +9,7 @@ import com.acasado.opored.repository.ProfessorRepository;
 import com.acasado.opored.repository.RatingProfessorRepository;
 import com.acasado.opored.repository.StudentRepository;
 import com.acasado.opored.util.RatingProfessorFactory;
-import com.acasado.opored.util.SecurityUtils;
+import com.acasado.opored.security.SecurityUtils;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

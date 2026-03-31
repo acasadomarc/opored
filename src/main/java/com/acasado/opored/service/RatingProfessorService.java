@@ -6,7 +6,7 @@ import com.acasado.opored.model.RatingProfessorEntity;
 import com.acasado.opored.repository.ProfessorRepository;
 import com.acasado.opored.repository.RatingProfessorRepository;
 import com.acasado.opored.repository.StudentRepository;
-import com.acasado.opored.util.SecurityUtils;
+import com.acasado.opored.security.SecurityUtils;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

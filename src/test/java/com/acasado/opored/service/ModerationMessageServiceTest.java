@@ -7,7 +7,7 @@ import com.acasado.opored.repository.MessageRepository;
 import com.acasado.opored.repository.ModerationMessageRepository;
 import com.acasado.opored.repository.ModeratorRepository;
 import com.acasado.opored.util.ModerationMessageFactory;
-import com.acasado.opored.util.SecurityUtils;
+import com.acasado.opored.security.SecurityUtils;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

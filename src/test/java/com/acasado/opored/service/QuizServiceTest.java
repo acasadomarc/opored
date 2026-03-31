@@ -7,7 +7,7 @@ import com.acasado.opored.model.ProfessorEntity;
 import com.acasado.opored.model.QuizEntity;
 import com.acasado.opored.repository.CourseRepository;
 import com.acasado.opored.repository.QuizRepository;
-import com.acasado.opored.util.SecurityUtils;
+import com.acasado.opored.security.SecurityUtils;
 import com.acasado.opored.util.QuizFactory;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;

@@ -8,7 +8,7 @@ import com.acasado.opored.model.StudentEntity;
 import com.acasado.opored.repository.CourseRepository;
 import com.acasado.opored.repository.PurchaseRepository;
 import com.acasado.opored.repository.StudentRepository;
-import com.acasado.opored.util.SecurityUtils;
+import com.acasado.opored.security.SecurityUtils;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

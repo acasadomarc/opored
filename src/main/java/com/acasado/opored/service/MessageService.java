@@ -8,7 +8,7 @@ import com.acasado.opored.model.UserEntity;
 import com.acasado.opored.repository.MessageRepository;
 import com.acasado.opored.repository.TopicRepository;
 import com.acasado.opored.repository.UserRepository;
-import com.acasado.opored.util.SecurityUtils;
+import com.acasado.opored.security.SecurityUtils;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

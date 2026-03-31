@@ -6,7 +6,7 @@ import com.acasado.opored.enumeration.RoleEnum;
 import com.acasado.opored.exception.AliasAlreadyRegisteredException;
 import com.acasado.opored.model.*;
 import com.acasado.opored.repository.UserRepository;
-import com.acasado.opored.util.SecurityUtils;
+import com.acasado.opored.security.SecurityUtils;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;

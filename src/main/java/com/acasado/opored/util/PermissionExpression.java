@@ -1,4 +1,4 @@
-package com.acasado.opored.component;
+package com.acasado.opored.util;
 
 import com.acasado.opored.enumeration.PermissionEnum;
 import org.springframework.stereotype.Component;

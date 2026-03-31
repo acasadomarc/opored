@@ -4,7 +4,7 @@ import com.acasado.opored.dto.ProfessorDTO;
 import com.acasado.opored.model.ProfessorEntity;
 import com.acasado.opored.repository.ProfessorRepository;
 import com.acasado.opored.util.ProfessorFactory;
-import com.acasado.opored.util.SecurityUtils;
+import com.acasado.opored.security.SecurityUtils;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

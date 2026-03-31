@@ -4,7 +4,7 @@ import com.acasado.opored.dto.CourseDTO;
 import com.acasado.opored.model.ProfessorEntity;
 import com.acasado.opored.repository.ProfessorRepository;
 import com.acasado.opored.dto.ProfessorDTO;
-import com.acasado.opored.util.SecurityUtils;
+import com.acasado.opored.security.SecurityUtils;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

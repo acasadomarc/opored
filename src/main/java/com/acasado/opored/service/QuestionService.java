@@ -6,7 +6,7 @@ import com.acasado.opored.model.QuestionEntity;
 import com.acasado.opored.model.QuizEntity;
 import com.acasado.opored.repository.QuestionRepository;
 import com.acasado.opored.repository.QuizRepository;
-import com.acasado.opored.util.SecurityUtils;
+import com.acasado.opored.security.SecurityUtils;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
