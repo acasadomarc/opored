@@ -67,11 +67,11 @@ public class RatingProfessorController {
     @ApiResponse(responseCode = "200", description = "Rating updated")
     @ApiResponse(responseCode = "404", description = "Rating not found or unauthorized")
     @PutMapping("/me/id/{id}")
-    public ResponseEntity<RatingProfessorDTO> updateMyRatingProfessor(@RequestBody @NotNull @Valid RatingProfessorDTO ratingProfessorDTO)
+    public ResponseEntity<RatingProfessorDTO> updateMyRatingProfessor(@PathVariable @NotNull Integer id, @RequestBody @NotNull @Valid RatingProfessorDTO ratingProfessorDTO)
     {
         log.info("updateRatingProfessor");
         RatingProfessorDTO ratingProfessorDTOUpdated = ratingProfessorService.updateMyRatingProfessor(
-                ratingProfessorDTO.getId(),
+                id,
                 ratingProfessorDTO.getTitle(),
                 ratingProfessorDTO.getScore(),
                 ratingProfessorDTO.getComment()

@@ -47,9 +47,15 @@ public class RatingCourseService {
                 );
 
         if (studentAlreadyPublishedRating) {
-            throw new StudentWithoutPermissionException("Student already published rating for this course");
+            // Check if the student had previously published a rating and it is currently deleted
+            if (ratingCourseRepository.findByStudentId(ratingCourseDTO.getStudentId()).isPresent()) {
+                RatingCourseEntity ratingCourseEntity = ratingCourseRepository.findByStudentId(ratingCourseDTO.getStudentId()).get();
+                return updateMyRatingCourse(ratingCourseEntity.getId(), ratingCourseDTO.getTitle(), ratingCourseDTO.getScore(), ratingCourseDTO.getComment());
+            }
+            else {
+                throw new StudentWithoutPermissionException("Student already published rating for this course");
+            }
         }
-
         RatingCourseEntity rating = convertToRatingCourse(ratingCourseDTO);
         RatingCourseEntity savedRatingCourse = ratingCourseRepository.save(rating);
 
@@ -66,6 +72,7 @@ public class RatingCourseService {
         toUpdateRatingCourse.setTitle(title);
         toUpdateRatingCourse.setScore(score);
         toUpdateRatingCourse.setComment(comment);
+        toUpdateRatingCourse.setIsDeleted(false);
 
         RatingCourseEntity updatedRatingCourse = ratingCourseRepository.save(toUpdateRatingCourse);
         return convertToRatingCourseDTO(updatedRatingCourse);

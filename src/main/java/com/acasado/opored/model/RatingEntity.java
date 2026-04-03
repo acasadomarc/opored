@@ -6,7 +6,6 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDate;
 
@@ -16,7 +15,6 @@ import java.time.LocalDate;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "ratings")
-@SQLRestriction("is_deleted = false")
 public abstract class RatingEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,21 +26,21 @@ public abstract class RatingEntity {
     @Column(name = "title", nullable = false, length = 100)
     private String title;
 
-    @Column(name = "score")
+    @NotNull
+    @Column(name = "score", nullable = false)
     private Float score;
 
     @NotNull
     @Column(name = "publication_date", nullable = false)
-    private LocalDate publicationDate;
+    private LocalDate publicationDate = LocalDate.now();
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "student_id", nullable = false)
     private StudentEntity student;
 
-    @NotNull
     @Lob
-    @Column(name = "comment", columnDefinition = "text", nullable = false)
+    @Column(name = "comment", columnDefinition = "text")
     private String comment;
 
     @Column(name = "is_deleted")

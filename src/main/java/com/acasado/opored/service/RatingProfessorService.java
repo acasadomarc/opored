@@ -48,7 +48,14 @@ public class RatingProfessorService {
                 );
 
         if (studentAlreadyPublishedRating) {
-            throw new StudentWithoutPermissionException("Student already published rating for this professor");
+            // Check if the student had previously published a rating and it is currently deleted
+            if (ratingProfessorRepository.findByStudentId(ratingProfessorDTO.getStudentId()).isPresent()) {
+                RatingProfessorEntity ratingProfessorEntity = ratingProfessorRepository.findByStudentId(ratingProfessorDTO.getStudentId()).get();
+                return updateMyRatingProfessor(ratingProfessorEntity.getId(), ratingProfessorDTO.getTitle(), ratingProfessorDTO.getScore(), ratingProfessorDTO.getComment());
+            }
+            else {
+                throw new StudentWithoutPermissionException("Student already published rating for this professor");
+            }
         }
 
         RatingProfessorEntity rating = convertToRatingProfessor(ratingProfessorDTO);
@@ -68,6 +75,7 @@ public class RatingProfessorService {
         toUpdateRatingProfessor.setTitle(title);
         toUpdateRatingProfessor.setScore(score);
         toUpdateRatingProfessor.setComment(comment);
+        toUpdateRatingProfessor.setIsDeleted(false);
 
         RatingProfessorEntity updatedRatingProfessor = ratingProfessorRepository.save(toUpdateRatingProfessor);
         return convertToRatingProfessorDTO(updatedRatingProfessor);

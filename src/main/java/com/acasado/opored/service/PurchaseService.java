@@ -13,6 +13,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -52,6 +53,7 @@ public class PurchaseService {
         PurchaseEntity purchase = convertToPurchaseEntity(purchaseDTO);
         purchase.setCourse(course);
         purchase.setStudent(student);
+        purchase.setPurchaseDate(LocalDate.now());
         PurchaseEntity savedPurchase = purchaseRepository.save(purchase);
         return convertToPurchaseDTO(savedPurchase);
     }

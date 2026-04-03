@@ -8,7 +8,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -17,7 +19,7 @@ import java.util.Set;
 @Schema(description = "Professor data")
 public class ProfessorDTO extends UserDTO {
     @Schema(description = "Set of ratings received by the professor")
-    private Set<RatingProfessorEntity> ratings;
+    private Set<RatingProfessorDTO> ratings;
 
     @Schema(description = "Average score calculated from ratings", example = "4.5")
     private Float totalScore;
@@ -39,9 +41,21 @@ public class ProfessorDTO extends UserDTO {
         setTotalScore();
     }
 
+    // Show only the ratings that are not marked as deleted
+    public void setRatings(Set<RatingProfessorEntity> ratings) {
+        Set<RatingProfessorEntity> publishedRatings = new LinkedHashSet<>();
+
+        for (RatingProfessorEntity rating : ratings) {
+            if (!rating.getIsDeleted()) {
+                publishedRatings.add(rating);
+            }
+        }
+        this.ratings = publishedRatings.stream().map(RatingProfessorDTO::new).collect(Collectors.toSet());
+    }
+
     public void setTotalScore() {
         if (getRatings() != null && !getRatings().isEmpty()) {
-            float sumScore = (float) getRatings().stream().mapToDouble(RatingProfessorEntity::getScore).sum();
+            float sumScore = (float) getRatings().stream().mapToDouble(RatingProfessorDTO::getScore).sum();
             int totalVotes = getRatings().size();
             this.totalScore = sumScore / totalVotes;
         } else {

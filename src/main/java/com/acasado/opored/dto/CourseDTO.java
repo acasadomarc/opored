@@ -2,6 +2,7 @@ package com.acasado.opored.dto;
 
 import com.acasado.opored.model.ContentEntity;
 import com.acasado.opored.model.CourseEntity;
+import com.acasado.opored.model.RatingCourseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -11,6 +12,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -73,10 +75,22 @@ public class CourseDTO {
         setUpdateDate(course.getUpdateDate());
         setContents(course.getContents());
         if (!course.getRatings().isEmpty()) {
-            setRatings(course.getRatings().stream().map(RatingCourseDTO::new).collect(Collectors.toSet()));
+            setRatings(course.getRatings());
         }
         setTotalScore();
         setProfessor(new ProfessorDTO(course.getProfessor()));
+    }
+
+    // Show only the ratings that are not marked as deleted
+    public void setRatings(Set<RatingCourseEntity> ratings) {
+        Set<RatingCourseEntity> publishedRatings = new LinkedHashSet<>();
+
+        for (RatingCourseEntity rating : ratings) {
+            if (!rating.getIsDeleted()) {
+                publishedRatings.add(rating);
+            }
+        }
+        this.ratings = publishedRatings.stream().map(RatingCourseDTO::new).collect(Collectors.toSet());
     }
 
     public void setTotalScore() {

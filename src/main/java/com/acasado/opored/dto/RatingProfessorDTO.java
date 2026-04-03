@@ -19,7 +19,6 @@ import java.time.LocalDate;
 public class RatingProfessorDTO {
 
     @Schema(example = "1")
-    @NotNull
     private Integer id;
 
     @Schema(example = "Great mentor")
