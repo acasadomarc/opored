@@ -19,10 +19,19 @@ public class FileUploadController {
     private final StorageService storageService;
 
     @PreAuthorize("hasAuthority(@authorities.PROFESSOR_UPDATE)")
-    @Operation(summary = "Upload any file (PDF, video, image)")
+    @Operation(summary = "Upload file (PDF, video)")
     @PostMapping(value = "/upload")
     public ResponseEntity<FileUploadResponse> uploadFile(@RequestParam("file") MultipartFile file) {
         log.info("FileUploaded");
+        String fileUrl = storageService.store(file);
+        return ResponseEntity.ok(new FileUploadResponse(fileUrl, "Archivo subido correctamente"));
+    }
+
+    @PreAuthorize("hasAuthority(@authorities.USER_UPDATE)")
+    @Operation(summary = "Upload images")
+    @PostMapping(value = "/uploadImage")
+    public ResponseEntity<FileUploadResponse> uploadImage(@RequestParam("file") MultipartFile file) {
+        log.info("ImageUploaded");
         String fileUrl = storageService.store(file);
         return ResponseEntity.ok(new FileUploadResponse(fileUrl, "Archivo subido correctamente"));
     }

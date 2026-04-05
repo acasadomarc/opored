@@ -87,11 +87,13 @@ public class UserService {
             }
         }
         // Remove the previous profile photo from the filesystem
-        if (!toUpdateUser.getProfilePhoto().equals(userUpdateRequest.getProfilePhoto())) {
-            storageService.delete(toUpdateUser.getProfilePhoto());
-            toUpdateUser.setProfilePhoto(userUpdateRequest.getProfilePhoto());
+        if (toUpdateUser.getProfilePhoto() != null) {
+            if (!toUpdateUser.getProfilePhoto().equals(userUpdateRequest.getProfilePhoto())) {
+                storageService.delete(toUpdateUser.getProfilePhoto());
+                toUpdateUser.setProfilePhoto(userUpdateRequest.getProfilePhoto());
+            }
         }
-
+        toUpdateUser.setProfilePhoto(userUpdateRequest.getProfilePhoto());
 
         UserEntity updatedUser = userRepository.save(toUpdateUser);
         return convertToUserDTO(updatedUser);
