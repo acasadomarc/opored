@@ -27,6 +27,7 @@ public class UserService {
     private final TopicService topicService;
     private final MessageService messageService;
     private final UserRepository userRepository;
+    private final StorageService storageService;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -85,7 +86,12 @@ public class UserService {
                 toUpdateUser.setPassword(passwordEncoder.encode(userUpdateRequest.getPassword()));
             }
         }
-        toUpdateUser.setProfilePhoto(userUpdateRequest.getProfilePhoto());
+        // Remove the previous profile photo from the filesystem
+        if (!toUpdateUser.getProfilePhoto().equals(userUpdateRequest.getProfilePhoto())) {
+            storageService.delete(toUpdateUser.getProfilePhoto());
+            toUpdateUser.setProfilePhoto(userUpdateRequest.getProfilePhoto());
+        }
+
 
         UserEntity updatedUser = userRepository.save(toUpdateUser);
         return convertToUserDTO(updatedUser);

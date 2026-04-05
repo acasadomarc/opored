@@ -54,4 +54,29 @@ public class StorageService{
             throw new RuntimeException("Fallo al guardar el archivo.", e);
         }
     }
+
+    public void delete(String fileUrl) {
+        if (fileUrl == null || fileUrl.trim().isEmpty()) {
+            return;
+        }
+        try {
+            String filename = fileUrl.substring(fileUrl.lastIndexOf("/") + 1);
+
+            if (filename.isEmpty()) {
+                throw new IllegalArgumentException("URL de archivo no válida: " + fileUrl);
+            }
+
+            Path fileToDelete = this.rootLocation.resolve(Paths.get(filename)).normalize().toAbsolutePath();
+
+            // Security check
+            if (!fileToDelete.getParent().equals(this.rootLocation.toAbsolutePath())) {
+                throw new SecurityException("No se puede eliminar un archivo fuera del directorio actual.");
+            }
+
+            Files.deleteIfExists(fileToDelete);
+
+        } catch (IOException e) {
+            throw new RuntimeException("Fallo al intentar eliminar el archivo: " + fileUrl, e);
+        }
+    }
 }

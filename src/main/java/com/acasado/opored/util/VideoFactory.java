@@ -14,7 +14,6 @@ public class VideoFactory {
                 1,
                 "Intro to Spring",
                 "Basic concepts",
-                120,
                 "https://video.link",
                 10 // Course ID
         );
@@ -25,7 +24,6 @@ public class VideoFactory {
                 null,
                 null,
                 "Desc",
-                -10,
                 null,
                 null
         );
@@ -43,7 +41,6 @@ public class VideoFactory {
         video.setId(1);
         video.setTitle("Intro to Spring");
         video.setDescription("Basic concepts");
-        video.setDuration(120);
         video.setLink("https://video.link");
         video.setIsDeleted(false);
         video.setCourse(course);

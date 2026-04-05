@@ -32,7 +32,7 @@ public class AnswerService {
     public AnswerDTO createAnswer(AnswerDTO answerDTO) {
         Integer questionId = answerDTO.getQuestionId();
         QuestionEntity parentQuestion = questionRepository.findById(questionId).orElseThrow(() -> new EntityNotFoundException("Parent question with id " + questionId + " not found"));
-        if (!parentQuestion.getTest().getCourse().getProfessor().getId().equals(getCurrentProfessorUserId())) {
+        if (!parentQuestion.getQuiz().getCourse().getProfessor().getId().equals(getCurrentProfessorUserId())) {
             throw new ProfessorWithoutPermissionException("You do not have permission to do add answers to this question");
         }
 
@@ -45,7 +45,7 @@ public class AnswerService {
     public AnswerDTO updateAnswer(AnswerDTO answerDTO) {
         AnswerEntity toUpdateAnswer = answerRepository.findById(answerDTO.getId()).orElseThrow(() -> notFoundById(answerDTO.getId()));
 
-        if (!toUpdateAnswer.getQuestion().getTest().getCourse().getProfessor().getId().equals(getCurrentProfessorUserId())) {
+        if (!toUpdateAnswer.getQuestion().getQuiz().getCourse().getProfessor().getId().equals(getCurrentProfessorUserId())) {
             throw new ProfessorWithoutPermissionException("You do not have permissions to update this answer");
         }
 
@@ -59,7 +59,7 @@ public class AnswerService {
     public void deleteAnswer(Integer id) {
         AnswerEntity toDeleteAnswer = answerRepository.findById(id).orElseThrow(() -> notFoundById(id));
 
-        if (!isAuthorized(toDeleteAnswer.getQuestion().getTest().getCourse().getProfessor().getId())) {
+        if (!isAuthorized(toDeleteAnswer.getQuestion().getQuiz().getCourse().getProfessor().getId())) {
             throw new ProfessorWithoutPermissionException("You do not have permissions to delete this answer");
         }
         // Logical delete

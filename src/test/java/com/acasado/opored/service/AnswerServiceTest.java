@@ -75,7 +75,7 @@ class AnswerServiceTest {
 
         course.setProfessor(professor);
         test.setCourse(course);
-        question.setTest(test);
+        question.setQuiz(test);
 
         try (MockedStatic<SecurityUtils> securityMock = mockStatic(SecurityUtils.class)) {
             securityMock.when(SecurityUtils::getCurrentUserId).thenReturn(professorId);
@@ -106,7 +106,7 @@ class AnswerServiceTest {
         professor.setId(ownerId);
         course.setProfessor(professor);
         test.setCourse(course);
-        question.setTest(test);
+        question.setQuiz(test);
 
         try (MockedStatic<SecurityUtils> securityMock = mockStatic(SecurityUtils.class)) {
             securityMock.when(SecurityUtils::getCurrentUserId).thenReturn(intruderId);

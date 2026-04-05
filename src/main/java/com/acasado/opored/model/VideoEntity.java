@@ -16,18 +16,13 @@ import org.hibernate.annotations.SQLRestriction;
 @DiscriminatorValue("VIDEO")
 public class VideoEntity extends ContentEntity {
     @NotNull
-    @Column(name = "duration", nullable = false)
-    private Integer duration;
-
-    @NotNull
     @Lob
     @Column(name = "link",columnDefinition = "text", nullable = false)
     private String link;
 
-    public VideoEntity(String title, String description, Integer duration, String link) {
+    public VideoEntity(String title, String description, String link) {
         setTitle(title);
         setDescription(description);
-        setDuration(duration);
         setLink(link);
     }
 }

@@ -30,6 +30,7 @@ class DocumentServiceTest {
 
     @Mock private DocumentRepository documentRepository;
     @Mock private CourseRepository courseRepository;
+    @Mock private StorageService storageService;
 
     @InjectMocks
     private DocumentService documentService;
@@ -150,7 +151,7 @@ class DocumentServiceTest {
 
     // --- Delete (Security) ---
     @Test
-    void When_DeleteDocument_Owner_Expect_LogicalDelete() {
+    void When_DeleteDocument_Owner_Expect_HardDelete() {
         // Arrange
         int professorId = 5;
         DocumentEntity entity = DocumentFactory.createValidDocumentEntity();
@@ -166,8 +167,7 @@ class DocumentServiceTest {
             documentService.deleteDocument(1);
 
             // Assert
-            assertTrue(entity.getIsDeleted());
-            verify(documentRepository).save(entity);
+            verify(documentRepository).delete(entity);
         }
     }
 }

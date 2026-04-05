@@ -2,6 +2,7 @@ package com.acasado.opored.service;
 
 import com.acasado.opored.dto.QuestionDTO;
 import com.acasado.opored.exception.ProfessorWithoutPermissionException;
+import com.acasado.opored.model.AnswerEntity;
 import com.acasado.opored.model.QuestionEntity;
 import com.acasado.opored.model.QuizEntity;
 import com.acasado.opored.repository.QuestionRepository;
@@ -19,7 +20,7 @@ public class QuestionService {
 
     private final QuestionRepository questionRepository;
     private final QuizRepository quizRepository;
-
+    private final AnswerService answerService;
 
     public List<QuestionDTO> getAllQuestions() {
         return questionRepository.findAll().stream().map(this::convertToQuestionDTO).toList();
@@ -31,14 +32,14 @@ public class QuestionService {
     }
 
     public QuestionDTO createQuestion(QuestionDTO questionDTO) {
-        Integer testId = questionDTO.getTestId();
+        Integer testId = questionDTO.getQuizId();
         QuizEntity parentTest = quizRepository.findById(testId).orElseThrow(() -> new EntityNotFoundException("Parent test with id " + testId + " not found"));
         if (!parentTest.getCourse().getProfessor().getId().equals(getCurrentProfessorUserId())) {
             throw new ProfessorWithoutPermissionException("You do not have permissions to add questions to this test");
         }
 
         QuestionEntity question = convertToQuestionEntity(questionDTO);
-        question.setTest(parentTest);
+        question.setQuiz(parentTest);
         QuestionEntity savedQuestion = questionRepository.save(question);
         return convertToQuestionDTO(savedQuestion);
     }
@@ -46,12 +47,11 @@ public class QuestionService {
     public QuestionDTO updateQuestion(QuestionDTO questionDTO) {
         QuestionEntity toUpdateQuestion = questionRepository.findById(questionDTO.getId()).orElseThrow(() -> notFoundById(questionDTO.getId()));
 
-        if (!toUpdateQuestion.getTest().getCourse().getProfessor().getId().equals(getCurrentProfessorUserId())) {
+        if (!toUpdateQuestion.getQuiz().getCourse().getProfessor().getId().equals(getCurrentProfessorUserId())) {
             throw new ProfessorWithoutPermissionException("You do not have permissions to update this question");
         }
 
         toUpdateQuestion.setStatement(questionDTO.getStatement());
-        toUpdateQuestion.setPosition(questionDTO.getPosition());
 
         QuestionEntity updatedQuestion = questionRepository.save(toUpdateQuestion);
         return convertToQuestionDTO(updatedQuestion);
@@ -60,9 +60,15 @@ public class QuestionService {
     public void deleteQuestion(Integer id) {
         QuestionEntity toDeleteQuestion = questionRepository.findById(id).orElseThrow(() -> notFoundById(id));
 
-        if (!isAuthorized(toDeleteQuestion.getTest().getCourse().getProfessor().getId())) {
+        if (!isAuthorized(toDeleteQuestion.getQuiz().getCourse().getProfessor().getId())) {
             throw new ProfessorWithoutPermissionException("You do not have permissions to delete this question");
         }
+
+        // First, delete the associated answers
+        if (!toDeleteQuestion.getAnswers().isEmpty()) {
+            toDeleteQuestion.getAnswers().stream().map(AnswerEntity::getId).forEach(answerService::deleteAnswer);
+        }
+
         // Logical delete
         toDeleteQuestion.setIsDeleted(true);
         questionRepository.save(toDeleteQuestion);
@@ -73,9 +79,7 @@ public class QuestionService {
     }
 
     private QuestionEntity convertToQuestionEntity(QuestionDTO questionDTO) {
-        return new QuestionEntity(
-                questionDTO.getStatement(),
-                questionDTO.getPosition());
+        return new QuestionEntity(questionDTO.getStatement());
     }
 
     private Integer getCurrentProfessorUserId() {

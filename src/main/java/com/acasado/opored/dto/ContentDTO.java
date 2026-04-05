@@ -61,7 +61,6 @@ public abstract class ContentDTO {
                 entity.setId(quizDTO.getId());
                 entity.setTitle(quizDTO.getTitle());
                 entity.setDescription(quizDTO.getDescription());
-                entity.setAllowedAttempts(quizDTO.getAllowedAttempts());
                 entity.setTimeLimit(quizDTO.getTimeLimit());
                 entity.setScoreToPass(quizDTO.getScoreToPass());
                 entity.setMaxScore(quizDTO.getMaxScore());
@@ -72,7 +71,6 @@ public abstract class ContentDTO {
                 entity.setId(videoDTO.getId());
                 entity.setTitle(videoDTO.getTitle());
                 entity.setDescription(videoDTO.getDescription());
-                entity.setDuration(videoDTO.getDuration());
                 entity.setLink(videoDTO.getLink());
                 return entity;
             }

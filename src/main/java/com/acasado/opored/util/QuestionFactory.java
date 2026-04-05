@@ -17,7 +17,7 @@ public class QuestionFactory {
                 1,
                 "What is the capital of Spain?",
                 (byte) 1,
-                20, // Test ID,
+                20, // quizId,
                 Collections.emptySet()
         );
     }
@@ -47,9 +47,8 @@ public class QuestionFactory {
         QuestionEntity question = new QuestionEntity();
         question.setId(1);
         question.setStatement("What is the capital of Spain?");
-        question.setPosition((byte) 1);
         question.setIsDeleted(false);
-        question.setTest(test);
+        question.setQuiz(test);
 
         return question;
     }

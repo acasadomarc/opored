@@ -69,7 +69,7 @@ class QuestionServiceTest {
 
         // Build hierarchy for security check
         QuizEntity test = new QuizEntity();
-        test.setId(inputDto.getTestId());
+        test.setId(inputDto.getQuizId());
         CourseEntity course = new CourseEntity();
         course.setProfessor(new ProfessorEntity());
         course.getProfessor().setId(professorId);
@@ -78,7 +78,7 @@ class QuestionServiceTest {
         try (MockedStatic<SecurityUtils> securityMock = mockStatic(SecurityUtils.class)) {
             securityMock.when(SecurityUtils::getCurrentUserId).thenReturn(professorId);
 
-            when(quizRepository.findById(inputDto.getTestId())).thenReturn(Optional.of(test));
+            when(quizRepository.findById(inputDto.getQuizId())).thenReturn(Optional.of(test));
             when(questionRepository.save(any(QuestionEntity.class))).thenAnswer(i -> i.getArguments()[0]);
 
             // Act

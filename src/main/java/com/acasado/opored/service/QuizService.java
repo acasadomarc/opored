@@ -23,6 +23,7 @@ public class QuizService {
 
     private final QuizRepository quizRepository;
     private final CourseRepository courseRepository;
+    private final QuestionService questionService;
 
     public List<QuizDTO> getAllQuizzes() {
         return quizRepository.findAll().stream().map(this::convertToQuizDTO).toList();
@@ -55,7 +56,6 @@ public class QuizService {
 
         toUpdateQuiz.setTitle(quizDTO.getTitle());
         toUpdateQuiz.setDescription(quizDTO.getDescription());
-        toUpdateQuiz.setAllowedAttempts(quizDTO.getAllowedAttempts());
         toUpdateQuiz.setTimeLimit(quizDTO.getTimeLimit());
         toUpdateQuiz.setScoreToPass(quizDTO.getScoreToPass());
         toUpdateQuiz.setMaxScore(quizDTO.getMaxScore());
@@ -71,6 +71,11 @@ public class QuizService {
             throw new ProfessorWithoutPermissionException("You do not have permissions to delete this quiz");
         }
 
+        // First, delete the associated questions
+        if (!toDeleteQuiz.getQuestions().isEmpty()) {
+            toDeleteQuiz.getQuestions().stream().map(QuestionEntity::getId).forEach(questionService::deleteQuestion);
+        }
+
         // Logical delete
         toDeleteQuiz.setIsDeleted(true);
         quizRepository.save(toDeleteQuiz);
@@ -84,7 +89,6 @@ public class QuizService {
         return new QuizEntity(
                 quizDTO.getTitle(),
                 quizDTO.getDescription(),
-                quizDTO.getAllowedAttempts(),
                 quizDTO.getTimeLimit(),
                 quizDTO.getScoreToPass(),
                 quizDTO.getMaxScore(),
@@ -96,8 +100,7 @@ public class QuizService {
         if (questionDTOs != null) {
             for (QuestionDTO questionDTO : questionDTOs) {
                 questionEntities.add(new QuestionEntity(
-                        questionDTO.getStatement(),
-                        questionDTO.getPosition()));
+                        questionDTO.getStatement()));
             }
         }
         return questionEntities;

@@ -29,16 +29,15 @@ public class QuestionDTO {
     private Byte position;
 
     @Schema(description = "ID of the associated test", example = "10")
-    private Integer testId;
+    private Integer quizId;
 
     private Set<AnswerDTO> answers;
 
     public QuestionDTO(QuestionEntity question) {
         setId(question.getId());
         setStatement(question.getStatement());
-        setPosition(question.getPosition());
-        if (question.getTest() != null) {
-            setTestId(question.getTest().getId());
+        if (question.getQuiz() != null) {
+            setQuizId(question.getQuiz().getId());
         }
         setAnswers(question.getAnswers().stream().map(AnswerDTO::new).collect(Collectors.toSet()));
     }

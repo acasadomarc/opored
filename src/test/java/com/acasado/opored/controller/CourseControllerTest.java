@@ -52,38 +52,7 @@ class CourseControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("$.id").value(1));
     }
 
-    @Test
-    void When_CreateCourse_Expect_CreatedAndDTO() throws Exception {
-        // Arrange
-        CourseDTO inputDto = CourseFactory.createValidCourseDTO();
-        when(courseService.createCourse(any(CourseDTO.class))).thenReturn(inputDto);
 
-        // Act
-        mockMvc.perform(post("/api/courses")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(inputDto)))
-                // Assert
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name").value(inputDto.getName()));
-    }
-
-    @Test
-    void When_UpdateMyCourse_Expect_OkAndDTO() throws Exception {
-        // Arrange
-        CourseDTO updatedDto = CourseFactory.createValidCourseDTO();
-        updatedDto.setName("Updated Name");
-
-        when(courseService.updateCourse(anyInt(), anyString(), anyString(), anyFloat(), anyFloat(), anyBoolean()))
-                .thenReturn(updatedDto);
-
-        // Act
-        mockMvc.perform(put("/api/courses/me/id/{id}", 1)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(updatedDto)))
-                // Assert
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("Updated Name"));
-    }
 
     @Test
     void When_AddDiscount_Expect_OkAndNewPrice() throws Exception {

@@ -3,28 +3,27 @@ package com.acasado.opored.controller;
 import com.acasado.opored.dto.FileUploadResponse;
 import com.acasado.opored.service.StorageService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/api/profile")
+@RequestMapping("/api/files")
 @RequiredArgsConstructor
-public class ProfileImageController {
+@Slf4j
+public class FileUploadController {
 
     private final StorageService storageService;
 
-    @PreAuthorize("hasAuthority(@authorities.USER_UPDATE)")
-    @Operation(summary = "Upload profile photo")
-    @ApiResponse(responseCode = "200", description = "Image uploaded")
+    @PreAuthorize("hasAuthority(@authorities.PROFESSOR_UPDATE)")
+    @Operation(summary = "Upload any file (PDF, video, image)")
     @PostMapping(value = "/upload")
-    public ResponseEntity<FileUploadResponse> uploadProfilePhoto(@RequestParam("file") MultipartFile file) {
-
+    public ResponseEntity<FileUploadResponse> uploadFile(@RequestParam("file") MultipartFile file) {
+        log.info("FileUploaded");
         String fileUrl = storageService.store(file);
-
-        return ResponseEntity.ok(new FileUploadResponse(fileUrl, "Imagen subida correctamente"));
+        return ResponseEntity.ok(new FileUploadResponse(fileUrl, "Archivo subido correctamente"));
     }
 }

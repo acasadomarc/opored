@@ -19,6 +19,7 @@ public class VideoService {
 
     private final VideoRepository videoRepository;
     private final CourseRepository courseRepository;
+    private final StorageService storageService;
 
     public List<VideoDTO> getAllVideos() {
         return videoRepository.findAll().stream().map(this::convertToVideoDTO).toList();
@@ -51,7 +52,6 @@ public class VideoService {
 
         toUpdateVideo.setTitle(videoDTO.getTitle());
         toUpdateVideo.setDescription(videoDTO.getDescription());
-        toUpdateVideo.setDuration(videoDTO.getDuration());
         toUpdateVideo.setLink(videoDTO.getLink());
 
         VideoEntity updatedVideo = videoRepository.save(toUpdateVideo);
@@ -65,9 +65,10 @@ public class VideoService {
             throw new ProfessorWithoutPermissionException("You do not have permissions to delete this video");
         }
 
-        // Logical delete
-        toDeleteVideo.setIsDeleted(true);
-        videoRepository.save(toDeleteVideo);
+        // Hard delete in database and filesystem to free space
+        storageService.delete(toDeleteVideo.getLink());
+        videoRepository.delete(toDeleteVideo);
+
     }
 
     private VideoDTO convertToVideoDTO(VideoEntity video) {
@@ -78,7 +79,6 @@ public class VideoService {
         return new VideoEntity(
                 videoDTO.getTitle(),
                 videoDTO.getDescription(),
-                videoDTO.getDuration(),
                 videoDTO.getLink());
     }
 

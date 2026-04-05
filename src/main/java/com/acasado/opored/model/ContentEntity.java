@@ -31,9 +31,6 @@ public abstract class ContentEntity {
     @Column(name = "description", columnDefinition = "text")
     private String description;
 
-    @Column(name = "is_visible")
-    private Boolean isVisible;
-
     @NotNull
     @Column(name = "is_deleted", nullable = false)
     private Boolean isDeleted = false;

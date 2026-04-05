@@ -12,6 +12,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -55,7 +56,7 @@ public class CourseDTO {
     private Set<ContentDTO> contents;
 
     @Schema(description = "Set of ratings received for the course")
-    private Set<RatingCourseDTO> ratings;
+    private Set<RatingCourseDTO> ratings = new HashSet<>();
 
     @Schema(description = "Average score calculated from ratings", example = "4.8")
     private Float totalScore;
@@ -84,13 +85,18 @@ public class CourseDTO {
     // Show only the ratings that are not marked as deleted
     public void setRatings(Set<RatingCourseEntity> ratings) {
         Set<RatingCourseEntity> publishedRatings = new LinkedHashSet<>();
-
-        for (RatingCourseEntity rating : ratings) {
-            if (!rating.getIsDeleted()) {
-                publishedRatings.add(rating);
+        if (ratings != null) {
+            for (RatingCourseEntity rating : ratings) {
+                if (!rating.getIsDeleted()) {
+                    publishedRatings.add(rating);
+                }
             }
+            this.ratings = publishedRatings.stream().map(RatingCourseDTO::new).collect(Collectors.toSet());
         }
-        this.ratings = publishedRatings.stream().map(RatingCourseDTO::new).collect(Collectors.toSet());
+        else {
+            this.ratings = new LinkedHashSet<>();
+        }
+
     }
 
     public void setTotalScore() {

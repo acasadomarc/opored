@@ -16,10 +16,6 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @Schema(description = "Quiz definition details")
 public class QuizDTO extends ContentDTO {
-
-    @Schema(description = "Number of attempts allowed for the student", example = "3")
-    private Integer allowedAttempts;
-
     @Schema(description = "Time limit in minutes", example = "60")
     private Integer timeLimit;
 
@@ -35,7 +31,6 @@ public class QuizDTO extends ContentDTO {
         setId(quizEntity.getId());
         setTitle(quizEntity.getTitle());
         setDescription(quizEntity.getDescription());
-        setAllowedAttempts(quizEntity.getAllowedAttempts());
         setTimeLimit(quizEntity.getTimeLimit());
         setScoreToPass(quizEntity.getScoreToPass());
         setMaxScore(quizEntity.getMaxScore());
@@ -45,12 +40,11 @@ public class QuizDTO extends ContentDTO {
         setQuestions(quizEntity.getQuestions().stream().map(QuestionDTO::new).collect(Collectors.toSet()));
     }
 
-    public QuizDTO(Integer id, String title, String description, Integer allowedAttempts, Integer timeLimit, Integer scoreToPass, Integer maxScore, Integer courseId) {
+    public QuizDTO(Integer id, String title, String description, Integer timeLimit, Integer scoreToPass, Integer maxScore, Integer courseId) {
         setId(id);
         setTitle(title);
         setDescription(description);
         setTimeLimit(timeLimit);
-        setAllowedAttempts(allowedAttempts);
         setScoreToPass(scoreToPass);
         setMaxScore(maxScore);
         setCourseId(courseId);
