@@ -6,7 +6,7 @@ import com.acasado.opored.model.*;
 import com.acasado.opored.repository.AnswerRepository;
 import com.acasado.opored.repository.QuestionRepository;
 import com.acasado.opored.util.AnswerFactory;
-import com.acasado.opored.util.SecurityUtils;
+import com.acasado.opored.security.SecurityUtils;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -75,7 +75,7 @@ class AnswerServiceTest {
 
         course.setProfessor(professor);
         test.setCourse(course);
-        question.setTest(test);
+        question.setQuiz(test);
 
         try (MockedStatic<SecurityUtils> securityMock = mockStatic(SecurityUtils.class)) {
             securityMock.when(SecurityUtils::getCurrentUserId).thenReturn(professorId);
@@ -106,7 +106,7 @@ class AnswerServiceTest {
         professor.setId(ownerId);
         course.setProfessor(professor);
         test.setCourse(course);
-        question.setTest(test);
+        question.setQuiz(test);
 
         try (MockedStatic<SecurityUtils> securityMock = mockStatic(SecurityUtils.class)) {
             securityMock.when(SecurityUtils::getCurrentUserId).thenReturn(intruderId);

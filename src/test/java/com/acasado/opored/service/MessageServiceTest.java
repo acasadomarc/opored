@@ -10,7 +10,7 @@ import com.acasado.opored.repository.MessageRepository;
 import com.acasado.opored.repository.TopicRepository;
 import com.acasado.opored.repository.UserRepository;
 import com.acasado.opored.util.MessageFactory;
-import com.acasado.opored.util.SecurityUtils;
+import com.acasado.opored.security.SecurityUtils;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

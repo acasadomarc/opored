@@ -7,7 +7,7 @@ import com.acasado.opored.model.ProfessorEntity;
 import com.acasado.opored.model.VideoEntity;
 import com.acasado.opored.repository.CourseRepository;
 import com.acasado.opored.repository.VideoRepository;
-import com.acasado.opored.util.SecurityUtils;
+import com.acasado.opored.security.SecurityUtils;
 import com.acasado.opored.util.VideoFactory;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
@@ -30,6 +30,7 @@ class VideoServiceTest {
 
     @Mock private VideoRepository videoRepository;
     @Mock private CourseRepository courseRepository;
+    @Mock private StorageService storageService;
 
     @InjectMocks
     private VideoService videoService;
@@ -133,7 +134,7 @@ class VideoServiceTest {
 
     // --- Delete (Security) ---
     @Test
-    void When_DeleteVideo_Owner_Expect_LogicalDelete() {
+    void When_DeleteVideo_Owner_Expect_HardDelete() {
         // Arrange
         int professorId = 5;
         VideoEntity entity = VideoFactory.createValidVideoEntity();
@@ -149,8 +150,7 @@ class VideoServiceTest {
             videoService.deleteVideo(1);
 
             // Assert
-            assertTrue(entity.getIsDeleted());
-            verify(videoRepository).save(entity);
+            verify(videoRepository).delete(entity);
         }
     }
 

@@ -1,19 +1,15 @@
 package com.acasado.opored.service;
 
 import com.acasado.opored.dto.ModeratorDTO;
-import com.acasado.opored.dto.UserUpdateRequest;
 import com.acasado.opored.dto.auth.AuthCreateUserRequest;
 import com.acasado.opored.dto.auth.AuthResponse;
 import com.acasado.opored.enumeration.RoleEnum;
-import com.acasado.opored.exception.AliasAlreadyRegisteredException;
 import com.acasado.opored.model.*;
 import com.acasado.opored.repository.*;
 import com.acasado.opored.service.jpa.JpaUserDetailsService;
-import com.acasado.opored.util.SecurityUtils;
+import com.acasado.opored.security.SecurityUtils;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,9 +19,10 @@ import java.util.List;
 public class ModeratorService {
 
     private final ModeratorRepository moderatorRepository;
+    private final ModerationMessageService moderationMessageService;
+    private final ModerationTopicService moderationTopicService;
 
     private final JpaUserDetailsService userDetailsService;
-    private final PasswordEncoder passwordEncoder;
 
     public List<ModeratorDTO> getAllModerators() {
         return moderatorRepository.findAll().stream().map(this::convertToModeratorDTO).toList();
@@ -43,13 +40,6 @@ public class ModeratorService {
         return convertToModeratorDTO(moderator);
     }
 
-    public ModeratorDTO getMe() {
-        Integer currentId = getCurrentModeratorUserId();
-        ModeratorEntity moderator = moderatorRepository.findById(currentId).orElseThrow(() -> notFoundById(currentId));
-
-        return convertToModeratorDTO(moderator);
-    }
-
     public AuthResponse createModerator(ModeratorDTO moderatorDTO) {
         AuthCreateUserRequest authCreateUserRequest = new AuthCreateUserRequest(moderatorDTO.getName(),
                 moderatorDTO.getSurname(),
@@ -61,36 +51,19 @@ public class ModeratorService {
         return userDetailsService.createUser(authCreateUserRequest);
     }
 
-    public ModeratorDTO updateMe(UserUpdateRequest userUpdateRequest) {
-        Integer currentId = getCurrentModeratorUserId();
-
-        ModeratorEntity toUpdateModerator = moderatorRepository.findById(currentId).orElseThrow(() -> notFoundById(currentId));
-
-        if (moderatorRepository.findByAlias(userUpdateRequest.getAlias()).isPresent()) {
-            throw new AliasAlreadyRegisteredException("User with alias " + userUpdateRequest.getAlias() + " already exists");
-        }
-        // Password validation
-        if (!SecurityUtils.passwordValidation(userUpdateRequest.getPassword())) {
-            throw new BadCredentialsException("Password is not valid");
-        }
-
-        toUpdateModerator.setName(userUpdateRequest.getName());
-        toUpdateModerator.setSurname(userUpdateRequest.getSurname());
-        toUpdateModerator.setAlias(userUpdateRequest.getAlias());
-        toUpdateModerator.setPassword(passwordEncoder.encode(userUpdateRequest.getPassword()));
-        toUpdateModerator.setProfilePhoto(userUpdateRequest.getProfilePhoto());
-
-        ModeratorEntity updatedModerator = moderatorRepository.save(toUpdateModerator);
-        return convertToModeratorDTO(updatedModerator);
-    }
-
-    public void deleteModerator(Integer id) {
+    public void disableModerator(Integer id) {
         ModeratorEntity toDeleteModerator = moderatorRepository.findById(id)
                 .orElseThrow(() -> notFoundById(id));
-
         // Logical delete
-        toDeleteModerator.setIsDeleted(true);
         toDeleteModerator.setEnabled(false);
+        moderatorRepository.save(toDeleteModerator);
+    }
+
+    public void enableModerator(Integer id) {
+        ModeratorEntity toDeleteModerator = moderatorRepository.findById(id)
+                .orElseThrow(() -> notFoundById(id));
+        // Logical delete
+        toDeleteModerator.setEnabled(true);
         moderatorRepository.save(toDeleteModerator);
     }
 
@@ -100,6 +73,20 @@ public class ModeratorService {
                 .orElseThrow(() -> notFoundById(currentId));
 
         // Logical delete
+        toDeleteModerator.setIsDeleted(true);
+        toDeleteModerator.setEnabled(false);
+        moderatorRepository.save(toDeleteModerator);
+    }
+
+    public void deleteMe(ModeratorEntity toDeleteModerator) {
+        // When we delete a moderator, their moderations are sent to another moderator in the system.
+        // If there are no available moderators, the method will throw an exception
+
+        ModeratorEntity subModerator = moderatorRepository.findFirstByIdNot(toDeleteModerator.getId()).orElseThrow(() -> new IllegalStateException("There must exist at least one moderator in the system"));
+
+        moderationMessageService.changeModerationMessagesOwner(toDeleteModerator.getModerationMessages(), subModerator);
+        moderationTopicService.changeModerationTopicsOwner(toDeleteModerator.getModerationTopics(), subModerator);
+
         toDeleteModerator.setIsDeleted(true);
         toDeleteModerator.setEnabled(false);
         moderatorRepository.save(toDeleteModerator);

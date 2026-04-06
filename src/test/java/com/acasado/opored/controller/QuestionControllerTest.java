@@ -52,7 +52,7 @@ class QuestionControllerTest extends BaseControllerTest {
                         .content(objectMapper.writeValueAsString(inputDto)))
                 // Assert
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.testId").value(inputDto.getTestId()));
+                .andExpect(jsonPath("$.quizId").value(inputDto.getQuizId()));
     }
 
     @Test

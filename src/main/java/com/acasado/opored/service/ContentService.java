@@ -29,7 +29,6 @@ public class ContentService {
             QuizEntity quizEntity = new QuizEntity(
                     contentDTO.getTitle(),
                     contentDTO.getDescription(),
-                    ((QuizDTO) contentDTO).getAllowedAttempts(),
                     ((QuizDTO) contentDTO).getTimeLimit(),
                     ((QuizDTO) contentDTO).getScoreToPass(),
                     ((QuizDTO) contentDTO).getMaxScore(),
@@ -49,7 +48,6 @@ public class ContentService {
             VideoEntity videoEntity = new VideoEntity(
                     contentDTO.getTitle(),
                     contentDTO.getDescription(),
-                    ((VideoDTO) contentDTO).getDuration(),
                     ((VideoDTO) contentDTO).getLink());
             videoRepository.save(videoEntity);
             return videoEntity;

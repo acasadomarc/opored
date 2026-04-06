@@ -46,7 +46,7 @@ public class RatingCourseController {
     public ResponseEntity<RatingCourseDTO> getRatingCourseById(
             @Parameter(description = "Rating ID", example = "1")
             @PathVariable @NotNull Integer id) {
-        log.info("getRatingCourseById with id {}", id);
+        log.info("getRatingCourseById");
         RatingCourseDTO ratingCourseDTO = ratingCourseService.getRatingCourseById(id);
         return ResponseEntity.ok(ratingCourseDTO);
     }
@@ -57,7 +57,7 @@ public class RatingCourseController {
     @PostMapping
     public ResponseEntity<RatingCourseDTO> createRatingCourse(
             @RequestBody @NotNull @Valid RatingCourseDTO ratingCourseDTO) {
-        log.info("createRatingCourse with id: {}", ratingCourseDTO.getId());
+        log.info("createRatingCourse");
         RatingCourseDTO ratingCourseDTOCreated = ratingCourseService.createRatingCourse(ratingCourseDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(ratingCourseDTOCreated);
     }
@@ -67,11 +67,11 @@ public class RatingCourseController {
     @ApiResponse(responseCode = "200", description = "Rating updated")
     @ApiResponse(responseCode = "404", description = "Rating not found or unauthorized")
     @PutMapping("/me/id/{id}")
-    public ResponseEntity<RatingCourseDTO> updateMyRatingCourse(@RequestBody @NotNull @Valid RatingCourseDTO ratingCourseDTO)
+    public ResponseEntity<RatingCourseDTO> updateMyRatingCourse(@PathVariable @NotNull Integer id, @RequestBody @NotNull @Valid RatingCourseDTO ratingCourseDTO)
     {
         log.info("updateRatingCourse");
         RatingCourseDTO ratingCourseDTOUpdated = ratingCourseService.updateMyRatingCourse(
-                ratingCourseDTO.getId(),
+                id,
                 ratingCourseDTO.getTitle(),
                 ratingCourseDTO.getScore(),
                 ratingCourseDTO.getComment()

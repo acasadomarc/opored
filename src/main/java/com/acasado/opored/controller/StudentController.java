@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -74,17 +73,6 @@ public class StudentController {
         return ResponseEntity.ok(studentDTO);
     }
 
-    @PreAuthorize("hasAuthority(@authorities.STUDENT_UPDATE)")
-    @Operation(summary = "Update my profile")
-    @ApiResponse(responseCode = "200", description = "Profile updated")
-    @PutMapping("/me")
-    public ResponseEntity<StudentDTO> updateMe(
-            @RequestBody @NotNull @Valid UserUpdateRequest userUpdateRequest) {
-        log.info("updateStudent");
-        StudentDTO studentDTOUpdated = studentService.updateMe(userUpdateRequest);
-        return ResponseEntity.ok(studentDTOUpdated);
-    }
-
     @PreAuthorize("hasAuthority(@authorities.ADMINISTRATION_DELETE)")
     @Operation(summary = "Delete student by ID")
     @ApiResponse(responseCode = "204", description = "Student deleted")
@@ -93,17 +81,7 @@ public class StudentController {
             @Parameter(description = "Student ID", example = "1")
             @PathVariable @NotNull Integer id) {
         log.info("deleteStudent");
-        studentService.deleteStudent(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    @PreAuthorize("hasAuthority(@authorities.STUDENT_DELETE)")
-    @Operation(summary = "Delete my account")
-    @ApiResponse(responseCode = "204", description = "Account deleted")
-    @DeleteMapping("/me")
-    public ResponseEntity<Void> deleteMe() {
-        log.info("deleteMe");
-        studentService.deleteMe();
+        studentService.disableStudent(id);
         return ResponseEntity.noContent().build();
     }
 
@@ -157,24 +135,24 @@ public class StudentController {
     @Operation(summary = "Sign up for a public examination")
     @ApiResponse(responseCode = "200", description = "Signed up successfully")
     @PostMapping("/me/publicExamination/{publicExaminationId}")
-    public ResponseEntity<String> signUpForPublicExamination(
+    public ResponseEntity<Void> signUpForPublicExamination(
             @Parameter(description = "Public Examination ID", example = "10")
             @PathVariable @NotNull Integer publicExaminationId) {
         log.info("signUpForPublicExamination");
         studentService.signUpForPublicExamination(publicExaminationId);
-        return ResponseEntity.ok("Relación creada correctamente");
+        return ResponseEntity.ok().build();
     }
 
     @PreAuthorize("hasAuthority(@authorities.STUDENT_DELETE)")
     @Operation(summary = "Withdraw from a public examination")
     @ApiResponse(responseCode = "200", description = "Withdrawn successfully")
     @DeleteMapping("/me/publicExamination/{publicExaminationId}")
-    public ResponseEntity<String> withdrawFromPublicExamination(
+    public ResponseEntity<Void> withdrawFromPublicExamination(
             @Parameter(description = "Public Examination ID", example = "10")
             @PathVariable @NotNull Integer publicExaminationId) {
         log.info("withdrawFromPublicExamination");
         studentService.withdrawFromPublicExamination(publicExaminationId);
-        return ResponseEntity.ok("Relación eliminada correctamente");
+        return ResponseEntity.ok().build();
     }
 
     // Student - Course/Purchase relation methods

@@ -17,7 +17,6 @@ import java.util.Set;
 @SQLRestriction("is_deleted = false")
 public class BulletinBoardEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Integer id;
 
@@ -34,7 +33,8 @@ public class BulletinBoardEntity {
     @OneToMany(mappedBy = "bulletinBoard")
     private Set<AnnouncementEntity> announcements = new LinkedHashSet<>();
 
-    public BulletinBoardEntity(String name, String description) {
+    public BulletinBoardEntity(Integer id, String name, String description) {
+        setId(id);
         setName(name);
         setDescription(description);
     }

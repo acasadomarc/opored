@@ -35,7 +35,7 @@ class CoursePurchaseIntegrationTest extends BaseIntegrationTest {
         StudentEntity student = createStudent("buyer@example.com");
         ProfessorEntity professor = createProfessor("professor@example.com");
 
-        CourseEntity course = new CourseEntity("Course", "Description", 49.99F, Set.of(), Set.of());
+        CourseEntity course = new CourseEntity("Course", "Description", 49.99F, Set.of(), Set.of(), professor);
         course.setDiscountPercentage(0.0F);
         course.setProfessor(professor);
         course = courseRepository.save(course);
@@ -62,7 +62,7 @@ class CoursePurchaseIntegrationTest extends BaseIntegrationTest {
         StudentEntity otherStudent = createStudent("other@example.com");
         ProfessorEntity professor = createProfessor("professor2@example.com");
 
-        CourseEntity course = new CourseEntity("Course", "Description", 49.99F, Set.of(), Set.of());
+        CourseEntity course = new CourseEntity("Course", "Description", 49.99F, Set.of(), Set.of(), professor);
         course.setDiscountPercentage(0.0F);
         course.setProfessor(professor);
         course = courseRepository.save(course);
@@ -87,7 +87,7 @@ class CoursePurchaseIntegrationTest extends BaseIntegrationTest {
         StudentEntity otherStudent = createStudent("other2@example.com");
         ProfessorEntity professor = createProfessor("professor3@example.com");
 
-        CourseEntity course = new CourseEntity("Course", "Description", 49.99F, Set.of(), Set.of());
+        CourseEntity course = new CourseEntity("Course", "Description", 49.99F, Set.of(), Set.of(), professor);
         course.setDiscountPercentage(0.0F);
         course.setProfessor(professor);
         course = courseRepository.save(course);

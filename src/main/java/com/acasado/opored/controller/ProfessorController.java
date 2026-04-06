@@ -1,13 +1,12 @@
 package com.acasado.opored.controller;
 
+import com.acasado.opored.dto.CourseDTO;
 import com.acasado.opored.dto.ProfessorDTO;
-import com.acasado.opored.dto.UserUpdateRequest;
 import com.acasado.opored.service.ProfessorService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping(
@@ -64,24 +64,12 @@ public class ProfessorController {
     }
 
     @PreAuthorize("hasAuthority(@authorities.PROFESSOR_READ)")
-    @Operation(summary = "Get current professor")
-    @ApiResponse(responseCode = "200", description = "Professor returned")
-    @GetMapping("/me")
-    public ResponseEntity<ProfessorDTO> getMe() {
-        log.info("getMe");
-        ProfessorDTO professorDTO = professorService.getMe();
-        return ResponseEntity.ok(professorDTO);
-    }
-
-    @PreAuthorize("hasAuthority(@authorities.PROFESSOR_UPDATE)")
-    @Operation(summary = "Update my profile")
-    @ApiResponse(responseCode = "200", description = "Profile updated")
-    @PutMapping("/me")
-    public ResponseEntity<ProfessorDTO> updateMe(
-            @RequestBody @NotNull @Valid UserUpdateRequest userUpdateRequest) {
-        log.info("updateMe");
-        ProfessorDTO professorDTOUpdated = professorService.updateMe(userUpdateRequest);
-        return ResponseEntity.ok(professorDTOUpdated);
+    @Operation(summary = "Get my courses")
+    @ApiResponse(responseCode = "200", description = "Courses returned")
+    @GetMapping("/me/courses")
+    public ResponseEntity<Set<CourseDTO>> getCourses() {
+        log.info("getCourses");
+        return ResponseEntity.ok(professorService.getCourses());
     }
 
     @PreAuthorize("hasAuthority(@authorities.ROOT)")
@@ -92,17 +80,7 @@ public class ProfessorController {
             @Parameter(description = "Professor ID", example = "1")
             @PathVariable @NotNull Integer id) {
         log.info("deleteProfessor with id {}", id);
-        professorService.deleteProfessor(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    @PreAuthorize("hasAuthority(@authorities.PROFESSOR_DELETE)")
-    @Operation(summary = "Delete my account")
-    @ApiResponse(responseCode = "204", description = "Account deleted")
-    @DeleteMapping("/me")
-    public ResponseEntity<String> deleteMe() {
-        log.info("deleteMe");
-        professorService.deleteMe();
+        professorService.disableProfessor(id);
         return ResponseEntity.noContent().build();
     }
 }

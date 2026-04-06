@@ -6,7 +6,7 @@ import com.acasado.opored.model.CourseEntity;
 import com.acasado.opored.model.DocumentEntity;
 import com.acasado.opored.repository.CourseRepository;
 import com.acasado.opored.repository.DocumentRepository;
-import com.acasado.opored.util.SecurityUtils;
+import com.acasado.opored.security.SecurityUtils;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,6 +19,7 @@ public class DocumentService {
 
     private final DocumentRepository documentRepository;
     private final CourseRepository courseRepository;
+    private final StorageService storageService;
 
     public List<DocumentDTO> getAllDocuments() {
         return documentRepository.findAll().stream().map(this::convertToDocumentDTO).toList();
@@ -65,9 +66,9 @@ public class DocumentService {
             throw new ProfessorWithoutPermissionException("You do not have permissions to delete this document");
         }
 
-        // Logical delete
-        toDeleteDocument.setIsDeleted(true);
-        documentRepository.save(toDeleteDocument);
+        // Hard delete in database and filesystem to free space
+        storageService.delete(toDeleteDocument.getLink());
+        documentRepository.delete(toDeleteDocument);
     }
 
     private DocumentDTO convertToDocumentDTO(DocumentEntity document) {

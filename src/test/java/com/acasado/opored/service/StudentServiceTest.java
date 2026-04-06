@@ -7,7 +7,7 @@ import com.acasado.opored.enumeration.RoleEnum;
 import com.acasado.opored.model.*;
 import com.acasado.opored.repository.*;
 import com.acasado.opored.service.jpa.JpaUserDetailsService;
-import com.acasado.opored.util.SecurityUtils;
+import com.acasado.opored.security.SecurityUtils;
 import com.acasado.opored.util.StudentFactory;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
@@ -16,7 +16,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,8 +33,6 @@ class StudentServiceTest {
     @Mock private FollowTopicRepository followTopicRepository;
     @Mock private PublicExaminationRepository publicExaminationRepository;
     @Mock private StudentPublicExaminationRepository studentPublicExaminationRepository;
-    @Mock private PasswordEncoder passwordEncoder;
-
     @InjectMocks
     private StudentService studentService;
 
@@ -80,28 +77,6 @@ class StudentServiceTest {
         // Assert
         assertEquals(authResponse.getAccessToken(), result.getAccessToken());
         verify(userDetailsService).createUser(argThat(req -> RoleEnum.valueOf(req.getRole()) == RoleEnum.STUDENT));
-    }
-
-    @Test
-    void When_UpdateMe_Expect_UpdatedDTO() {
-        // Arrange
-        int userId = 1;
-        StudentEntity entity = StudentFactory.createValidStudentEntity();
-        UserUpdateRequest request = StudentFactory.createUserUpdateRequest();
-
-        try (MockedStatic<SecurityUtils> utilities = mockStatic(SecurityUtils.class)) {
-            utilities.when(SecurityUtils::getCurrentUserId).thenReturn(userId);
-            utilities.when(() -> SecurityUtils.passwordValidation(anyString())).thenReturn(true);
-            when(studentRepository.findById(userId)).thenReturn(Optional.of(entity));
-            when(studentRepository.save(any(StudentEntity.class))).thenAnswer(i -> i.getArguments()[0]);
-
-            // Act
-            StudentDTO result = studentService.updateMe(request);
-
-            // Assert
-            assertEquals("StudentUpdated", result.getName());
-            verify(studentRepository).save(entity);
-        }
     }
 
     // --- Topic Logic Tests ---

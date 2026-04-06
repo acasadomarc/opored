@@ -76,7 +76,14 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiErrorDTO> handleGeneralException(Exception ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error: " + ex.getMessage()));
+        // Ignore this case, it is when the browser cuts the connection when streaming the videos
+        if (ex.getClass().getName().contains("ClientAbortException")) {
+            return null;
+        }
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .header(org.springframework.http.HttpHeaders.CONTENT_TYPE, org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
+                .body(error(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error: " + ex.getMessage()));
     }
 
     private ApiErrorDTO error(HttpStatus status, String message) {

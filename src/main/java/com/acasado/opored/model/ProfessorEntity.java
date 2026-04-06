@@ -21,6 +21,9 @@ public class ProfessorEntity extends UserEntity {
             inverseJoinColumns = @JoinColumn(name = "id"))
     private Set<RatingProfessorEntity> ratings = new LinkedHashSet<>();
 
+    @OneToMany(mappedBy = "professor")
+    private Set<CourseEntity> courses = new LinkedHashSet<>();
+
     public ProfessorEntity(String name, String surname, String alias, String email, String password, UserAccountStatus accountStatus, RoleEntity role, Set<RatingProfessorEntity> ratings) {
         super(name, surname, alias, email, password, accountStatus, role);
         setRatings(ratings);

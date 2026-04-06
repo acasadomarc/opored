@@ -38,18 +38,20 @@ public class CourseEntity {
     @Column(name = "price", nullable = false)
     private Float price;
 
-    @NotNull
     @Column(name = "discount_percentage")
     private Float discountPercentage;
 
     @Column(name = "is_visible")
-    private Boolean isVisible;
+    private Boolean isVisible = Boolean.FALSE;
+
+    @Column(name = "is_purchasable")
+    private Boolean isPurchasable = Boolean.TRUE;
 
     @Column(name = "create_date")
-    private LocalDate createDate;
+    private LocalDate createDate = LocalDate.now();
 
     @Column(name = "update_date")
-    private LocalDate updateDate;
+    private LocalDate updateDate = LocalDate.now();
 
     @Column(name = "is_deleted")
     private Boolean isDeleted = Boolean.FALSE;
@@ -71,12 +73,13 @@ public class CourseEntity {
     @OneToMany(mappedBy = "course")
     private Set<PurchaseEntity> purchases = new LinkedHashSet<>();
 
-    public CourseEntity(String name, String description, Float price, Set<ContentEntity> contents, Set<RatingCourseEntity> ratings) {
+    public CourseEntity(String name, String description, Float price, Set<ContentEntity> contents, Set<RatingCourseEntity> ratings, ProfessorEntity professor) {
         setName(name);
         setDescription(description);
         setPrice(price);
         setDiscountPercentage(0.0F); // To avoid null errors
         setContents(contents);
         setRatings(ratings);
+        setProfessor(professor);
     }
 }

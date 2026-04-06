@@ -8,12 +8,15 @@ import com.acasado.opored.model.StudentEntity;
 import com.acasado.opored.repository.CourseRepository;
 import com.acasado.opored.repository.PurchaseRepository;
 import com.acasado.opored.repository.StudentRepository;
-import com.acasado.opored.util.SecurityUtils;
+import com.acasado.opored.security.SecurityUtils;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -50,8 +53,18 @@ public class PurchaseService {
         PurchaseEntity purchase = convertToPurchaseEntity(purchaseDTO);
         purchase.setCourse(course);
         purchase.setStudent(student);
+        purchase.setPurchaseDate(LocalDate.now());
         PurchaseEntity savedPurchase = purchaseRepository.save(purchase);
         return convertToPurchaseDTO(savedPurchase);
+    }
+
+    public void changePurchasesOwner(Set<PurchaseEntity> purchases, StudentEntity student) {
+        Set<PurchaseEntity> changedOwnershipPurchases = new HashSet<>();
+        for (PurchaseEntity purchaseEntity : purchases) {
+            purchaseEntity.setStudent(student);
+            changedOwnershipPurchases.add(purchaseEntity);
+        }
+        purchaseRepository.saveAll(changedOwnershipPurchases);
     }
 
     private PurchaseDTO convertToPurchaseDTO(PurchaseEntity purchase) {

@@ -14,7 +14,6 @@ public class QuizFactory {
                 1,
                 "Java Basics Exam",
                 "Multiple choice questions",
-                3,   // allowedAttempts
                 60,  // timeLimit
                 50,  // scoreToPass
                 100, // maxScore
@@ -27,7 +26,6 @@ public class QuizFactory {
                 null,
                 null,
                 "Desc",
-                -1,
                 null,
                 null,
                 null,
@@ -47,7 +45,6 @@ public class QuizFactory {
         test.setId(1);
         test.setTitle("Java Basics Exam");
         test.setDescription("Multiple choice questions");
-        test.setAllowedAttempts(3);
         test.setTimeLimit(60);
         test.setScoreToPass(50);
         test.setMaxScore(100);

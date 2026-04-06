@@ -39,7 +39,7 @@ public class CourseController {
         return ResponseEntity.ok(courses);
     }
 
-    @PreAuthorize("hasAuthority(@authorities.STUDENT_READ)")
+    @PreAuthorize("hasAuthority(@authorities.USER_READ)")
     @Operation(summary = "Get course by ID")
     @ApiResponse(responseCode = "200", description = "Course found")
     @ApiResponse(responseCode = "404", description = "Not found")
@@ -68,14 +68,16 @@ public class CourseController {
     @ApiResponse(responseCode = "200", description = "Course updated")
     @ApiResponse(responseCode = "404", description = "Not found")
     @PutMapping("/me/id/{id}")
-    public ResponseEntity<CourseDTO> updateMyCourse(@RequestBody @NotNull @Valid CourseDTO courseDTO)
+    public ResponseEntity<CourseDTO> updateMyCourse(@PathVariable @NotNull Integer id, @RequestBody @NotNull @Valid CourseDTO courseDTO)
     {
         log.info("updateCourse");
         CourseDTO courseDTOUpdated = courseService.updateCourse(
-                courseDTO.getId(),
+                id,
                 courseDTO.getName(),
                 courseDTO.getDescription(),
-                courseDTO.getPrice()
+                courseDTO.getPrice(),
+                courseDTO.getDiscountPercentage(),
+                courseDTO.getIsVisible()
         );
         return ResponseEntity.ok(courseDTOUpdated);
     }
@@ -112,7 +114,7 @@ public class CourseController {
         return ResponseEntity.ok(priceWithDiscount);
     }
 
-    @PreAuthorize("hasAuthority(@authorities.PROFESSOR_DELETE)")
+    @PreAuthorize("hasAuthority(@authorities.PROFESSOR_DELETE) or hasAuthority(@authorities.ADMINISTRATION_DELETE)")
     @Operation(summary = "Delete course")
     @ApiResponse(responseCode = "204", description = "Course deleted")
     @DeleteMapping("/{id}")

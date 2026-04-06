@@ -35,7 +35,7 @@ public class SecurityConfig {
                 .httpBasic(Customizer.withDefaults()) // Enable request login (postman for example)
                 //.formLogin(Customizer.withDefaults()) // Enable form login
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/login","/api/auth/refresh","/api/auth/logout", "/api/auth/signup", "/swagger-ui.html", "swagger-ui/**", "/v3/api-docs/**", "/actuator/health")
+                        .requestMatchers("/api/auth/login","/api/auth/refresh","/api/auth/logout", "/api/auth/signup", "/swagger-ui.html", "swagger-ui/**", "/v3/api-docs/**", "/actuator/health", "/uploads/**")
                         .permitAll()
                         .anyRequest().authenticated()
                 )

@@ -28,24 +28,19 @@ public class QuestionEntity {
     private String statement;
 
     @NotNull
-    @Column(name = "position", nullable = false)
-    private Byte position;
-
-    @NotNull
     @Column(name = "is_deleted", nullable = false)
     private Boolean isDeleted = false;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "test_id", nullable = false)
-    private QuizEntity test;
+    @JoinColumn(name = "quiz_id", nullable = false)
+    private QuizEntity quiz;
 
     @OneToMany(mappedBy = "question")
     private Set<AnswerEntity> answers = new LinkedHashSet<>();
 
-    public QuestionEntity(String statement, Byte position) {
+    public QuestionEntity(String statement) {
         setStatement(statement);
-        setPosition(position);
     }
 
 }

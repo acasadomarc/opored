@@ -11,11 +11,12 @@ import com.acasado.opored.repository.ForumRepository;
 import com.acasado.opored.repository.StudentRepository;
 import com.acasado.opored.repository.TopicRepository;
 import com.acasado.opored.repository.UserRepository;
-import com.acasado.opored.util.SecurityUtils;
+import com.acasado.opored.security.SecurityUtils;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -92,6 +93,15 @@ public class TopicService {
         if (studentRepository.existsById(toDeleteTopic.getUser().getId())) {
             toDeleteTopic.getStudentsFollowing().forEach(student -> studentService.unfollowDeletedTopic(student.getId(), id));
         }
+    }
+
+    public void changeTopicsOwner(Set<TopicEntity> topics, UserEntity user) {
+        Set<TopicEntity> changedOwnershipTopics = new HashSet<>();
+        for (TopicEntity topicEntity : topics) {
+            topicEntity.setUser(user);
+            changedOwnershipTopics.add(topicEntity);
+        }
+        topicRepository.saveAll(changedOwnershipTopics);
     }
 
     public Set<StudentSummaryDTO> getStudentsFollowing(Integer id) {

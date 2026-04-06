@@ -9,7 +9,7 @@ import com.acasado.opored.model.*;
 import com.acasado.opored.repository.*;
 import com.acasado.opored.security.BruteForceSecurityService;
 import com.acasado.opored.service.jpa.JpaUserDetailsService;
-import com.acasado.opored.service.jpa.RefreshTokenService;
+import com.acasado.opored.security.RefreshTokenService;
 import com.acasado.opored.util.AuthFactory;
 import com.acasado.opored.util.JwtUtils;
 import org.junit.jupiter.api.Test;

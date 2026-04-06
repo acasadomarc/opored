@@ -6,12 +6,13 @@ import com.acasado.opored.model.RatingProfessorEntity;
 import com.acasado.opored.repository.ProfessorRepository;
 import com.acasado.opored.repository.RatingProfessorRepository;
 import com.acasado.opored.repository.StudentRepository;
-import com.acasado.opored.util.SecurityUtils;
+import com.acasado.opored.security.SecurityUtils;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -47,7 +48,14 @@ public class RatingProfessorService {
                 );
 
         if (studentAlreadyPublishedRating) {
-            throw new StudentWithoutPermissionException("Student already published rating for this professor");
+            // Check if the student had previously published a rating and it is currently deleted
+            if (ratingProfessorRepository.findByStudentId(ratingProfessorDTO.getStudentId()).isPresent()) {
+                RatingProfessorEntity ratingProfessorEntity = ratingProfessorRepository.findByStudentId(ratingProfessorDTO.getStudentId()).get();
+                return updateMyRatingProfessor(ratingProfessorEntity.getId(), ratingProfessorDTO.getTitle(), ratingProfessorDTO.getScore(), ratingProfessorDTO.getComment());
+            }
+            else {
+                throw new StudentWithoutPermissionException("Student already published rating for this professor");
+            }
         }
 
         RatingProfessorEntity rating = convertToRatingProfessor(ratingProfessorDTO);
@@ -67,6 +75,7 @@ public class RatingProfessorService {
         toUpdateRatingProfessor.setTitle(title);
         toUpdateRatingProfessor.setScore(score);
         toUpdateRatingProfessor.setComment(comment);
+        toUpdateRatingProfessor.setIsDeleted(false);
 
         RatingProfessorEntity updatedRatingProfessor = ratingProfessorRepository.save(toUpdateRatingProfessor);
         return convertToRatingProfessorDTO(updatedRatingProfessor);
@@ -84,6 +93,13 @@ public class RatingProfessorService {
         toDeleteRatingProfessor.setIsDeleted(true);
         ratingProfessorRepository.save(toDeleteRatingProfessor);
 
+    }
+
+    public void deleteMultipleRatingProfessor(Set<RatingProfessorEntity> ratingProfessors) {
+        for (RatingProfessorEntity ratingProfessorEntity : ratingProfessors) {
+            ratingProfessorEntity.setIsDeleted(true);
+            ratingProfessorRepository.save(ratingProfessorEntity);
+        }
     }
 
     private RatingProfessorDTO convertToRatingProfessorDTO(RatingProfessorEntity rating) {

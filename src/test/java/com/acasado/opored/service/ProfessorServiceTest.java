@@ -1,11 +1,10 @@
 package com.acasado.opored.service;
 
 import com.acasado.opored.dto.ProfessorDTO;
-import com.acasado.opored.dto.UserUpdateRequest;
 import com.acasado.opored.model.ProfessorEntity;
 import com.acasado.opored.repository.ProfessorRepository;
 import com.acasado.opored.util.ProfessorFactory;
-import com.acasado.opored.util.SecurityUtils;
+import com.acasado.opored.security.SecurityUtils;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,7 +18,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 
@@ -31,6 +29,9 @@ class ProfessorServiceTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private UserService userService;
 
     @InjectMocks
     private ProfessorService professorService;
@@ -87,58 +88,15 @@ class ProfessorServiceTest {
     }
 
     @Test
-    void When_GetMe_Expect_DTO() {
-        // Arrange
-        int currentUserId = 1;
-        ProfessorEntity entity = ProfessorFactory.createValidProfessorEntity();
-
-        try (MockedStatic<SecurityUtils> securityMock = mockStatic(SecurityUtils.class)) {
-            securityMock.when(SecurityUtils::getCurrentUserId).thenReturn(currentUserId);
-            when(professorRepository.findById(currentUserId)).thenReturn(Optional.of(entity));
-
-            // Act
-            ProfessorDTO result = professorService.getMe();
-
-            // Assert
-            assertEquals(entity.getEmail(), result.getEmail());
-        }
-    }
-
-    @Test
-    void When_UpdateMe_Expect_UpdatedDTO() {
-        // Arrange
-        int currentUserId = 1;
-        String newName = "ProfessorUpdated";
-        ProfessorEntity entity = ProfessorFactory.createValidProfessorEntity();
-        UserUpdateRequest request = ProfessorFactory.createUserUpdateRequest();
-
-        try (MockedStatic<SecurityUtils> securityMock = mockStatic(SecurityUtils.class)) {
-            securityMock.when(SecurityUtils::getCurrentUserId).thenReturn(currentUserId);
-            securityMock.when(() -> SecurityUtils.passwordValidation(anyString())).thenReturn(true);
-
-            when(professorRepository.findById(currentUserId)).thenReturn(Optional.of(entity));
-            when(professorRepository.save(any(ProfessorEntity.class))).thenAnswer(i -> i.getArguments()[0]);
-
-            // Act
-            ProfessorDTO result = professorService.updateMe(request);
-
-            // Assert
-            assertEquals(newName, result.getName());
-            verify(professorRepository).save(entity);
-        }
-    }
-
-    @Test
-    void When_DeleteProfessor_Expect_LogicalDelete() {
+    void When_DeleteProfessor_Expect_LogicalDisable() {
         // Arrange
         ProfessorEntity entity = ProfessorFactory.createValidProfessorEntity();
         when(professorRepository.findById(1)).thenReturn(Optional.of(entity));
 
         // Act
-        professorService.deleteProfessor(1);
+        professorService.disableProfessor(1);
 
         // Assert
-        assertTrue(entity.getIsDeleted());
         assertFalse(entity.isEnabled());
         verify(professorRepository).save(entity);
     }

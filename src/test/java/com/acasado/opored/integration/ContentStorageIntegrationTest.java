@@ -6,8 +6,8 @@ import com.acasado.opored.integration.base.BaseIntegrationTest;
 import com.acasado.opored.model.CourseEntity;
 import com.acasado.opored.model.ProfessorEntity;
 import com.acasado.opored.repository.CourseRepository;
-import com.acasado.opored.repository.DocumentRepository;
 import com.acasado.opored.service.DocumentService;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -23,16 +23,13 @@ class ContentStorageIntegrationTest extends BaseIntegrationTest {
     @Autowired
     private CourseRepository courseRepository;
 
-    @Autowired
-    private DocumentRepository documentRepository;
-
     @Test
     void When_CreateUpdateAndDeleteDocument_Expect_PermissionChecks() {
         // Arrange
         ProfessorEntity professor = createProfessor("professor-docs@example.com");
         ProfessorEntity otherProfessor = createProfessor("other-professor@example.com");
 
-        CourseEntity course = new CourseEntity("Course", "Description", 10.0F, Set.of(), Set.of());
+        CourseEntity course = new CourseEntity("Course", "Description", 10.0F, Set.of(), Set.of(), professor);
         course.setDiscountPercentage(0.0F);
         course.setProfessor(professor);
         course = courseRepository.save(course);
@@ -64,6 +61,6 @@ class ContentStorageIntegrationTest extends BaseIntegrationTest {
         documentService.deleteDocument(updated.getId());
 
         // Assert
-        assertTrue(documentRepository.getReferenceById(updated.getId()).getIsDeleted());
+        assertThrows(EntityNotFoundException.class, () -> documentService.getDocumentById(updated.getId()));
     }
 }

@@ -1,7 +1,10 @@
-package com.acasado.opored.util;
+package com.acasado.opored.security;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class SecurityUtils {
 
@@ -22,6 +25,13 @@ public class SecurityUtils {
 
         return auth.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROOT"));
+    }
+
+    public static boolean isUserAdmin() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        return auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().contains("ADMIN")) || isUserRoot();
     }
 
     public static boolean isProvidedUser(Integer userId) {
@@ -49,5 +59,33 @@ public class SecurityUtils {
         String passRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=]).{12,20}$";
 
         return password.matches(passRegex);
+    }
+
+    public static boolean aliasValidation(String alias) {
+        List<String> banned_words = Arrays.asList(
+                "admin", "root", "modera", "soporte",
+                "elimina", "borra", "delete"
+        );
+
+        if (alias == null) return false;
+
+        alias = alias.trim();
+
+        if (alias.length() < 3 || alias.length() > 20) {
+            return false;
+        }
+        // Only letters and numbers allowed
+        if (!alias.matches("^[a-zA-Z0-9_]+$")) {
+            return false;
+        }
+
+        // Exclude banned words
+        String lowerAlias = alias.toLowerCase();
+        for (String banned : banned_words) {
+            if (lowerAlias.contains(banned)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

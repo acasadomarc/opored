@@ -1,14 +1,13 @@
 package com.acasado.opored.service;
 
 import com.acasado.opored.dto.ModeratorDTO;
-import com.acasado.opored.dto.UserUpdateRequest;
 import com.acasado.opored.dto.auth.AuthCreateUserRequest;
 import com.acasado.opored.dto.auth.AuthResponse;
 import com.acasado.opored.model.ModeratorEntity;
 import com.acasado.opored.repository.ModeratorRepository;
 import com.acasado.opored.service.jpa.JpaUserDetailsService;
 import com.acasado.opored.util.ModeratorFactory;
-import com.acasado.opored.util.SecurityUtils;
+import com.acasado.opored.security.SecurityUtils;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,6 +37,9 @@ class ModeratorServiceTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private UserService userService;
 
     @InjectMocks
     private ModeratorService moderatorService;
@@ -94,24 +96,6 @@ class ModeratorServiceTest {
     }
 
     @Test
-    void When_GetMe_Expect_DTO() {
-        // Arrange
-        int currentUserId = 1;
-        ModeratorEntity entity = ModeratorFactory.createValidModeratorEntity();
-
-        try (MockedStatic<SecurityUtils> securityMock = mockStatic(SecurityUtils.class)) {
-            securityMock.when(SecurityUtils::getCurrentUserId).thenReturn(currentUserId);
-            when(moderatorRepository.findById(currentUserId)).thenReturn(Optional.of(entity));
-
-            // Act
-            ModeratorDTO result = moderatorService.getMe();
-
-            // Assert
-            assertEquals(entity.getEmail(), result.getEmail());
-        }
-    }
-
-    @Test
     void When_CreateModerator_Expect_AuthResponse() {
         // Arrange
         ModeratorDTO dto = ModeratorFactory.createValidModeratorDTO();
@@ -131,40 +115,15 @@ class ModeratorServiceTest {
     }
 
     @Test
-    void When_UpdateMe_Expect_UpdatedDTO() {
-        // Arrange
-        int currentUserId = 1;
-        String newName = "ModeratorUpdated";
-        ModeratorEntity entity = ModeratorFactory.createValidModeratorEntity();
-        UserUpdateRequest request = ModeratorFactory.createUserUpdateRequest();
-
-        try (MockedStatic<SecurityUtils> securityMock = mockStatic(SecurityUtils.class)) {
-            securityMock.when(SecurityUtils::getCurrentUserId).thenReturn(currentUserId);
-            securityMock.when(() -> SecurityUtils.passwordValidation(anyString())).thenReturn(true);
-
-            when(moderatorRepository.findById(currentUserId)).thenReturn(Optional.of(entity));
-            when(moderatorRepository.save(any(ModeratorEntity.class))).thenAnswer(i -> i.getArguments()[0]);
-
-            // Act
-            ModeratorDTO result = moderatorService.updateMe(request);
-
-            // Assert
-            assertEquals(newName, result.getName());
-            verify(moderatorRepository).save(entity);
-        }
-    }
-
-    @Test
     void When_DeleteModerator_Expect_LogicalDelete() {
         // Arrange
         ModeratorEntity entity = ModeratorFactory.createValidModeratorEntity();
         when(moderatorRepository.findById(1)).thenReturn(Optional.of(entity));
 
         // Act
-        moderatorService.deleteModerator(1);
+        moderatorService.disableModerator(1);
 
         // Assert
-        assertTrue(entity.getIsDeleted());
         assertFalse(entity.isEnabled());
         verify(moderatorRepository).save(entity);
     }

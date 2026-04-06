@@ -2,7 +2,6 @@ package com.acasado.opored.controller;
 
 import com.acasado.opored.controller.base.BaseControllerTest;
 import com.acasado.opored.dto.ProfessorDTO;
-import com.acasado.opored.dto.UserUpdateRequest;
 import com.acasado.opored.service.ProfessorService;
 import com.acasado.opored.util.ProfessorFactory;
 import jakarta.persistence.EntityNotFoundException;
@@ -14,7 +13,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -85,42 +83,9 @@ class ProfessorControllerTest extends BaseControllerTest {
     }
 
     @Test
-    void When_GetMe_Expect_OkAndDTO() throws Exception {
-        // Arrange
-        ProfessorDTO dto = ProfessorFactory.createValidProfessorDTO();
-        when(professorService.getMe()).thenReturn(dto);
-
-        // Act
-        mockMvc.perform(get("/api/professors/me")
-                        .contentType(MediaType.APPLICATION_JSON))
-                // Assert
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.email").value(dto.getEmail()));
-    }
-
-    @Test
-    void When_UpdateMe_Expect_OkAndUpdatedDTO() throws Exception {
-        // Arrange
-        UserUpdateRequest request = ProfessorFactory.createUserUpdateRequest();
-        ProfessorDTO updatedDto = ProfessorFactory.createValidProfessorDTO();
-        updatedDto.setName(request.getName());
-
-        when(professorService.updateMe(any(UserUpdateRequest.class)))
-                .thenReturn(updatedDto);
-
-        // Act
-        mockMvc.perform(put("/api/professors/me")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                // Assert
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value(request.getName()));
-    }
-
-    @Test
     void When_DeleteProfessor_Expect_NoContent() throws Exception {
         // Arrange
-        doNothing().when(professorService).deleteProfessor(anyInt());
+        doNothing().when(professorService).disableProfessor(anyInt());
 
         // Act
         mockMvc.perform(delete("/api/professors/{id}", 1)
@@ -129,21 +94,6 @@ class ProfessorControllerTest extends BaseControllerTest {
                 // Assert
                 .andExpect(status().isNoContent());
 
-        verify(professorService, times(1)).deleteProfessor(1);
-    }
-
-    @Test
-    void When_DeleteMe_Expect_NoContent() throws Exception {
-        // Arrange
-        doNothing().when(professorService).deleteMe();
-
-        // Act
-        mockMvc.perform(delete("/api/professors/me")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                // Assert
-                .andExpect(status().isNoContent());
-
-        verify(professorService, times(1)).deleteMe();
+        verify(professorService, times(1)).disableProfessor(1);
     }
 }

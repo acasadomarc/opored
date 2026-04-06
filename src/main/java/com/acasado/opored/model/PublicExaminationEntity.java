@@ -16,7 +16,6 @@ import java.util.Set;
 @SQLRestriction("is_deleted = false")
 public class PublicExaminationEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Integer id;
 
@@ -49,7 +48,8 @@ public class PublicExaminationEntity {
     private Set<StudentEntity> students = new LinkedHashSet<>();
 
 
-    public PublicExaminationEntity(String name, String description, CategoryEntity category, BulletinBoardEntity bulletinBoard, ForumEntity forum) {
+    public PublicExaminationEntity(Integer id,String name, String description, CategoryEntity category, BulletinBoardEntity bulletinBoard, ForumEntity forum) {
+        setId(id);
         setName(name);
         setDescription(description);
         setCategory(category);

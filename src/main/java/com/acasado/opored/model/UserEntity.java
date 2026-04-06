@@ -9,6 +9,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDate;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -64,6 +66,15 @@ public abstract class UserEntity {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "role", nullable = false)
     private RoleEntity role;
+
+    @OneToMany(mappedBy = "user")
+    private Set<MessageEntity> messages = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "user")
+    private Set<TopicEntity> topics = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "user")
+    private Set<RefreshTokenEntity> refreshTokens = new LinkedHashSet<>();
 
     protected UserEntity(String name, String surname, String alias, String email, String password, UserAccountStatus accountStatus, RoleEntity role) {
         setName(name);

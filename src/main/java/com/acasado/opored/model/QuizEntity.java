@@ -18,9 +18,6 @@ import java.util.Set;
 @SQLRestriction("is_deleted = false")
 @DiscriminatorValue("QUIZ")
 public class QuizEntity extends ContentEntity {
-    @Column(name = "allowed_attempts")
-    private Integer allowedAttempts;
-
     @Column(name = "time_limit")
     private Integer timeLimit;
 
@@ -31,13 +28,12 @@ public class QuizEntity extends ContentEntity {
     @Column(name = "max_score", nullable = false)
     private Integer maxScore;
 
-    @OneToMany(mappedBy = "test")
+    @OneToMany(mappedBy = "quiz")
     private Set<QuestionEntity> questions = new LinkedHashSet<>();
 
-    public QuizEntity(String title, String description, Integer allowedAttempts, Integer timeLimit, Integer scoreToPass, Integer maxScore, Set<QuestionEntity> questions) {
+    public QuizEntity(String title, String description, Integer timeLimit, Integer scoreToPass, Integer maxScore, Set<QuestionEntity> questions) {
         setTitle(title);
         setDescription(description);
-        setAllowedAttempts(allowedAttempts);
         setTimeLimit(timeLimit);
         setScoreToPass(scoreToPass);
         setMaxScore(maxScore);

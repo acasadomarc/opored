@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDate;
@@ -31,6 +32,7 @@ public class AnnouncementEntity {
     @Column(name = "related_links", columnDefinition = "text")
     private String relatedLinks;
 
+    @CreationTimestamp
     @Column(name = "publication_date")
     private LocalDate publicationDate;
 

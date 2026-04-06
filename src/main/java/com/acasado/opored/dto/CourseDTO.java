@@ -2,9 +2,9 @@ package com.acasado.opored.dto;
 
 import com.acasado.opored.model.ContentEntity;
 import com.acasado.opored.model.CourseEntity;
+import com.acasado.opored.model.RatingCourseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,6 +12,8 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -23,7 +25,6 @@ import java.util.stream.Collectors;
 public class CourseDTO {
 
     @Schema(example = "1")
-    @NotNull
     private Integer id;
 
     @Schema(example = "Advanced Java Programming")
@@ -42,6 +43,12 @@ public class CourseDTO {
     @Schema(description = "Indicates if the course currently has a discount", example = "true")
     private Boolean hasDiscount;
 
+    @Schema(description = "Indicas if the course is visible in the platform")
+    private Boolean isVisible;
+
+    @Schema(description = "Indicas if the course can be purchased")
+    private Boolean isPurchasable;
+
     @Schema(example = "2026-10-01")
     private LocalDate updateDate;
 
@@ -49,7 +56,7 @@ public class CourseDTO {
     private Set<ContentDTO> contents;
 
     @Schema(description = "Set of ratings received for the course")
-    private Set<RatingCourseDTO> ratings;
+    private Set<RatingCourseDTO> ratings = new HashSet<>();
 
     @Schema(description = "Average score calculated from ratings", example = "4.8")
     private Float totalScore;
@@ -61,23 +68,35 @@ public class CourseDTO {
         setId(course.getId());
         setName(course.getName());
         setDescription(course.getDescription());
-        setPrice(course.getPrice(), course.getDiscountPercentage());
+        setPrice(course.getPrice());
         setDiscountPercentage(course.getDiscountPercentage());
+        setHasDiscount();
+        setIsVisible(course.getIsVisible());
+        setIsPurchasable(course.getIsPurchasable());
         setUpdateDate(course.getUpdateDate());
         setContents(course.getContents());
-        setRatings(course.getRatings().stream().map(RatingCourseDTO::new).collect(Collectors.toSet()));
+        if (!course.getRatings().isEmpty()) {
+            setRatings(course.getRatings());
+        }
         setTotalScore();
         setProfessor(new ProfessorDTO(course.getProfessor()));
     }
 
-    public void setPrice(Float price, Float discountPercentage) {
-        if (discountPercentage == null || discountPercentage == 0.0f) {
-            this.price = price;
-            this.hasDiscount = false;
-        } else {
-            this.price = (price * (100 - discountPercentage)) / 100;
-            this.hasDiscount = true;
+    // Show only the ratings that are not marked as deleted
+    public void setRatings(Set<RatingCourseEntity> ratings) {
+        Set<RatingCourseEntity> publishedRatings = new LinkedHashSet<>();
+        if (ratings != null) {
+            for (RatingCourseEntity rating : ratings) {
+                if (!rating.getIsDeleted()) {
+                    publishedRatings.add(rating);
+                }
+            }
+            this.ratings = publishedRatings.stream().map(RatingCourseDTO::new).collect(Collectors.toSet());
         }
+        else {
+            this.ratings = new LinkedHashSet<>();
+        }
+
     }
 
     public void setTotalScore() {
@@ -88,6 +107,10 @@ public class CourseDTO {
             int totalVotes = getRatings().size();
             this.totalScore = sumScore / totalVotes;
         }
+    }
+
+    public void setHasDiscount() {
+        this.hasDiscount = this.discountPercentage != null && this.discountPercentage > 0.0f;
     }
 
     public void setContents(Set<ContentEntity> contents) {

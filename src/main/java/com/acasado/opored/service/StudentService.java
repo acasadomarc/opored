@@ -3,15 +3,12 @@ package com.acasado.opored.service;
 import com.acasado.opored.dto.*;
 import com.acasado.opored.dto.auth.AuthCreateUserRequest;
 import com.acasado.opored.dto.auth.AuthResponse;
-import com.acasado.opored.exception.AliasAlreadyRegisteredException;
 import com.acasado.opored.model.*;
 import com.acasado.opored.repository.*;
 import com.acasado.opored.service.jpa.JpaUserDetailsService;
-import com.acasado.opored.util.SecurityUtils;
+import com.acasado.opored.security.SecurityUtils;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,13 +20,18 @@ import java.util.stream.Collectors;
 public class StudentService {
     private final StudentRepository studentRepository;
 
-    private final PasswordEncoder passwordEncoder;
     private final JpaUserDetailsService userDetailsService;
 
     private final TopicRepository topicRepository;
     private final FollowTopicRepository followTopicRepository;
     private final PublicExaminationRepository publicExaminationRepository;
     private final StudentPublicExaminationRepository studentPublicExaminationRepository;
+
+    private final RatingProfessorService ratingProfessorService;
+    private final RatingCourseService ratingCourseService;
+    private final PurchaseService purchaseService;
+
+    private final static Integer DEFAULT_DELETED_STUDENT_ID = 1;
 
     public List<StudentSummaryDTO> getAllStudents() {
         return studentRepository.findAll().stream().map(StudentSummaryDTO::new).toList();
@@ -56,37 +58,21 @@ public class StudentService {
         return userDetailsService.createUser(authCreateUserRequest);
     }
 
-    public StudentDTO updateMe(UserUpdateRequest userUpdateRequest) {
-        Integer currentId = getCurrentStudentUserId();
-
-        StudentEntity toUpdateStudent = studentRepository.findById(currentId).orElseThrow(() -> notFoundById(currentId));
-
-        if (studentRepository.findByAlias(userUpdateRequest.getAlias()).isPresent()) {
-            throw new AliasAlreadyRegisteredException("User with alias " + userUpdateRequest.getAlias() + " already exists");
-        }
-
-        toUpdateStudent.setName(userUpdateRequest.getName());
-        toUpdateStudent.setSurname(userUpdateRequest.getSurname());
-        toUpdateStudent.setAlias(userUpdateRequest.getAlias());
-        if (!userUpdateRequest.getPassword().isEmpty()) {
-            if (!SecurityUtils.passwordValidation(userUpdateRequest.getPassword())) {
-                throw new BadCredentialsException("Password is not valid");
-            }
-            toUpdateStudent.setPassword(passwordEncoder.encode(userUpdateRequest.getPassword()));
-        }
-        toUpdateStudent.setProfilePhoto(userUpdateRequest.getProfilePhoto());
-
-        StudentEntity updatedStudent = studentRepository.save(toUpdateStudent);
-        return convertToStudentDTO(updatedStudent);
-    }
-
-    public void deleteStudent(Integer id) {
+    public void disableStudent(Integer id) {
         StudentEntity toDeleteStudent = studentRepository.findById(id)
                 .orElseThrow(() -> notFoundById(id));
 
         // Logical delete
-        toDeleteStudent.setIsDeleted(true);
         toDeleteStudent.setEnabled(false);
+        studentRepository.save(toDeleteStudent);
+    }
+
+    public void enableStudent(Integer id) {
+        StudentEntity toDeleteStudent = studentRepository.findById(id)
+                .orElseThrow(() -> notFoundById(id));
+
+        // Logical delete
+        toDeleteStudent.setEnabled(true);
         studentRepository.save(toDeleteStudent);
     }
 
@@ -95,6 +81,36 @@ public class StudentService {
         StudentEntity toDeleteStudent = studentRepository.findById(currentId).orElseThrow(() -> notFoundById(currentId));
 
         // Logical delete
+        toDeleteStudent.setIsDeleted(true);
+        toDeleteStudent.setEnabled(false);
+        studentRepository.save(toDeleteStudent);
+    }
+
+    public void deleteMe(StudentEntity toDeleteStudent) {
+
+        // Remove the topic associations
+        toDeleteStudent.getTopicsFollowed().forEach(topicFollowed -> unfollowTopic(topicFollowed.getId()));
+
+        // Remove the examinations associations
+        toDeleteStudent.getPublicExaminations().forEach(publicExamination -> withdrawFromPublicExamination(publicExamination.getId()));
+
+        // Remove the ratings created by the student
+        toDeleteStudent.getRatings().forEach(rating -> {
+            if (rating instanceof RatingCourseEntity) {
+                ratingCourseService.deleteRatingCourse(rating.getId());
+            }
+            else if (rating instanceof RatingProfessorEntity) {
+                ratingProfessorService.deleteRatingProfessor(rating.getId());
+            }
+        });
+
+        // Change purchases ownership to default deleted account
+        if (!toDeleteStudent.getPurchases().isEmpty()) {
+            StudentEntity defaultDeletedStudent = studentRepository.findById(DEFAULT_DELETED_STUDENT_ID).orElseThrow(() -> notFoundById(DEFAULT_DELETED_STUDENT_ID));
+
+            purchaseService.changePurchasesOwner(toDeleteStudent.getPurchases(), defaultDeletedStudent);
+        }
+
         toDeleteStudent.setIsDeleted(true);
         toDeleteStudent.setEnabled(false);
         studentRepository.save(toDeleteStudent);

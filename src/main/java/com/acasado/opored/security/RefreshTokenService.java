@@ -1,4 +1,4 @@
-package com.acasado.opored.service.jpa;
+package com.acasado.opored.security;
 
 import com.acasado.opored.model.RefreshTokenEntity;
 import com.acasado.opored.model.UserEntity;

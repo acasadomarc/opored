@@ -6,13 +6,15 @@ import com.acasado.opored.model.*;
 import com.acasado.opored.repository.ModeratorRepository;
 import com.acasado.opored.repository.MessageRepository;
 import com.acasado.opored.repository.ModerationMessageRepository;
-import com.acasado.opored.util.SecurityUtils;
+import com.acasado.opored.security.SecurityUtils;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -74,6 +76,15 @@ public class ModerationMessageService {
         MessageEntity message = messageRepository.getReferenceById(messageId);
         message.setStatus(StatusEnum.VISIBLE);
         messageRepository.save(message);
+    }
+
+    public void changeModerationMessagesOwner(Set<ModerationMessageEntity> moderationMessages, ModeratorEntity moderator) {
+        Set<ModerationMessageEntity> changedOwnershipModerationMessages = new HashSet<>();
+        for (ModerationMessageEntity moderationmoderationMessageEntity : moderationMessages) {
+            moderationmoderationMessageEntity.setModerator(moderator);
+            changedOwnershipModerationMessages.add(moderationmoderationMessageEntity);
+        }
+        moderationMessageRepository.saveAll(changedOwnershipModerationMessages);
     }
 
     private ModerationMessageDTO convertToModerationMessageDTO(ModerationMessageEntity moderationMessageEntity) {

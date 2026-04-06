@@ -39,7 +39,7 @@ public class AnswerFactory {
 
         QuestionEntity question = new QuestionEntity();
         question.setId(100);
-        question.setTest(test);
+        question.setQuiz(test);
 
         AnswerEntity answer = new AnswerEntity();
         answer.setId(1);

@@ -10,8 +10,9 @@ import com.acasado.opored.exception.EmailAlreadyRegisteredException;
 import com.acasado.opored.model.*;
 import com.acasado.opored.repository.*;
 import com.acasado.opored.security.BruteForceSecurityService;
+import com.acasado.opored.security.RefreshTokenService;
 import com.acasado.opored.util.JwtUtils;
-import com.acasado.opored.util.SecurityUtils;
+import com.acasado.opored.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -75,6 +76,11 @@ public class JpaUserDetailsService implements UserDetailsService {
         }
         if (userRepository.findByAlias(authCreateUser.getAlias()).isPresent()) {
             throw new AliasAlreadyRegisteredException("User with alias " + authCreateUser.getAlias() + " already exists");
+        }
+
+        // Alias validation
+        if (!SecurityUtils.aliasValidation(authCreateUser.getAlias())) {
+            throw new BadCredentialsException("Alias is not valid");
         }
 
         // Email validation
