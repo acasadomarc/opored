@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -49,9 +50,18 @@ public class RatingProfessorService {
 
         if (studentAlreadyPublishedRating) {
             // Check if the student had previously published a rating and it is currently deleted
-            if (ratingProfessorRepository.findByStudentId(ratingProfessorDTO.getStudentId()).isPresent()) {
-                RatingProfessorEntity ratingProfessorEntity = ratingProfessorRepository.findByStudentId(ratingProfessorDTO.getStudentId()).get();
-                return updateMyRatingProfessor(ratingProfessorEntity.getId(), ratingProfessorDTO.getTitle(), ratingProfessorDTO.getScore(), ratingProfessorDTO.getComment());
+            Optional<RatingProfessorEntity> optionalRating =
+                    ratingProfessorRepository.findByStudentId(ratingProfessorDTO.getStudentId());
+
+            if (optionalRating.isPresent()) {
+                RatingProfessorEntity ratingProfessorEntity = optionalRating.get();
+
+                return updateMyRatingProfessor(
+                        ratingProfessorEntity.getId(),
+                        ratingProfessorDTO.getTitle(),
+                        ratingProfessorDTO.getScore(),
+                        ratingProfessorDTO.getComment()
+                );
             }
             else {
                 throw new StudentWithoutPermissionException("Student already published rating for this professor");
@@ -75,7 +85,7 @@ public class RatingProfessorService {
         toUpdateRatingProfessor.setTitle(title);
         toUpdateRatingProfessor.setScore(score);
         toUpdateRatingProfessor.setComment(comment);
-        toUpdateRatingProfessor.setIsDeleted(false);
+        toUpdateRatingProfessor.setDeleted(false);
 
         RatingProfessorEntity updatedRatingProfessor = ratingProfessorRepository.save(toUpdateRatingProfessor);
         return convertToRatingProfessorDTO(updatedRatingProfessor);
@@ -90,14 +100,14 @@ public class RatingProfessorService {
         }
 
         // Logical delete
-        toDeleteRatingProfessor.setIsDeleted(true);
+        toDeleteRatingProfessor.setDeleted(true);
         ratingProfessorRepository.save(toDeleteRatingProfessor);
 
     }
 
     public void deleteMultipleRatingProfessor(Set<RatingProfessorEntity> ratingProfessors) {
         for (RatingProfessorEntity ratingProfessorEntity : ratingProfessors) {
-            ratingProfessorEntity.setIsDeleted(true);
+            ratingProfessorEntity.setDeleted(true);
             ratingProfessorRepository.save(ratingProfessorEntity);
         }
     }

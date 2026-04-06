@@ -52,7 +52,7 @@ public class RatingProfessorFactory {
         entity.setStudent(student);
         entity.setProfessor(professor);
         entity.setComment("Very helpful");
-        entity.setIsDeleted(false);
+        entity.setDeleted(false);
 
         return entity;
     }

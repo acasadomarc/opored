@@ -38,7 +38,7 @@ public abstract class ContentDTO {
     @Schema(description = "ID of the associated course", example = "10")
     private Integer courseId;
 
-    public ContentDTO() { }
+    ContentDTO() { }
 
     // Factory method
     public static ContentDTO fromEntity(ContentEntity content) {
@@ -82,10 +82,8 @@ public abstract class ContentDTO {
                 entity.setLink(documentDTO.getLink());
                 return entity;
             }
-            default -> {
-            }
+            default -> throw new IllegalArgumentException("Unknown ContentDTO type: " + dto.getClass().getSimpleName());
         }
-        throw new IllegalArgumentException("Unknown DTO type: " + dto.getClass());
     }
 
 }

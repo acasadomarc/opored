@@ -162,7 +162,7 @@ class RatingProfessorServiceTest {
 
             ratingProfessorService.deleteRatingProfessor(1);
 
-            assertTrue(entity.getIsDeleted());
+            assertTrue(entity.isDeleted());
             verify(ratingProfessorRepository).save(entity);
         }
     }

@@ -22,7 +22,7 @@ public class ModeratorEntity extends UserEntity {
     @OneToMany(mappedBy = "moderator")
     private Set<ModerationTopicEntity> moderationTopics = new LinkedHashSet<>();
 
-    public ModeratorEntity(String name, String surname, String alias, String email, String password, UserAccountStatus accountStatus, RoleEntity role) {
-        super(name, surname, alias, email, password, accountStatus, role);
+    public ModeratorEntity(UserIdentificationFields userIdentificationFields, UserAccountStatus accountStatus,  RoleEntity role) {
+        super(userIdentificationFields, accountStatus, role);
     }
 }

@@ -46,7 +46,7 @@ public class ProfessorDTO extends UserDTO {
         Set<RatingProfessorEntity> publishedRatings = new LinkedHashSet<>();
 
         for (RatingProfessorEntity rating : ratings) {
-            if (!rating.getIsDeleted()) {
+            if (!rating.isDeleted()) {
                 publishedRatings.add(rating);
             }
         }

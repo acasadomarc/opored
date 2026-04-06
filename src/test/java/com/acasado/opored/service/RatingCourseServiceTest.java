@@ -162,7 +162,7 @@ class RatingCourseServiceTest {
 
             ratingCourseService.deleteRatingCourse(1);
 
-            assertTrue(entity.getIsDeleted());
+            assertTrue(entity.isDeleted());
             verify(ratingCourseRepository).save(entity);
         }
     }

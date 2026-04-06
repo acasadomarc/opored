@@ -95,22 +95,24 @@ public class JpaUserDetailsService implements UserDetailsService {
         UserEntity userSaved = switch (role.name()) {
             case "ADMIN" -> {
                 AdministratorEntity administrator = new AdministratorEntity(
-                        authCreateUser.getName(),
-                        authCreateUser.getSurname(),
-                        authCreateUser.getAlias(),
-                        authCreateUser.getEmail(),
-                        passwordEncoder.encode(authCreateUser.getPassword()),
+                        new UserIdentificationFields(
+                            authCreateUser.getName(),
+                            authCreateUser.getSurname(),
+                            authCreateUser.getAlias(),
+                            authCreateUser.getEmail(),
+                            passwordEncoder.encode(authCreateUser.getPassword())),
                         new UserAccountStatus(true, true, true, true),
                         roleRepository.getRoleByName(role));
                 yield administratorRepository.save(administrator);
             }
             case "PROFESSOR" -> {
                 ProfessorEntity professor = new ProfessorEntity(
-                        authCreateUser.getName(),
-                        authCreateUser.getSurname(),
-                        authCreateUser.getAlias(),
-                        authCreateUser.getEmail(),
-                        passwordEncoder.encode(authCreateUser.getPassword()),
+                        new UserIdentificationFields(
+                                authCreateUser.getName(),
+                                authCreateUser.getSurname(),
+                                authCreateUser.getAlias(),
+                                authCreateUser.getEmail(),
+                                passwordEncoder.encode(authCreateUser.getPassword())),
                         new UserAccountStatus(true, true, true, true),
                         roleRepository.getRoleByName(role),
                         new LinkedHashSet<>());
@@ -118,22 +120,24 @@ public class JpaUserDetailsService implements UserDetailsService {
             }
             case "MODERATOR" -> {
                 ModeratorEntity moderator = new ModeratorEntity(
-                        authCreateUser.getName(),
-                        authCreateUser.getSurname(),
-                        authCreateUser.getAlias(),
-                        authCreateUser.getEmail(),
-                        passwordEncoder.encode(authCreateUser.getPassword()),
+                        new UserIdentificationFields(
+                                authCreateUser.getName(),
+                                authCreateUser.getSurname(),
+                                authCreateUser.getAlias(),
+                                authCreateUser.getEmail(),
+                                passwordEncoder.encode(authCreateUser.getPassword())),
                         new UserAccountStatus(true, true, true, true),
                         roleRepository.getRoleByName(role));
                 yield moderatorRepository.save(moderator);
             }
             case "STUDENT" -> {
                 StudentEntity student = new StudentEntity(
-                        authCreateUser.getName(),
-                        authCreateUser.getSurname(),
-                        authCreateUser.getAlias(),
-                        authCreateUser.getEmail(),
-                        passwordEncoder.encode(authCreateUser.getPassword()),
+                        new UserIdentificationFields(
+                                authCreateUser.getName(),
+                                authCreateUser.getSurname(),
+                                authCreateUser.getAlias(),
+                                authCreateUser.getEmail(),
+                                passwordEncoder.encode(authCreateUser.getPassword())),
                         new UserAccountStatus(true, true, true, true),
                         roleRepository.getRoleByName(role));
                 yield studentRepository.save(student);

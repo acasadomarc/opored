@@ -30,8 +30,8 @@ public class QuizService {
     }
 
     public QuizDTO getQuizById(Integer id) {
-        QuizEntity Quiz = quizRepository.findById(id).orElseThrow(() -> notFoundById(id));
-        return convertToQuizDTO(Quiz);
+        QuizEntity quiz = quizRepository.findById(id).orElseThrow(() -> notFoundById(id));
+        return convertToQuizDTO(quiz);
     }
 
     public QuizDTO createQuiz(QuizDTO quizDTO) {
@@ -41,9 +41,9 @@ public class QuizService {
             throw new ProfessorWithoutPermissionException("You do not have permission to add quizzes to this course");
         }
 
-        QuizEntity Quiz = convertToQuizEntity(quizDTO);
-        Quiz.setCourse(parentCourse);
-        QuizEntity savedQuiz = quizRepository.save(Quiz);
+        QuizEntity quiz = convertToQuizEntity(quizDTO);
+        quiz.setCourse(parentCourse);
+        QuizEntity savedQuiz = quizRepository.save(quiz);
         return convertToQuizDTO(savedQuiz);
     }
 
@@ -81,8 +81,8 @@ public class QuizService {
         quizRepository.save(toDeleteQuiz);
     }
 
-    private QuizDTO convertToQuizDTO(QuizEntity Quiz) {
-        return new QuizDTO(Quiz);
+    private QuizDTO convertToQuizDTO(QuizEntity quiz) {
+        return new QuizDTO(quiz);
     }
 
     private QuizEntity convertToQuizEntity(QuizDTO quizDTO) {

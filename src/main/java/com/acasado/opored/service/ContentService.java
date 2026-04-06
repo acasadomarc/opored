@@ -25,30 +25,30 @@ public class ContentService {
 
 
     ContentEntity convertToEntity(ContentDTO contentDTO) {
-        if (contentDTO instanceof QuizDTO) {
+        if (contentDTO instanceof QuizDTO quizDTO) {
             QuizEntity quizEntity = new QuizEntity(
                     contentDTO.getTitle(),
                     contentDTO.getDescription(),
-                    ((QuizDTO) contentDTO).getTimeLimit(),
-                    ((QuizDTO) contentDTO).getScoreToPass(),
-                    ((QuizDTO) contentDTO).getMaxScore(),
-                    quizService.setQuestionEntities(((QuizDTO) contentDTO).getQuestions()));
+                    quizDTO.getTimeLimit(),
+                    quizDTO.getScoreToPass(),
+                    quizDTO.getMaxScore(),
+                    quizService.setQuestionEntities(quizDTO.getQuestions()));
             quizRepository.save(quizEntity);
             return quizEntity;
-        } else if (contentDTO instanceof DocumentDTO) {
+        } else if (contentDTO instanceof DocumentDTO documentDTO) {
             DocumentEntity documentEntity = new DocumentEntity(
                     contentDTO.getTitle(),
                     contentDTO.getDescription(),
-                    ((DocumentDTO) contentDTO).getNumPages(),
-                    ((DocumentDTO) contentDTO).getLink());
+                    documentDTO.getNumPages(),
+                    documentDTO.getLink());
             documentRepository.save(documentEntity);
             return documentEntity;
         }
-        else if (contentDTO instanceof VideoDTO){
+        else if (contentDTO instanceof VideoDTO videoDTO) {
             VideoEntity videoEntity = new VideoEntity(
                     contentDTO.getTitle(),
                     contentDTO.getDescription(),
-                    ((VideoDTO) contentDTO).getLink());
+                    videoDTO.getLink());
             videoRepository.save(videoEntity);
             return videoEntity;
         }

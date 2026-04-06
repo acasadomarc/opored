@@ -37,10 +37,8 @@ public class CourseService {
     public CourseDTO getCourseById(Integer id) {
         CourseEntity course = courseRepository.findById(id).orElseThrow(() -> notFoundById(id));
 
-        if (!course.getIsVisible()) { // Block users trying to access the course by the id url
-            if (!getCurrentUserId().equals(course.getProfessor().getId())) {
-                throw new UserWithoutPermissionException("You are not authorized to view this course");
-            }
+        if (!course.isVisible() && !getCurrentUserId().equals(course.getProfessor().getId())) { // Block users trying to access the course by the id url
+            throw new UserWithoutPermissionException("You are not authorized to view this course");
         }
         return convertToCourseDTO(course);
     }
@@ -63,7 +61,7 @@ public class CourseService {
         toUpdateCourse.setPrice(price);
         toUpdateCourse.setDiscountPercentage(discountPercentage);
         if (isVisible != null) {
-            toUpdateCourse.setIsVisible(isVisible);
+            toUpdateCourse.setVisible(isVisible);
         }
         CourseEntity updatedCourse = courseRepository.save(toUpdateCourse);
         return convertToCourseDTO(updatedCourse);
@@ -109,7 +107,7 @@ public class CourseService {
         }
 
         // Logical delete
-        toDeleteCourse.setIsDeleted(true);
+        toDeleteCourse.setDeleted(true);
         courseRepository.save(toDeleteCourse);
     }
 

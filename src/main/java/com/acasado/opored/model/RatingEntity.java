@@ -44,5 +44,5 @@ public abstract class RatingEntity {
     private String comment;
 
     @Column(name = "is_deleted")
-    private Boolean isDeleted = Boolean.FALSE;
+    private boolean isDeleted = false;
 }

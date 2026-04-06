@@ -1,5 +1,6 @@
 package com.acasado.opored.security;
 
+import com.acasado.opored.exception.RefreshTokenExpiredException;
 import com.acasado.opored.model.RefreshTokenEntity;
 import com.acasado.opored.model.UserEntity;
 import com.acasado.opored.repository.RefreshTokenRepository;
@@ -19,7 +20,7 @@ public class RefreshTokenService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserRepository userRepository;
 
-    private static final long refreshDurationMs = 7 * 24 * 60 * 60 * 1000L; // 7 days
+    private static final long REFRESH_DURATION_MS = 7 * 24 * 60 * 60 * 1000L; // 7 days
 
     public RefreshTokenEntity createRefreshToken(Integer userId) {
         UserEntity userEntity = userRepository.findById(userId)
@@ -29,7 +30,7 @@ public class RefreshTokenService {
 
         token.setUser(userEntity);
         token.setToken(UUID.randomUUID().toString());
-        token.setExpiryDate(Instant.now().plusMillis(refreshDurationMs));
+        token.setExpiryDate(Instant.now().plusMillis(REFRESH_DURATION_MS));
         token.setRevoked(false);
 
         return refreshTokenRepository.save(token);
@@ -40,7 +41,7 @@ public class RefreshTokenService {
 
         if (refreshToken.getExpiryDate().isBefore(Instant.now()) || refreshToken.isRevoked()) {
             refreshTokenRepository.delete(refreshToken);
-            throw new RuntimeException("Refresh token expired");
+            throw new RefreshTokenExpiredException("Refresh token expired");
         }
         return refreshToken;
     }

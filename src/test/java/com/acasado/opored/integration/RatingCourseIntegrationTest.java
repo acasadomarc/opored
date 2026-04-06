@@ -82,6 +82,6 @@ class RatingCourseIntegrationTest extends BaseIntegrationTest {
         ratingCourseService.deleteRatingCourse(rating.getId());
 
         // Assert
-        assertTrue(ratingCourseRepository.getReferenceById(rating.getId()).getIsDeleted());
+        assertTrue(ratingCourseRepository.getReferenceById(rating.getId()).isDeleted());
     }
 }

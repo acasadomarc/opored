@@ -1,5 +1,6 @@
  package com.acasado.opored.service;
 
+import com.acasado.opored.exception.FileManagementException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,7 +24,7 @@ public class StorageService{
 
     public String store(MultipartFile file) {
         // Path where the image can be searched for
-        String BASE_URL = "http://localhost:8080/uploads/";
+        final String BASE_URL = "http://localhost:8080/uploads/";
 
         try {
             if (file.isEmpty()) {
@@ -51,7 +52,7 @@ public class StorageService{
             return  BASE_URL + newFilename;
 
         } catch (IOException e) {
-            throw new RuntimeException("Fallo al guardar el archivo.", e);
+            throw new FileManagementException("Fallo al guardar el archivo: " + e);
         }
     }
 
@@ -76,7 +77,7 @@ public class StorageService{
             Files.deleteIfExists(fileToDelete);
 
         } catch (IOException e) {
-            throw new RuntimeException("Fallo al intentar eliminar el archivo: " + fileUrl, e);
+            throw new FileManagementException("Fallo al intentar eliminar el archivo: " + e);
         }
     }
 }

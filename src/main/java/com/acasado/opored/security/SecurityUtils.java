@@ -62,7 +62,7 @@ public class SecurityUtils {
     }
 
     public static boolean aliasValidation(String alias) {
-        List<String> banned_words = Arrays.asList(
+        List<String> bannedWords = Arrays.asList(
                 "admin", "root", "modera", "soporte",
                 "elimina", "borra", "delete"
         );
@@ -75,13 +75,13 @@ public class SecurityUtils {
             return false;
         }
         // Only letters and numbers allowed
-        if (!alias.matches("^[a-zA-Z0-9_]+$")) {
+        if (!alias.matches("^\\w+$")) {
             return false;
         }
 
         // Exclude banned words
         String lowerAlias = alias.toLowerCase();
-        for (String banned : banned_words) {
+        for (String banned : bannedWords) {
             if (lowerAlias.contains(banned)) {
                 return false;
             }

@@ -31,7 +31,7 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
 
-    private final static Integer DEFAULT_DELETED_USER_ID = 1;
+    private static final Integer DEFAULT_DELETED_USER_ID = 1;
 
     public List<UserDTO> getAllUsers() {
         // Admins are not treated as normal users
@@ -58,8 +58,8 @@ public class UserService {
 
         switch (toDisableUser.getRole().getName()) {
             case MODERATOR -> moderatorService.disableModerator(id);
-            case STUDENT -> studentService.disableStudent(id);
             case PROFESSOR -> professorService.disableProfessor(id);
+            default -> studentService.disableStudent(id);
         }
     }
 
@@ -68,11 +68,10 @@ public class UserService {
 
         UserEntity toUpdateUser = userRepository.findById(currentId).orElseThrow(() -> notFoundById(currentId));
 
-        if (!userUpdateRequest.getAlias().equals(toUpdateUser.getAlias())) {
-            // We only validate the alias if it has changed
-            if (userRepository.findByAlias(userUpdateRequest.getAlias()).isPresent()) {
-                throw new AliasAlreadyRegisteredException("User with alias " + userUpdateRequest.getAlias() + " already exists");
-            }
+
+        if (!userUpdateRequest.getAlias().equals(toUpdateUser.getAlias()) && userRepository.findByAlias(userUpdateRequest.getAlias()).isPresent()) {
+            throw new AliasAlreadyRegisteredException("User with alias " + userUpdateRequest.getAlias() + " already exists");
+
         }
         toUpdateUser.setName(userUpdateRequest.getName());
         toUpdateUser.setSurname(userUpdateRequest.getSurname());
@@ -87,11 +86,9 @@ public class UserService {
             }
         }
         // Remove the previous profile photo from the filesystem
-        if (toUpdateUser.getProfilePhoto() != null) {
-            if (!toUpdateUser.getProfilePhoto().equals(userUpdateRequest.getProfilePhoto())) {
-                storageService.delete(toUpdateUser.getProfilePhoto());
-                toUpdateUser.setProfilePhoto(userUpdateRequest.getProfilePhoto());
-            }
+        if (toUpdateUser.getProfilePhoto() != null && !toUpdateUser.getProfilePhoto().equals(userUpdateRequest.getProfilePhoto())) {
+            storageService.delete(toUpdateUser.getProfilePhoto());
+            toUpdateUser.setProfilePhoto(userUpdateRequest.getProfilePhoto());
         }
         toUpdateUser.setProfilePhoto(userUpdateRequest.getProfilePhoto());
 
@@ -105,8 +102,8 @@ public class UserService {
 
         switch (toEnableUser.getRole().getName()) {
             case MODERATOR -> moderatorService.enableModerator(id);
-            case STUDENT -> studentService.enableStudent(id);
             case PROFESSOR -> professorService.enableProfessor(id);
+            default -> studentService.enableStudent(id);
         }
     }
 
@@ -130,9 +127,9 @@ public class UserService {
 
         switch (toDeleteUser.getRole().getName()) {
             case MODERATOR -> moderatorService.deleteMe((ModeratorEntity) toDeleteUser);
-            case STUDENT -> studentService.deleteMe((StudentEntity) toDeleteUser);
             case PROFESSOR -> professorService.deleteMe((ProfessorEntity) toDeleteUser);
             case ADMIN -> administratorService.deleteMe((AdministratorEntity) toDeleteUser);
+            default -> studentService.deleteMe((StudentEntity) toDeleteUser);
         }
     }
 

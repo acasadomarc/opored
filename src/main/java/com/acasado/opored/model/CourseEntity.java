@@ -42,7 +42,7 @@ public class CourseEntity {
     private Float discountPercentage;
 
     @Column(name = "is_visible")
-    private Boolean isVisible = Boolean.FALSE;
+    private boolean isVisible = false;
 
     @Column(name = "is_purchasable")
     private Boolean isPurchasable = Boolean.TRUE;
@@ -54,7 +54,7 @@ public class CourseEntity {
     private LocalDate updateDate = LocalDate.now();
 
     @Column(name = "is_deleted")
-    private Boolean isDeleted = Boolean.FALSE;
+    private boolean isDeleted = false;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

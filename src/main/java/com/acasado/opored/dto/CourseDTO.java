@@ -71,7 +71,7 @@ public class CourseDTO {
         setPrice(course.getPrice());
         setDiscountPercentage(course.getDiscountPercentage());
         setHasDiscount();
-        setIsVisible(course.getIsVisible());
+        setIsVisible(course.isVisible());
         setIsPurchasable(course.getIsPurchasable());
         setUpdateDate(course.getUpdateDate());
         setContents(course.getContents());
@@ -87,7 +87,7 @@ public class CourseDTO {
         Set<RatingCourseEntity> publishedRatings = new LinkedHashSet<>();
         if (ratings != null) {
             for (RatingCourseEntity rating : ratings) {
-                if (!rating.getIsDeleted()) {
+                if (!rating.isDeleted()) {
                     publishedRatings.add(rating);
                 }
             }

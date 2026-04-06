@@ -34,8 +34,8 @@ public class QuizController {
     @GetMapping
     public ResponseEntity<List<QuizDTO>> getAllQuizzes() {
         log.info("getAllQuizzes");
-        List<QuizDTO> Quizzes = quizService.getAllQuizzes();
-        return ResponseEntity.ok(Quizzes);
+        List<QuizDTO> quizzes = quizService.getAllQuizzes();
+        return ResponseEntity.ok(quizzes);
     }
 
     @PreAuthorize("hasAuthority(@authorities.PROFESSOR_CREATE)")

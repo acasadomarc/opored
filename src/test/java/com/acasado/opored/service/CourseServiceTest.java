@@ -178,7 +178,7 @@ class CourseServiceTest {
             courseService.deleteCourse(1);
 
             // Assert
-            assertTrue(course.getIsDeleted());
+            assertTrue(course.isDeleted());
             verify(courseRepository).save(course);
         }
     }

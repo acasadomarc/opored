@@ -40,8 +40,8 @@ public class CourseFactory {
         course.setPrice(100.0f);
         course.setDiscountPercentage(0.0f);
         course.setUpdateDate(LocalDate.now());
-        course.setIsVisible(true);
-        course.setIsDeleted(false);
+        course.setVisible(true);
+        course.setDeleted(false);
         course.setContents(new HashSet<>());
         course.setRatings(new HashSet<>());
         course.setPurchases(new HashSet<>());

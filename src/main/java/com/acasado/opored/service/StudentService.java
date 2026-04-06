@@ -31,7 +31,7 @@ public class StudentService {
     private final RatingCourseService ratingCourseService;
     private final PurchaseService purchaseService;
 
-    private final static Integer DEFAULT_DELETED_STUDENT_ID = 1;
+    private static final Integer DEFAULT_DELETED_STUDENT_ID = 1;
 
     public List<StudentSummaryDTO> getAllStudents() {
         return studentRepository.findAll().stream().map(StudentSummaryDTO::new).toList();

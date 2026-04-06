@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -48,9 +49,18 @@ public class RatingCourseService {
 
         if (studentAlreadyPublishedRating) {
             // Check if the student had previously published a rating and it is currently deleted
-            if (ratingCourseRepository.findByStudentId(ratingCourseDTO.getStudentId()).isPresent()) {
-                RatingCourseEntity ratingCourseEntity = ratingCourseRepository.findByStudentId(ratingCourseDTO.getStudentId()).get();
-                return updateMyRatingCourse(ratingCourseEntity.getId(), ratingCourseDTO.getTitle(), ratingCourseDTO.getScore(), ratingCourseDTO.getComment());
+            Optional<RatingCourseEntity> optionalRating =
+                    ratingCourseRepository.findByStudentId(ratingCourseDTO.getStudentId());
+
+            if (optionalRating.isPresent()) {
+                RatingCourseEntity ratingCourseEntity = optionalRating.get();
+
+                return updateMyRatingCourse(
+                        ratingCourseEntity.getId(),
+                        ratingCourseDTO.getTitle(),
+                        ratingCourseDTO.getScore(),
+                        ratingCourseDTO.getComment()
+                );
             }
             else {
                 throw new StudentWithoutPermissionException("Student already published rating for this course");
@@ -72,7 +82,7 @@ public class RatingCourseService {
         toUpdateRatingCourse.setTitle(title);
         toUpdateRatingCourse.setScore(score);
         toUpdateRatingCourse.setComment(comment);
-        toUpdateRatingCourse.setIsDeleted(false);
+        toUpdateRatingCourse.setDeleted(false);
 
         RatingCourseEntity updatedRatingCourse = ratingCourseRepository.save(toUpdateRatingCourse);
         return convertToRatingCourseDTO(updatedRatingCourse);
@@ -86,7 +96,7 @@ public class RatingCourseService {
             throw new StudentWithoutPermissionException("You do not have permissions to delete this rating");
         }
         // Logical delete
-        toDeleteRatingCourse.setIsDeleted(true);
+        toDeleteRatingCourse.setDeleted(true);
         ratingCourseRepository.save(toDeleteRatingCourse);
     }
 

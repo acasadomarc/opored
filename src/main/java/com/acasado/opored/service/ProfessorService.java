@@ -21,7 +21,7 @@ public class ProfessorService {
     private final RatingProfessorService ratingProfessorService;
     private final ProfessorRepository professorRepository;
 
-    private final static Integer DEFAULT_DELETED_PROFESSOR_ID = 2;
+    private static final Integer DEFAULT_DELETED_PROFESSOR_ID = 2;
 
     public List<ProfessorDTO> getAllProfessors() {
         return professorRepository.findAll().stream().map(this::convertToProfessorDTO).toList();

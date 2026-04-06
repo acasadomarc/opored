@@ -76,12 +76,12 @@ public abstract class UserEntity {
     @OneToMany(mappedBy = "user")
     private Set<RefreshTokenEntity> refreshTokens = new LinkedHashSet<>();
 
-    protected UserEntity(String name, String surname, String alias, String email, String password, UserAccountStatus accountStatus, RoleEntity role) {
-        setName(name);
-        setSurname(surname);
-        setAlias(alias);
-        setEmail(email);
-        setPassword(password);
+    protected UserEntity(UserIdentificationFields userIdentificationFields, UserAccountStatus accountStatus, RoleEntity role) {
+        setName(userIdentificationFields.getName());
+        setSurname(userIdentificationFields.getSurname());
+        setAlias(userIdentificationFields.getAlias());
+        setEmail(userIdentificationFields.getEmail());
+        setPassword(userIdentificationFields.getPassword());
         setEnabled(accountStatus.isEnabled());
         setAccountNoExpired(accountStatus.isAccountNoExpired());
         setAccountNoLocked(accountStatus.isAccountNoLocked());

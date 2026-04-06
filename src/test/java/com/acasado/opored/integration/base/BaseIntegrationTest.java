@@ -58,7 +58,8 @@ public abstract class BaseIntegrationTest {
 
     protected StudentEntity createStudent(String email) {
         RoleEntity role = createRole(RoleEnum.STUDENT);
-        StudentEntity student = new StudentEntity("Student", "User","alias", email, "password",
+        StudentEntity student = new StudentEntity(
+                new UserIdentificationFields("Student", "User", "alias", email, "password"),
                 new UserAccountStatus(true, true, true, true),
                 role);
         return studentRepository.save(student);
@@ -66,7 +67,8 @@ public abstract class BaseIntegrationTest {
 
     protected ProfessorEntity createProfessor(String email) {
         RoleEntity role = createRole(RoleEnum.PROFESSOR);
-        ProfessorEntity professor = new ProfessorEntity("Professor", "User","alias", email, "password",
+        ProfessorEntity professor = new ProfessorEntity(
+                new UserIdentificationFields("Professor", "User", "alias", email, "password"),
                 new UserAccountStatus(true, true, true, true),
                 role,
                 Collections.emptySet());
@@ -75,7 +77,8 @@ public abstract class BaseIntegrationTest {
 
     protected ModeratorEntity createModerator(String email) {
         RoleEntity role = createRole(RoleEnum.MODERATOR);
-        ModeratorEntity moderator = new ModeratorEntity("Moderator", "User","alias", email, "password",
+        ModeratorEntity moderator = new ModeratorEntity(
+                new UserIdentificationFields("Moderator", "User", "alias", email, "password"),
                 new UserAccountStatus(true, true, true, true),
                 role);
         return moderatorRepository.save(moderator);

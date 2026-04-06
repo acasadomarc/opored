@@ -61,6 +61,9 @@ class ContentStorageIntegrationTest extends BaseIntegrationTest {
         documentService.deleteDocument(updated.getId());
 
         // Assert
-        assertThrows(EntityNotFoundException.class, () -> documentService.getDocumentById(updated.getId()));
+        Integer id = updated.getId();
+        assertThrows(EntityNotFoundException.class, () ->
+                documentService.getDocumentById(id)
+        );
     }
 }
