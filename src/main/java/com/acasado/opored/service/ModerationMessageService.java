@@ -78,6 +78,23 @@ public class ModerationMessageService {
         messageRepository.save(message);
     }
 
+    public void deleteMyModerationMessage(Integer id) {
+        Integer moderatorId = getCurrentModeratorUserId();
+
+        ModerationMessageId moderationMessageId = new ModerationMessageId(id, moderatorId);
+
+        // If the moderator is not the creator of the entity, this will throw an exception
+        ModerationMessageEntity toDeleteModerationMessage = moderationMessageRepository.findById(moderationMessageId).orElseThrow(() -> notFoundById(id));
+
+        Integer messageId = toDeleteModerationMessage.getMessage().getId();
+        MessageEntity message = messageRepository.findById(messageId).orElseThrow(() -> notFoundById(messageId));
+        message.setStatus(StatusEnum.VISIBLE);
+
+        // Hard delete
+        moderationMessageRepository.delete(toDeleteModerationMessage);
+    }
+
+
     public void changeModerationMessagesOwner(Set<ModerationMessageEntity> moderationMessages, ModeratorEntity moderator) {
         Set<ModerationMessageEntity> changedOwnershipModerationMessages = new HashSet<>();
         for (ModerationMessageEntity moderationmoderationMessageEntity : moderationMessages) {

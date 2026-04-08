@@ -80,7 +80,7 @@ public class TopicService {
                 .orElseThrow(() -> notFoundById(id));
 
         if (!isAuthorized(toDeleteTopic.getUser().getId())) {
-            throw new UserWithoutPermissionException("You do not have permissions to delete this message");
+            throw new UserWithoutPermissionException("You do not have permissions to delete this topic");
         }
         // Logical delete
         toDeleteTopic.setIsDeleted(true);
@@ -126,7 +126,7 @@ public class TopicService {
     }
 
     private boolean isAuthorized(Integer userId) {
-        return SecurityUtils.isUserRoot() || SecurityUtils.isProvidedUser(userId);
+        return SecurityUtils.isUserAdmin() || SecurityUtils.isProvidedUser(userId);
     }
 
     private EntityNotFoundException notFoundById(Integer id) {

@@ -28,7 +28,7 @@ public class ModerationTopicController {
 
     private final ModerationTopicService moderationTopicService;
 
-    @PreAuthorize("hasAuthority(@authorities.ROOT)")
+    @PreAuthorize("hasAuthority(@authorities.MODERATION_READ)")
     @Operation(summary = "Get all moderated topics")
     @ApiResponse(responseCode = "200", description = "List returned")
     @GetMapping
@@ -103,5 +103,17 @@ public class ModerationTopicController {
         log.info("deleteModerationTopic with id {}", topicId);
         moderationTopicService.deleteModerationTopic(topicId, moderatorId);
         return ResponseEntity.ok("Moderación de tema eliminada correctamente");
+    }
+
+    @PreAuthorize("hasAuthority(@authorities.MODERATION_DELETE)")
+    @Operation(summary = "Delete myModerationTopic")
+    @ApiResponse(responseCode = "204", description = "ModerationTopic deleted")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteModerationTopic(
+            @Parameter(description = "ModerationTopic ID", example = "1")
+            @PathVariable @NotNull Integer id) {
+        log.info("deleteMyModerationTopic with id {}", id);
+        moderationTopicService.deleteMyModerationTopic(id);
+        return ResponseEntity.noContent().build();
     }
 }

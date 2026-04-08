@@ -137,7 +137,7 @@ class TopicServiceTest {
 
         try (MockedStatic<SecurityUtils> securityMock = mockStatic(SecurityUtils.class)) {
             // Mock authorization (e.g., as Root)
-            securityMock.when(SecurityUtils::isUserRoot).thenReturn(true);
+            securityMock.when(SecurityUtils::isUserAdmin).thenReturn(true);
 
             when(topicRepository.findById(1)).thenReturn(Optional.of(entity));
             // Student exists check for unfollow logic

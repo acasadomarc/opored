@@ -27,14 +27,14 @@ public class ForumDTO {
     private String description;
 
     @Schema(description = "List of topics belonging to this forum")
-    private Set<TopicSummaryDTO> topics;
+    private Set<TopicDTO> topics;
 
     public ForumDTO(ForumEntity forum) {
         setId(forum.getId());
         setName(forum.getName());
         setDescription(forum.getDescription());
         if (forum.getTopics() != null) {
-            setTopics(forum.getTopics().stream().map(TopicSummaryDTO::new).collect(Collectors.toSet()));
+            setTopics(forum.getTopics().stream().map(TopicDTO::new).collect(Collectors.toSet()));
         }
     }
 }

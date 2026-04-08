@@ -89,6 +89,22 @@ public class ModerationTopicService {
         topic.getMessages().forEach(message -> message.setStatus(StatusEnum.VISIBLE));
     }
 
+    public void deleteMyModerationTopic(Integer id) {
+        Integer moderatorId = getCurrentModeratorUserId();
+
+        ModerationTopicId moderationTopicId = new ModerationTopicId(id, moderatorId);
+
+        // If the moderator is not the creator of the entity, this will throw an exception
+        ModerationTopicEntity toDeleteModerationTopic = moderationTopicRepository.findById(moderationTopicId).orElseThrow(() -> notFoundById(id));
+
+        Integer topicId = toDeleteModerationTopic.getModerator().getId();
+        TopicEntity topic = topicRepository.findById(topicId).orElseThrow(() -> notFoundById(topicId));
+        topic.setStatus(StatusEnum.VISIBLE);
+
+        // Hard delete
+        moderationTopicRepository.delete(toDeleteModerationTopic);
+    }
+
     public void changeModerationTopicsOwner(Set<ModerationTopicEntity> moderationTopics, ModeratorEntity moderator) {
         Set<ModerationTopicEntity> changedOwnershipModerationTopics = new HashSet<>();
         for (ModerationTopicEntity moderationmoderationTopicEntity : moderationTopics) {

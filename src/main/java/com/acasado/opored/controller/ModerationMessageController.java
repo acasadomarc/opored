@@ -28,7 +28,7 @@ public class ModerationMessageController {
 
     private final ModerationMessageService moderationMessageService;
 
-    @PreAuthorize("hasAuthority(@authorities.ROOT)")
+    @PreAuthorize("hasAuthority(@authorities.MODERATION_READ)")
     @Operation(summary = "Get all moderated messages")
     @ApiResponse(responseCode = "200", description = "List returned")
     @GetMapping
@@ -83,12 +83,24 @@ public class ModerationMessageController {
     @PutMapping("/me/message/{messageId}/")
     public ResponseEntity<ModerationMessageDTO> updateModeratedMessageByMe(@RequestBody @NotNull @Valid ModerationMessageDTO moderationMessageDTO)
     {
-        log.info("updateMyModeratedTopic");
+        log.info("updateMyModeratedMessage");
         ModerationMessageDTO moderationMessageDTOUpdated = moderationMessageService.updateModeratedMessageByMe(
                 moderationMessageDTO.getMessageId(),
                 moderationMessageDTO.getReason()
         );
         return ResponseEntity.ok(moderationMessageDTOUpdated);
+    }
+
+    @PreAuthorize("hasAuthority(@authorities.MODERATION_DELETE)")
+    @Operation(summary = "Delete myModerationMessage")
+    @ApiResponse(responseCode = "204", description = "ModerationMessage deleted")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteModerationMessage(
+            @Parameter(description = "ModerationMessage ID", example = "1")
+            @PathVariable @NotNull Integer id) {
+        log.info("deleteMyModerationMessage with id {}", id);
+        moderationMessageService.deleteMyModerationMessage(id);
+        return ResponseEntity.noContent().build();
     }
 
     @PreAuthorize("hasAuthority(@authorities.ROOT)")

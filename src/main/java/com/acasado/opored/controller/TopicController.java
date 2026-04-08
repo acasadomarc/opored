@@ -69,18 +69,18 @@ public class TopicController {
     @ApiResponse(responseCode = "200", description = "Topic updated")
     @ApiResponse(responseCode = "404", description = "Not found or not authorized")
     @PutMapping("/me/id/{id}")
-    public ResponseEntity<TopicDTO> updateMyTopic(@RequestBody @NotNull @Valid TopicDTO topicDTO)
+    public ResponseEntity<TopicDTO> updateMyTopic(@PathVariable @NotNull Integer id, @RequestBody @NotNull @Valid TopicDTO topicDTO)
     {
         log.info("updateTopic");
         TopicDTO topicDTOUpdated = topicService.updateMyTopic(
-                topicDTO.getId(),
+                id,
                 topicDTO.getTitle(),
                 topicDTO.getStatus()
         );
         return ResponseEntity.ok(topicDTOUpdated);
     }
 
-    @PreAuthorize("hasAuthority(@authorities.ROOT)")
+    @PreAuthorize("hasAuthority(@authorities.ADMINISTRATION_DELETE)")
     @Operation(summary = "Delete topic (Admin)")
     @ApiResponse(responseCode = "204", description = "Topic deleted")
     @DeleteMapping("/{id}")
