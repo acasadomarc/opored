@@ -105,6 +105,7 @@ public class StudentService {
         });
 
         // Change purchases ownership to default deleted account
+        // With this, we lost the author of the purchase, but it is necessary to retrieve all the existent purchases
         if (!toDeleteStudent.getPurchases().isEmpty()) {
             StudentEntity defaultDeletedStudent = studentRepository.findById(DEFAULT_DELETED_STUDENT_ID).orElseThrow(() -> notFoundById(DEFAULT_DELETED_STUDENT_ID));
 

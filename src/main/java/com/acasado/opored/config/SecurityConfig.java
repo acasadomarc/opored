@@ -17,7 +17,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -32,7 +32,6 @@ public class SecurityConfig {
         return httpSecurity
                 .cors(Customizer.withDefaults()) // Enable CORS
                 .csrf(AbstractHttpConfigurer::disable) // Disable csrf token
-                .httpBasic(Customizer.withDefaults()) // Enable request login (postman for example)
                 //.formLogin(Customizer.withDefaults()) // Enable form login
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/login","/api/auth/refresh","/api/auth/logout", "/api/auth/signup", "/swagger-ui.html", "swagger-ui/**", "/v3/api-docs/**", "/actuator/health", "/uploads/**")
@@ -40,7 +39,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Avoid storaging session information, it will be based on time. Create separate session id for each request
-                .addFilterBefore(new JwtTokenValidator(jwtUtils), BasicAuthenticationFilter.class) // Execute jwt filter before the basic filter to avoid conflicts
+                .addFilterBefore(new JwtTokenValidator(jwtUtils), UsernamePasswordAuthenticationFilter.class) // Execute jwt filter before the basic filter to avoid conflicts
                 .build();
     }
 

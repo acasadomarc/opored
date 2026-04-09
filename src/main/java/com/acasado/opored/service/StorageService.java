@@ -18,12 +18,12 @@ public class StorageService{
     private final Path rootLocation;
 
     // Get the path to upload the file
-    public StorageService(@Value("${image.storage.upload.dir}") String uploadDir) {
+    public StorageService(@Value("${file.storage.upload.dir}") String uploadDir) {
         this.rootLocation = Paths.get(uploadDir);
     }
 
     public String store(MultipartFile file) {
-        // Path where the image can be searched for
+        // Path where the file can be searched for
         final String BASE_URL = "http://localhost:8080/uploads/";
 
         try {
