@@ -9,7 +9,8 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SQLRestriction;
 
-import java.time.LocalDate;
+import java.sql.Timestamp;
+import java.time.Instant;
 
 @Getter
 @Setter
@@ -33,7 +34,7 @@ public class MessageEntity {
 
     @CreationTimestamp
     @Column(name = "publication_date", updatable = false)
-    private LocalDate publicationDate;
+    private Timestamp publicationDate = Timestamp.from(Instant.now());
 
     @Column(name = "is_deleted")
     private Boolean isDeleted = Boolean.FALSE;

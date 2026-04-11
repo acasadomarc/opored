@@ -11,12 +11,14 @@ import lombok.Setter;
 public class ParentMessageDTO {
     private Integer id;
     private String content;
+    private String status;
     private Integer topicId;
     private UserSummaryDTO userSummaryDTO;
 
     public ParentMessageDTO(MessageEntity message) {
         setId(message.getId());
         setContent(message.getContent());
+        setStatus(message.getStatus().toString());
         setTopicId(message.getTopic().getId());
         setUserSummaryDTO(new UserSummaryDTO(message.getUser()));
     }

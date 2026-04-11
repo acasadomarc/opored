@@ -67,11 +67,11 @@ public class MessageController {
     @ApiResponse(responseCode = "200", description = "Message updated")
     @ApiResponse(responseCode = "404", description = "Not found or unauthorized")
     @PutMapping("/me/id/{id}")
-    public ResponseEntity<MessageDTO> updateMyMessage(@RequestBody @NotNull @Valid MessageDTO messageDTO)
+    public ResponseEntity<MessageDTO> updateMyMessage(@PathVariable @NotNull Integer id, @RequestBody @NotNull @Valid MessageDTO messageDTO)
     {
         log.info("updateMessage");
         MessageDTO messageDTOUpdated = messageService.updateMyMessage(
-                messageDTO.getId(),
+                id,
                 messageDTO.getContent(),
                 messageDTO.getStatus()
         );

@@ -8,7 +8,8 @@ import com.acasado.opored.model.TopicEntity;
 import com.acasado.opored.model.UserEntity;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.sql.Timestamp;
+import java.time.Instant;
 
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public class MessageFactory {
@@ -18,7 +19,7 @@ public class MessageFactory {
                 1,
                 "This is a message content",
                 StatusEnum.VISIBLE.toString(),
-                LocalDate.now(),
+                Timestamp.from(Instant.now()),
                 null, // Parent Message ID
                 10,   // Topic ID
                 5     // User ID
@@ -49,7 +50,7 @@ public class MessageFactory {
         entity.setId(1);
         entity.setContent("This is a message content");
         entity.setStatus(StatusEnum.VISIBLE);
-        entity.setPublicationDate(LocalDate.now());
+        entity.setPublicationDate(Timestamp.from(Instant.now()));
         entity.setTopic(topic);
         entity.setUser(user);
         entity.setIsDeleted(false);

@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
+import java.sql.Timestamp;
 
 @Getter
 @Setter
@@ -25,7 +25,7 @@ public class MessageSummaryDTO {
     private StatusEnum status;
 
     @Schema(example = "2026-07-20")
-    private LocalDate publicationDate;
+    private Timestamp publicationDate;
 
     @Schema(description = "Core info of the parent message")
     private ParentMessageDTO parentMessageDTO;

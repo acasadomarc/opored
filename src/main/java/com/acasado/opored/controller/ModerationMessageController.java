@@ -28,7 +28,7 @@ public class ModerationMessageController {
 
     private final ModerationMessageService moderationMessageService;
 
-    @PreAuthorize("hasAuthority(@authorities.MODERATION_READ)")
+    @PreAuthorize("hasAuthority(@authorities.USER_READ)")
     @Operation(summary = "Get all moderated messages")
     @ApiResponse(responseCode = "200", description = "List returned")
     @GetMapping
@@ -80,12 +80,12 @@ public class ModerationMessageController {
     @Operation(summary = "Update my moderation reason")
     @ApiResponse(responseCode = "200", description = "Moderation updated")
     @ApiResponse(responseCode = "404", description = "Not found")
-    @PutMapping("/me/message/{messageId}/")
-    public ResponseEntity<ModerationMessageDTO> updateModeratedMessageByMe(@RequestBody @NotNull @Valid ModerationMessageDTO moderationMessageDTO)
+    @PutMapping("/me/message/{messageId}")
+    public ResponseEntity<ModerationMessageDTO> updateModeratedMessageByMe(@PathVariable @NotNull Integer messageId, @RequestBody @NotNull @Valid ModerationMessageDTO moderationMessageDTO)
     {
         log.info("updateMyModeratedMessage");
         ModerationMessageDTO moderationMessageDTOUpdated = moderationMessageService.updateModeratedMessageByMe(
-                moderationMessageDTO.getMessageId(),
+                messageId,
                 moderationMessageDTO.getReason()
         );
         return ResponseEntity.ok(moderationMessageDTOUpdated);

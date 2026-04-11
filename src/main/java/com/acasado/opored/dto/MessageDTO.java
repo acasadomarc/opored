@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
+import java.sql.Timestamp;
 
 @Getter
 @Setter
@@ -27,7 +27,7 @@ public class MessageDTO {
     private String status;
 
     @Schema(example = "2026-07-20")
-    private LocalDate publicationDate;
+    private Timestamp publicationDate;
 
     @Schema(description = "ID of the parent message (if reply)", example = "5")
     private Integer parentMessageId;

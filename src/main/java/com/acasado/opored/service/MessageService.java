@@ -68,8 +68,8 @@ public class MessageService {
         if (!isAuthorized(toDeleteMessage.getUser().getId())) {
             throw new UserWithoutPermissionException("You do not have permissions to delete this message");
         }
-        // Logical delete
-        toDeleteMessage.setIsDeleted(true);
+        // Messages are not deleted, only the status changes
+        toDeleteMessage.setStatus(StatusEnum.DELETED);
         messageRepository.save(toDeleteMessage);
     }
 
