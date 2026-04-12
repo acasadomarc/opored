@@ -24,6 +24,9 @@ public class PublicExaminationDTO {
     @Schema(example = "Examination for the National Police Corps")
     private String description;
 
+    @Schema(description = "Indicates if the examination is visible in the platform")
+    private boolean isVisible;
+
     @Schema(description = "Category ID", example = "2")
     private Integer categoryId;
 

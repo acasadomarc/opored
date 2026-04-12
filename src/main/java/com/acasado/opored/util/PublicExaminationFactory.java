@@ -15,6 +15,7 @@ public class PublicExaminationFactory {
                 1,
                 "National Police",
                 "Exams for police corps",
+                true,
                 5,  // CategoryId
                 10, // BulletinBoardId
                 20  // ForumId
@@ -26,6 +27,7 @@ public class PublicExaminationFactory {
                 null,
                 null,
                 "Desc",
+                false,
                 null,
                 null,
                 null
@@ -50,7 +52,7 @@ public class PublicExaminationFactory {
         entity.setCategory(category);
         entity.setForum(forum);
         entity.setBulletinBoard(bulletinBoard);
-        entity.setIsDeleted(false);
+        entity.setDeleted(false);
         entity.setStudents(new HashSet<>());
 
         return entity;

@@ -43,10 +43,10 @@ public class CourseDTO {
     @Schema(description = "Indicates if the course currently has a discount", example = "true")
     private Boolean hasDiscount;
 
-    @Schema(description = "Indicas if the course is visible in the platform")
+    @Schema(description = "Indicates if the course is visible in the platform")
     private Boolean isVisible;
 
-    @Schema(description = "Indicas if the course can be purchased")
+    @Schema(description = "Indicates if the course can be purchased")
     private Boolean isPurchasable;
 
     @Schema(example = "2026-10-01")

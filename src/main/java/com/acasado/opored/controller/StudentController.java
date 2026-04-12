@@ -91,7 +91,7 @@ public class StudentController {
     @Operation(summary = "Get followed topics")
     @ApiResponse(responseCode = "200", description = "Topics returned")
     @GetMapping("/me/topics")
-    public ResponseEntity<Set<TopicSummaryDTO>> getFollowedTopics() {
+    public ResponseEntity<Set<TopicDTO>> getFollowedTopics() {
         log.info("getFollowedTopics by student");
         return ResponseEntity.ok(studentService.getFollowedTopics());
     }
@@ -105,7 +105,7 @@ public class StudentController {
             @PathVariable @NotNull Integer topicId) {
         log.info("followTopic with id {}", topicId);
         studentService.followTopic(topicId);
-        return ResponseEntity.ok("Seguimiento establecido correctamente");
+        return ResponseEntity.ok().build();
     }
 
     @PreAuthorize("hasAuthority(@authorities.STUDENT_DELETE)")
@@ -117,7 +117,7 @@ public class StudentController {
             @PathVariable @NotNull Integer topicId) {
         log.info("unfollowTopic with id {}", topicId);
         studentService.unfollowTopic(topicId);
-        return ResponseEntity.ok("Seguimiento eliminado correctamente");
+        return ResponseEntity.ok().build();
     }
 
     // Student - Public Examination relation methods

@@ -76,6 +76,10 @@ public class StudentFactory {
         return Set.of(new TopicSummaryDTO());
     }
 
+    public static Set<TopicDTO> createTopicDTOSet() {
+        return Set.of(new TopicDTO());
+    }
+
     public static Set<CourseDTO> createCourseDTOSet() {
         return Set.of(new CourseDTO());
     }

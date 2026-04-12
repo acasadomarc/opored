@@ -104,7 +104,7 @@ class ModerationMessageControllerTest extends BaseControllerTest {
         when(moderationMessageService.updateModeratedMessageByMe(anyInt(), anyString())).thenReturn(updatedDto);
 
         // Act
-        mockMvc.perform(put("/api/moderationMessages/me/message/{messageId}/", 100)
+        mockMvc.perform(put("/api/moderationMessages/me/message/{messageId}", 100)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updatedDto)))
                 // Assert

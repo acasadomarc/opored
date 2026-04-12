@@ -21,6 +21,9 @@ public class PublicExaminationSummaryDTO {
     @Schema(example = "Examination for the National Police Corps")
     private String description;
 
+    @Schema(description = "Indicates if the examination is visible in the platform")
+    private boolean isVisible;
+
     @Schema(description = "Associated Bulletin Board ID", example = "5")
     private Integer bulletinBoardId;
 
@@ -31,6 +34,7 @@ public class PublicExaminationSummaryDTO {
         setId(publicExamination.getId());
         setName(publicExamination.getName());
         setDescription(publicExamination.getDescription());
+        setVisible(publicExamination.isVisible());
         // Null checks might be needed depending on your entity mapping, kept simple as per original
         if(publicExamination.getBulletinBoard() != null) {
             setBulletinBoardId(publicExamination.getBulletinBoard().getId());

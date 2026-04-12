@@ -127,7 +127,7 @@ class PublicExaminationServiceTest {
         publicExaminationService.deletePublicExamination(1);
 
         // Assert
-        assertTrue(entity.getIsDeleted());
+        assertTrue(entity.isDeleted());
         verify(publicExaminationRepository).save(entity);
 
         // Verify dependent resources are deleted

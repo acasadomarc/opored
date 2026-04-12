@@ -117,10 +117,10 @@ public class StudentService {
         studentRepository.save(toDeleteStudent);
     }
 
-    public Set<TopicSummaryDTO> getFollowedTopics() {
+    public Set<TopicDTO> getFollowedTopics() {
         Integer currentId = getCurrentStudentUserId();
         StudentEntity student = studentRepository.findById(currentId).orElseThrow(() -> notFoundById(currentId));
-        return student.getTopicsFollowed().stream().map(TopicSummaryDTO::new).collect(Collectors.toSet());
+        return student.getTopicsFollowed().stream().map(TopicDTO::new).collect(Collectors.toSet());
     }
 
     // Student - Topic relation methods

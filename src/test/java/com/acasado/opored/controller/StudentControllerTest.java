@@ -84,7 +84,7 @@ class StudentControllerTest extends BaseControllerTest {
     @Test
     void When_GetFollowedTopics_Expect_OkAndSet() throws Exception {
         // Arrange
-        Set<TopicSummaryDTO> topics = StudentFactory.createTopicSummarySet();
+        Set<TopicDTO> topics = StudentFactory.createTopicDTOSet();
         when(studentService.getFollowedTopics()).thenReturn(topics);
 
         // Act
@@ -105,8 +105,7 @@ class StudentControllerTest extends BaseControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 // Assert
-                .andExpect(status().isOk())
-                .andExpect(content().string("Seguimiento establecido correctamente"));
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -119,8 +118,7 @@ class StudentControllerTest extends BaseControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 // Assert
-                .andExpect(status().isOk())
-                .andExpect(content().string("Seguimiento eliminado correctamente"));
+                .andExpect(status().isOk());
     }
 
     // --- Public Examination Relations ---

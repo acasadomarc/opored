@@ -162,7 +162,8 @@ class MessageServiceTest {
             messageService.deleteMessage(1);
 
             // Assert
-            assertTrue(entity.getIsDeleted());
+            assertEquals(StatusEnum.DELETED.name(),
+                    messageRepository.getReferenceById(entity.getId()).getStatus().name());
             verify(messageRepository).save(entity);
         }
     }

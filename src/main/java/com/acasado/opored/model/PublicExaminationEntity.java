@@ -27,7 +27,10 @@ public class PublicExaminationEntity {
     private String description;
 
     @Column(name = "is_deleted")
-    private Boolean isDeleted = Boolean.FALSE;
+    private boolean isDeleted = false;
+
+    @Column(name = "is_visible")
+    private boolean isVisible = true;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "category_id", nullable = false)

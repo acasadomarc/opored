@@ -70,7 +70,7 @@ public class PublicExaminationService {
                 .orElseThrow(() -> notFoundById(id));
 
         // Logical delete
-        toDeletePublicExamination.setIsDeleted(true);
+        toDeletePublicExamination.setDeleted(true);
 
         // Forum and BulletinBoard are forced to be deleted at the same time as the publicExamination.
         forumService.deleteForum(id);
@@ -89,6 +89,7 @@ public class PublicExaminationService {
                 publicExamination.getId(),
                 publicExamination.getName(),
                 publicExamination.getDescription(),
+                publicExamination.isVisible(),
                 publicExamination.getCategory().getId(),
                 publicExamination.getBulletinBoard().getId(),
                 publicExamination.getForum().getId());

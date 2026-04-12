@@ -1,5 +1,6 @@
 package com.acasado.opored.integration;
 
+import com.acasado.opored.enumeration.StatusEnum;
 import com.acasado.opored.exception.UserWithoutPermissionException;
 import com.acasado.opored.integration.base.BaseIntegrationTest;
 import com.acasado.opored.model.ForumEntity;
@@ -13,8 +14,7 @@ import com.acasado.opored.service.MessageService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class PermissionBoundaryIntegrationTest extends BaseIntegrationTest {
 
@@ -56,6 +56,7 @@ class PermissionBoundaryIntegrationTest extends BaseIntegrationTest {
         messageService.deleteMessage(message.getId());
 
         // Assert
-        assertTrue(messageRepository.getReferenceById(message.getId()).getIsDeleted());
+        assertEquals(StatusEnum.DELETED.name(),
+                messageRepository.getReferenceById(message.getId()).getStatus().name());
     }
 }
