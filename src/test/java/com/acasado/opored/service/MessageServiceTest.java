@@ -157,6 +157,7 @@ class MessageServiceTest {
             securityMock.when(() -> SecurityUtils.isProvidedUser(userId)).thenReturn(true);
 
             when(messageRepository.findById(1)).thenReturn(Optional.of(entity));
+            when(messageRepository.getReferenceById(1)).thenReturn(entity);
 
             // Act
             messageService.deleteMessage(1);

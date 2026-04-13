@@ -192,6 +192,7 @@ CREATE TABLE `public_examinations` (
                                        `name` varchar(100) NOT NULL,
                                        `description` text DEFAULT NULL,
                                        `is_deleted` bit(1) DEFAULT b'0',
+                                       `is_visible` bit(1) DEFAULT b'1',
                                        `category_id` int(11) NOT NULL,
                                        `bulletin_board_id` int(11) DEFAULT NULL,
                                        `forum_id` int(11) DEFAULT NULL,

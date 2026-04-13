@@ -46,7 +46,7 @@ public class AdministratorService {
                 administratorDTO.getPassword(),
                 RoleEnum.ADMIN.toString());
 
-        return userDetailsService.createUser(authCreateUserRequest);
+        return userDetailsService.createPrivilegedUser(authCreateUserRequest);
     }
 
     public void deleteAdministrator(Integer id) {

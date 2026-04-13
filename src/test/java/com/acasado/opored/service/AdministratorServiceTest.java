@@ -100,7 +100,7 @@ class AdministratorServiceTest {
         AdministratorDTO inputDto = AdministratorFactory.createValidAdministratorDTO();
         AuthResponse expectedResponse = AdministratorFactory.createAuthResponse();
 
-        when(userDetailsService.createUser(any(AuthCreateUserRequest.class))).thenReturn(expectedResponse);
+        when(userDetailsService.createPrivilegedUser(any(AuthCreateUserRequest.class))).thenReturn(expectedResponse);
 
         // Act
         AuthResponse result = administratorService.createAdministrator(inputDto);
@@ -111,7 +111,7 @@ class AdministratorServiceTest {
 
         // Verify correct role mapping
         ArgumentCaptor<AuthCreateUserRequest> captor = ArgumentCaptor.forClass(AuthCreateUserRequest.class);
-        verify(userDetailsService).createUser(captor.capture());
+        verify(userDetailsService).createPrivilegedUser(captor.capture());
         assertEquals("ADMIN", captor.getValue().getRole());
     }
 

@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,7 +37,18 @@ public class AuthenticationController {
     public ResponseEntity<AuthResponse> signUp(
             @RequestBody @NotNull @Valid AuthCreateUserRequest authCreateUserRequest) {
         log.info("User signed up");
-        AuthResponse authResponse = userDetailsService.createUser(authCreateUserRequest);
+        AuthResponse authResponse = userDetailsService.createPublicUser(authCreateUserRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(authResponse);
+    }
+
+    @PreAuthorize("hasAuthority(@authorities.ADMINISTRATION_CREATE)")
+    @Operation(summary = "Create a new user with privileges")
+    @ApiResponse(responseCode = "201", description = "User created successfully")
+    @PostMapping("/create")
+    public ResponseEntity<AuthResponse> createUser(
+            @RequestBody @NotNull @Valid AuthCreateUserRequest authCreateUserRequest) {
+        log.info("User created");
+        AuthResponse authResponse = userDetailsService.createPrivilegedUser(authCreateUserRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(authResponse);
     }
 

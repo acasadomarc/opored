@@ -100,7 +100,7 @@ class ModeratorServiceTest {
         // Arrange
         ModeratorDTO dto = ModeratorFactory.createValidModeratorDTO();
         AuthResponse expectedResponse = ModeratorFactory.createAuthResponse();
-        when(userDetailsService.createUser(any(AuthCreateUserRequest.class))).thenReturn(expectedResponse);
+        when(userDetailsService.createPrivilegedUser(any(AuthCreateUserRequest.class))).thenReturn(expectedResponse);
 
         // Act
         AuthResponse result = moderatorService.createModerator(dto);
@@ -110,7 +110,7 @@ class ModeratorServiceTest {
         assertEquals(expectedResponse.getAccessToken(), result.getAccessToken());
 
         ArgumentCaptor<AuthCreateUserRequest> captor = ArgumentCaptor.forClass(AuthCreateUserRequest.class);
-        verify(userDetailsService).createUser(captor.capture());
+        verify(userDetailsService).createPrivilegedUser(captor.capture());
         assertEquals("MODERATOR", captor.getValue().getRole());
     }
 

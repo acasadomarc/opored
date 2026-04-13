@@ -67,44 +67,59 @@ public class JpaUserDetailsService implements UserDetailsService {
                 authorities);
     }
 
-    public AuthResponse createUser(AuthCreateUserRequest authCreateUser) {
+    public AuthResponse createPrivilegedUser(AuthCreateUserRequest authCreateUser) {
         String username = authCreateUser.getEmail();
         RoleEnum role = RoleEnum.valueOf(authCreateUser.getRole());
 
-        if (userRepository.findByEmail(username).isPresent()) {
-            throw new EmailAlreadyRegisteredException("User with email " + username + " already exists");
-        }
-        if (userRepository.findByAlias(authCreateUser.getAlias()).isPresent()) {
-            throw new AliasAlreadyRegisteredException("User with alias " + authCreateUser.getAlias() + " already exists");
-        }
+        fieldsValidation(authCreateUser, username);
 
-        // Alias validation
-        if (!SecurityUtils.aliasValidation(authCreateUser.getAlias())) {
-            throw new BadCredentialsException("Alias is not valid");
-        }
-
-        // Email validation
-        if (!SecurityUtils.emailValidation(username)) {
-            throw new BadCredentialsException("Email is not valid");
-        }
-        // Password validation
-        if (!SecurityUtils.passwordValidation(authCreateUser.getPassword())) {
-            throw new BadCredentialsException("Password is not valid");
-        }
-
-        UserEntity userSaved = switch (role.name()) {
+        switch (role.name()) {
             case "ADMIN" -> {
                 AdministratorEntity administrator = new AdministratorEntity(
                         new UserIdentificationFields(
-                            authCreateUser.getName(),
-                            authCreateUser.getSurname(),
-                            authCreateUser.getAlias(),
-                            authCreateUser.getEmail(),
-                            passwordEncoder.encode(authCreateUser.getPassword())),
+                                authCreateUser.getName(),
+                                authCreateUser.getSurname(),
+                                authCreateUser.getAlias(),
+                                authCreateUser.getEmail(),
+                                passwordEncoder.encode(authCreateUser.getPassword())),
                         new UserAccountStatus(true, true, true, true),
                         roleRepository.getRoleByName(role));
-                yield administratorRepository.save(administrator);
+                administratorRepository.save(administrator);
             }
+            case "MODERATOR" -> {
+                ModeratorEntity moderator = new ModeratorEntity(
+                        new UserIdentificationFields(
+                                authCreateUser.getName(),
+                                authCreateUser.getSurname(),
+                                authCreateUser.getAlias(),
+                                authCreateUser.getEmail(),
+                                passwordEncoder.encode(authCreateUser.getPassword())),
+                        new UserAccountStatus(true, true, true, true),
+                        roleRepository.getRoleByName(role));
+                moderatorRepository.save(moderator);
+            }
+            default -> throw new BadCredentialsException("Invalid role");
+        }
+        // As the user is created by another admin, tokens are not needed
+        return new AuthResponse(username, "User created successfully", null, null, 200);
+    }
+
+    public AuthResponse createPublicUser(AuthCreateUserRequest authCreateUser) {
+        String username = authCreateUser.getEmail();
+        RoleEnum role = RoleEnum.valueOf(authCreateUser.getRole());
+
+        fieldsValidation(authCreateUser, username);
+
+        // Alias validation
+        if (!SecurityUtils.publicUserAliasValidation(authCreateUser.getAlias())) {
+            throw new BadCredentialsException("Alias is not valid");
+        }
+
+        if (!SecurityUtils.privilegedUserAliasValidation(authCreateUser.getAlias())) {
+            throw new BadCredentialsException("Alias is not valid");
+        }
+
+        UserEntity userSaved = switch (role.name()) {
             case "PROFESSOR" -> {
                 ProfessorEntity professor = new ProfessorEntity(
                         new UserIdentificationFields(
@@ -117,18 +132,6 @@ public class JpaUserDetailsService implements UserDetailsService {
                         roleRepository.getRoleByName(role),
                         new LinkedHashSet<>());
                 yield professorRepository.save(professor);
-            }
-            case "MODERATOR" -> {
-                ModeratorEntity moderator = new ModeratorEntity(
-                        new UserIdentificationFields(
-                                authCreateUser.getName(),
-                                authCreateUser.getSurname(),
-                                authCreateUser.getAlias(),
-                                authCreateUser.getEmail(),
-                                passwordEncoder.encode(authCreateUser.getPassword())),
-                        new UserAccountStatus(true, true, true, true),
-                        roleRepository.getRoleByName(role));
-                yield moderatorRepository.save(moderator);
             }
             case "STUDENT" -> {
                 StudentEntity student = new StudentEntity(
@@ -145,6 +148,29 @@ public class JpaUserDetailsService implements UserDetailsService {
             default -> throw new BadCredentialsException("Invalid role");
         };
 
+        return newCreatedUserToken(userSaved, username);
+
+    }
+
+    public void fieldsValidation(AuthCreateUserRequest authCreateUser, String username) {
+        if (userRepository.findByEmail(username).isPresent()) {
+            throw new EmailAlreadyRegisteredException("User with email " + username + " already exists");
+        }
+        if (userRepository.findByAlias(authCreateUser.getAlias()).isPresent()) {
+            throw new AliasAlreadyRegisteredException("User with alias " + authCreateUser.getAlias() + " already exists");
+        }
+
+        // Email validation
+        if (!SecurityUtils.emailValidation(username)) {
+            throw new BadCredentialsException("Email is not valid");
+        }
+        // Password validation
+        if (!SecurityUtils.passwordValidation(authCreateUser.getPassword())) {
+            throw new BadCredentialsException("Password is not valid");
+        }
+    }
+
+    public AuthResponse newCreatedUserToken(UserEntity userSaved, String username) {
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
 
         authorities.add(new SimpleGrantedAuthority("ROLE_" + userSaved.getRole().getName()));
@@ -158,6 +184,7 @@ public class JpaUserDetailsService implements UserDetailsService {
         RefreshTokenEntity refreshToken = refreshTokenService.createRefreshToken((Integer) authentication.getPrincipal());
 
         return new AuthResponse(username, "User created successfully", accessToken, refreshToken.getToken(), 200);
+
     }
 
     public AuthResponse loginUser(AuthLoginRequest authLoginRequest) {

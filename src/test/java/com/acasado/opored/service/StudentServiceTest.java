@@ -69,14 +69,14 @@ class StudentServiceTest {
         // Arrange
         AuthCreateUserRequest authCreateUserRequest = StudentFactory.createValidAuthCreateUserRequest();
         AuthResponse authResponse = StudentFactory.createAuthResponse();
-        when(userDetailsService.createUser(any(AuthCreateUserRequest.class))).thenReturn(authResponse);
+        when(userDetailsService.createPublicUser(any(AuthCreateUserRequest.class))).thenReturn(authResponse);
 
         // Act
         AuthResponse result = studentService.signUp(authCreateUserRequest);
 
         // Assert
         assertEquals(authResponse.getAccessToken(), result.getAccessToken());
-        verify(userDetailsService).createUser(argThat(req -> RoleEnum.valueOf(req.getRole()) == RoleEnum.STUDENT));
+        verify(userDetailsService).createPublicUser(argThat(req -> RoleEnum.valueOf(req.getRole()) == RoleEnum.STUDENT));
     }
 
     // --- Topic Logic Tests ---

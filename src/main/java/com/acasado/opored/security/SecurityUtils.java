@@ -62,11 +62,6 @@ public class SecurityUtils {
     }
 
     public static boolean aliasValidation(String alias) {
-        List<String> bannedWords = Arrays.asList(
-                "admin", "root", "modera", "soporte",
-                "elimina", "borra", "delete"
-        );
-
         if (alias == null) return false;
 
         alias = alias.trim();
@@ -75,7 +70,18 @@ public class SecurityUtils {
             return false;
         }
         // Only letters and numbers allowed
-        if (!alias.matches("^\\w+$")) {
+        return alias.matches("^\\w+$");
+    }
+
+    public static boolean publicUserAliasValidation(String alias) {
+        List<String> bannedWords = Arrays.asList(
+                "admin", "root", "modera", "soporte",
+                "elimina", "borra", "delete"
+        );
+
+        boolean firstValidation = aliasValidation(alias);
+
+        if (!firstValidation) {
             return false;
         }
 
@@ -87,5 +93,9 @@ public class SecurityUtils {
             }
         }
         return true;
+    }
+
+    public static boolean privilegedUserAliasValidation(String alias) {
+        return aliasValidation(alias);
     }
 }

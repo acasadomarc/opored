@@ -48,7 +48,7 @@ public class ModeratorService {
                 moderatorDTO.getPassword(),
                 RoleEnum.MODERATOR.toString());
 
-        return userDetailsService.createUser(authCreateUserRequest);
+        return userDetailsService.createPrivilegedUser(authCreateUserRequest);
     }
 
     public void disableModerator(Integer id) {

@@ -92,7 +92,7 @@ class JpaUserDetailsServiceTest {
         when(refreshTokenService.createRefreshToken(savedStudent.getId())).thenReturn(refreshTokenEntity);
 
         // Act
-        AuthResponse response = userDetailsService.createUser(request);
+        AuthResponse response = userDetailsService.createPublicUser(request);
 
         // Assert
         assertNotNull(response);
@@ -107,7 +107,7 @@ class JpaUserDetailsServiceTest {
         when(userRepository.findByEmail(request.getEmail())).thenReturn(Optional.of(new StudentEntity()));
 
         // Act & Assert
-        assertThrows(EmailAlreadyRegisteredException.class, () -> userDetailsService.createUser(request));
+        assertThrows(EmailAlreadyRegisteredException.class, () -> userDetailsService.createPublicUser(request));
     }
 
     @Test
@@ -117,7 +117,7 @@ class JpaUserDetailsServiceTest {
         when(userRepository.findByEmail(request.getEmail())).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(BadCredentialsException.class, () -> userDetailsService.createUser(request));
+        assertThrows(BadCredentialsException.class, () -> userDetailsService.createPublicUser(request));
     }
 
     // --- LoginUser Tests ---

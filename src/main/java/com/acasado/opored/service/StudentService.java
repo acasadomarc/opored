@@ -55,7 +55,7 @@ public class StudentService {
     }
 
     public AuthResponse signUp(AuthCreateUserRequest authCreateUserRequest) {
-        return userDetailsService.createUser(authCreateUserRequest);
+        return userDetailsService.createPublicUser(authCreateUserRequest);
     }
 
     public void disableStudent(Integer id) {
