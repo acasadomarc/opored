@@ -38,6 +38,16 @@ public class AnnouncementController {
         return ResponseEntity.ok(announcements);
     }
 
+    @PreAuthorize("hasAuthority(@authorities.ADMINISTRATION_READ)")
+    @Operation(summary = "Get uncategorized announcements")
+    @ApiResponse(responseCode = "200", description = "List returned")
+    @GetMapping("/uncategorized")
+    public ResponseEntity<List<AnnouncementDTO>> getUncategorizedAnnouncements() {
+        log.info("getUncategorizedAnnouncements");
+        List<AnnouncementDTO> announcements = announcementService.getUncategorizedAnnouncements();
+        return ResponseEntity.ok(announcements);
+    }
+
     @PreAuthorize("hasAuthority(@authorities.USER_READ)")
     @Operation(summary = "Get announcement by ID")
     @ApiResponse(responseCode = "200", description = "Announcement found")
@@ -69,12 +79,7 @@ public class AnnouncementController {
     @PutMapping("/{id}")
     public ResponseEntity<AnnouncementDTO> updateAnnouncement(@PathVariable Integer id, @RequestBody @NotNull @Valid AnnouncementDTO announcementDTO) {
         log.info("updateAnnouncement");
-        AnnouncementDTO announcementDTOUpdated = announcementService.updateAnnouncement(
-                id,
-                announcementDTO.getTitle(),
-                announcementDTO.getContent(),
-                announcementDTO.getRelatedLinks()
-        );
+        AnnouncementDTO announcementDTOUpdated = announcementService.updateAnnouncement(id, announcementDTO);
         return ResponseEntity.ok(announcementDTOUpdated);
     }
 

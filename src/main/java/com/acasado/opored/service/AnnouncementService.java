@@ -6,6 +6,7 @@ import com.acasado.opored.repository.AnnouncementRepository;
 import com.acasado.opored.repository.BulletinBoardRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,8 +18,15 @@ public class AnnouncementService {
     private final AnnouncementRepository announcementRepository;
     private final BulletinBoardRepository bulletinBoardRepository;
 
+    @Value("${unassigned.announcement.examination.id}")
+    private Integer unassignedAnnouncementExaminationId;
+
     public List<AnnouncementDTO> getAllAnnouncements() {
         return announcementRepository.findAll().stream().map(this::convertToAnnouncementDTO).toList();
+    }
+
+    public List<AnnouncementDTO> getUncategorizedAnnouncements() {
+        return announcementRepository.findByBulletinBoard_Id(unassignedAnnouncementExaminationId).stream().map(this::convertToAnnouncementDTO).toList();
     }
 
     public AnnouncementDTO getAnnouncementById(Integer id) {
@@ -32,12 +40,13 @@ public class AnnouncementService {
         return convertToAnnouncementDTO(savedAnnouncement);
     }
 
-    public AnnouncementDTO updateAnnouncement(Integer id, String title, String content, String relatedLinks) {
+    public AnnouncementDTO updateAnnouncement(Integer id, AnnouncementDTO announcementDTO) {
         AnnouncementEntity toUpdateAnnouncement = announcementRepository.findById(id).orElseThrow(() -> notFoundById(id));
 
-        toUpdateAnnouncement.setTitle(title);
-        toUpdateAnnouncement.setContent(content);
-        toUpdateAnnouncement.setRelatedLinks(relatedLinks);
+        toUpdateAnnouncement.setTitle(announcementDTO.getTitle());
+        toUpdateAnnouncement.setContent(announcementDTO.getContent());
+        toUpdateAnnouncement.setRelatedLinks(announcementDTO.getRelatedLinks());
+        toUpdateAnnouncement.setBulletinBoard(bulletinBoardRepository.getReferenceById(announcementDTO.getBulletinBoardId()));
 
         AnnouncementEntity updatedAnnouncement = announcementRepository.save(toUpdateAnnouncement);
         return convertToAnnouncementDTO(updatedAnnouncement);

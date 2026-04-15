@@ -103,7 +103,7 @@ class AnnouncementControllerTest extends BaseControllerTest {
         AnnouncementDTO updatedDto = AnnouncementFactory.createValidAnnouncementDTO();
         updatedDto.setTitle("Updated Title");
 
-        when(announcementService.updateAnnouncement(anyInt(), anyString(), anyString(), anyString()))
+        when(announcementService.updateAnnouncement(1, updatedDto))
                 .thenReturn(updatedDto);
 
         // Act

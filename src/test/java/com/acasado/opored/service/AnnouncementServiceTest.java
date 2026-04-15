@@ -94,12 +94,18 @@ class AnnouncementServiceTest {
         // Arrange
         AnnouncementEntity entity = AnnouncementFactory.createValidAnnouncementEntity();
         String newTitle = "Updated Title";
+        AnnouncementDTO dto = new AnnouncementDTO();
+        dto.setTitle(newTitle);
+        dto.setContent("Updated Content");
+        dto.setRelatedLinks("Links");
+        dto.setBulletinBoardId(1);
 
         when(announcementRepository.findById(1)).thenReturn(Optional.of(entity));
+        when(bulletinBoardRepository.getReferenceById(anyInt())).thenReturn(new BulletinBoardEntity());
         when(announcementRepository.save(any(AnnouncementEntity.class))).thenAnswer(i -> i.getArguments()[0]);
 
         // Act
-        AnnouncementDTO result = announcementService.updateAnnouncement(1, newTitle, "Content", "Links");
+        AnnouncementDTO result = announcementService.updateAnnouncement(1,dto);
 
         // Assert
         assertEquals(newTitle, result.getTitle());

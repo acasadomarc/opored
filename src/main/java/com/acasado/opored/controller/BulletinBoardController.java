@@ -1,6 +1,7 @@
 package com.acasado.opored.controller;
 
 import com.acasado.opored.dto.BulletinBoardDTO;
+import com.acasado.opored.dto.BulletinBoardSummaryDTO;
 import com.acasado.opored.service.BulletinBoardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -34,6 +35,16 @@ public class BulletinBoardController {
     public ResponseEntity<List<BulletinBoardDTO>> getAllBulletinBoards() {
         log.info("getAllBulletinBoards");
         List<BulletinBoardDTO> bulletinBoards = bulletinBoardService.getAllBulletinBoards();
+        return ResponseEntity.ok(bulletinBoards);
+    }
+
+    @PreAuthorize("hasAuthority(@authorities.USER_READ)")
+    @Operation(summary = "Get all bulletin boards summarized")
+    @ApiResponse(responseCode = "200", description = "List returned")
+    @GetMapping("/summarized")
+    public ResponseEntity<List<BulletinBoardSummaryDTO>> getAllBulletinBoardsSummarized() {
+        log.info("getAllBulletinBoardsSummarized");
+        List<BulletinBoardSummaryDTO> bulletinBoards = bulletinBoardService.getAllBulletinBoardsSummarized();
         return ResponseEntity.ok(bulletinBoards);
     }
 

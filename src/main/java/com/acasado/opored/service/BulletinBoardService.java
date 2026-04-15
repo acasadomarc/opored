@@ -1,6 +1,7 @@
 package com.acasado.opored.service;
 
 import com.acasado.opored.dto.BulletinBoardDTO;
+import com.acasado.opored.dto.BulletinBoardSummaryDTO;
 import com.acasado.opored.model.BulletinBoardEntity;
 import com.acasado.opored.repository.BulletinBoardRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -18,6 +19,10 @@ public class BulletinBoardService {
 
     public List<BulletinBoardDTO> getAllBulletinBoards() {
         return bulletinBoardRepository.findAll().stream().map(this::convertToBulletinBoardDTO).toList();
+    }
+
+    public List<BulletinBoardSummaryDTO> getAllBulletinBoardsSummarized() {
+        return bulletinBoardRepository.findAll().stream().map(BulletinBoardSummaryDTO::new).toList();
     }
 
     public BulletinBoardDTO getBulletinBoardById(Integer id) {

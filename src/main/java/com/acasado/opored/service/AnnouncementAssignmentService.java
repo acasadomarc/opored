@@ -9,6 +9,7 @@ import com.acasado.opored.repository.AnnouncementStagingRepository;
 import com.acasado.opored.repository.PublicExaminationRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,7 +20,8 @@ public class AnnouncementAssignmentService {
     private final AnnouncementStagingRepository announcementStagingRepository;
     private final AnnouncementScoringClassifierService scoringClassifierService;
 
-    private static final Integer UNCATEGORIZED_ANNOUNCEMENTS_PUBLIC_EXAMINATION_ID = 9;
+    @Value("${unassigned.announcement.examination.id}")
+    private Integer unassignedAnnouncementExaminationId;
 
     public void kafkaAnnouncementCategorization(KafkaAnnouncementDTO kafkaAnnouncementDTO) {
         // Descartamos directamente los anuncios con un título genérico referidos a convocatorias de plazas en
@@ -40,8 +42,8 @@ public class AnnouncementAssignmentService {
 
         }
         else {
-            // En caso de que no coincida con ninguna de las oposiciones existentes, se añade a una oposición genérica, que tiene id 9
-            PublicExaminationEntity publicExamination = publicExaminationRepository.findById(UNCATEGORIZED_ANNOUNCEMENTS_PUBLIC_EXAMINATION_ID).orElseThrow(EntityNotFoundException::new);
+            // En caso de que no coincida con ninguna de las oposiciones existentes, se añade a una oposición genérica, que tiene id 8
+            PublicExaminationEntity publicExamination = publicExaminationRepository.findById(unassignedAnnouncementExaminationId).orElseThrow(EntityNotFoundException::new);
             BulletinBoardEntity bulletinBoard = publicExamination.getBulletinBoard();
             AnnouncementStagingEntity announcement = kafkaAnnouncementToAnnouncement(kafkaAnnouncementDTO, bulletinBoard, result.getConfidence());
             announcementStagingRepository.save(announcement);
