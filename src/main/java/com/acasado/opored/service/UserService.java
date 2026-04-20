@@ -68,11 +68,13 @@ public class UserService {
 
         UserEntity toUpdateUser = userRepository.findById(currentId).orElseThrow(() -> notFoundById(currentId));
 
+        // Alias validation
 
-        if (!userUpdateRequest.getAlias().equals(toUpdateUser.getAlias()) && userRepository.findByAlias(userUpdateRequest.getAlias()).isPresent()) {
-            throw new AliasAlreadyRegisteredException("User with alias " + userUpdateRequest.getAlias() + " already exists");
-
+        if (!validateAlias(userUpdateRequest.getAlias(), toUpdateUser.getAlias(), toUpdateUser.getRole().getName())) {
+            throw new BadCredentialsException("Alias is not valid");
         }
+
+
         toUpdateUser.setName(userUpdateRequest.getName());
         toUpdateUser.setSurname(userUpdateRequest.getSurname());
         toUpdateUser.setAlias(userUpdateRequest.getAlias());
@@ -157,6 +159,19 @@ public class UserService {
 
     private Integer getCurrentUserId() {
         return SecurityUtils.getCurrentUserId();
+    }
+
+    private boolean validateAlias(String newAlias, String currentAlias, RoleEnum userRole) {
+        if (!newAlias.equals(currentAlias) && userRepository.findByAlias(newAlias).isPresent()) {
+            throw new AliasAlreadyRegisteredException("User with alias " + newAlias + " already exists");
+
+        }
+        if (userRole == RoleEnum.STUDENT || userRole == RoleEnum.PROFESSOR) {
+            return SecurityUtils.publicUserAliasValidation(newAlias);
+        }
+        else {
+            return SecurityUtils.privilegedUserAliasValidation(newAlias);
+        }
     }
 
 }
