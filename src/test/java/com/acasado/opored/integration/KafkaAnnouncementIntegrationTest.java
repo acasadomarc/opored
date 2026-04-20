@@ -10,6 +10,7 @@ import com.acasado.opored.repository.*;
 import com.acasado.opored.service.AnnouncementAssignmentService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalDate;
 
@@ -35,6 +36,9 @@ class KafkaAnnouncementIntegrationTest extends BaseIntegrationTest {
 
     @Autowired
     private AnnouncementClassificationKeywordsRepository announcementClassificationKeywordsRepository;
+
+    @Value("${unassigned.announcement.examination.id}")
+    private Integer unassignedAnnouncementExaminationId;
 
     @Test
     void When_KafkaAnnouncementMatchesTags_Expect_AssignedToMatchingBoard() {
@@ -69,14 +73,15 @@ class KafkaAnnouncementIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void When_KafkaAnnouncementDoesNotMatch_Expect_FallbackExam() {
+        Integer commonId = unassignedAnnouncementExaminationId;
         // Arrange
         CategoryEntity category = categoryRepository.save(new CategoryEntity("Cat2", "Desc2"));
         BulletinBoardEntity fallbackBoard = null;
         for (int i = 0; i < 8; i++) {
-            BulletinBoardEntity board = bulletinBoardRepository.save(new BulletinBoardEntity(9, "Board-" + i, "Desc"));
-            PublicExaminationEntity exam = new PublicExaminationEntity(9, "Exam-" + i, "Desc", category, board, null);
+            BulletinBoardEntity board = bulletinBoardRepository.save(new BulletinBoardEntity(commonId, "Board-" + i, "Desc"));
+            PublicExaminationEntity exam = new PublicExaminationEntity(commonId, "Exam-" + i, "Desc", category, board, null);
             exam = publicExaminationRepository.save(exam);
-            if (exam.getId() == 9) {
+            if (exam.getId().equals(commonId)) {
                 fallbackBoard = board;
             }
         }
