@@ -32,7 +32,6 @@ public class SecurityConfig {
         return httpSecurity
                 .cors(Customizer.withDefaults()) // Enable CORS
                 .csrf(AbstractHttpConfigurer::disable) // Disable csrf token
-                //.formLogin(Customizer.withDefaults()) // Enable form login
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/login","/api/auth/refresh","/api/auth/logout", "/api/auth/signup", "/swagger-ui.html", "swagger-ui/**", "/v3/api-docs/**", "/actuator/health", "/uploads/**")
                         .permitAll()

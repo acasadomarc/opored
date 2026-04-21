@@ -34,7 +34,7 @@ public class AnnouncementScoringClassifierService {
             return ClassificationResult.unclassified();
         }
 
-        // Encontrar la mejor coincidencia
+        // Find the best coincidence
         Map.Entry<PublicExaminationEntity, Double> bestMatch = scores.entrySet().stream()
                 .max(Map.Entry.comparingByValue())
                 .orElseThrow();
@@ -56,7 +56,7 @@ public class AnnouncementScoringClassifierService {
         for (AnnouncementClassificationKeywords keywords : allKeywords) {
             double score = calculateScoreForExamination(normalizedText, keywords);
 
-            // Solo incluir si tiene score positivo
+            // Only include it if the score is positive
             if (score > 0) {
                 scores.put(keywords.getPublicExamination(), score);
             }
@@ -68,21 +68,21 @@ public class AnnouncementScoringClassifierService {
     private double calculateScoreForExamination(String text, AnnouncementClassificationKeywords keywords) {
         double score = 0.0;
 
-        // Main tags (peso alto)
+        // Main tags
         for (String tag : keywords.getMainTags().split(",")) {
             if (text.contains(tag)) {
                 score += MAIN_TAG_WEIGHT;
             }
         }
 
-        // Secondary tags (peso medio)
+        // Secondary tags
         for (String tag : keywords.getSecondaryTags().split(",")) {
             if (text.contains(tag)) {
                 score += SECONDARY_TAG_WEIGHT;
             }
         }
 
-        // Exclusion tags (penalización)
+        // Exclusion tags (penalty)
         for (String tag : keywords.getExclusionTags().split(",")) {
             if (text.contains(tag)) {
                 score += EXCLUSION_TAG_PENALTY;
@@ -97,7 +97,6 @@ public class AnnouncementScoringClassifierService {
             return bestScore > MIN_CONFIDENCE_THRESHOLD ? 10.0 : bestScore;
         }
 
-        // Ordenar scores de mayor a menor
         List<Double> sortedScores = allScores.values().stream()
                 .sorted(Comparator.reverseOrder())
                 .toList();
@@ -105,7 +104,7 @@ public class AnnouncementScoringClassifierService {
         double best = sortedScores.get(0);
         double secondBest = sortedScores.size() > 1 ? sortedScores.get(1) : 0.0;
 
-        // La confianza es la diferencia entre el mejor y el segundo mejor
+        // Confidence is the difference between the best and the second best option
         return best - secondBest;
     }
 
@@ -115,10 +114,10 @@ public class AnnouncementScoringClassifierService {
         }
 
         return Normalizer.normalize(text, Normalizer.Form.NFD)
-                .replaceAll("\\p{M}", "") // Eliminar marcas diacríticas
+                .replaceAll("\\p{M}", "") // Remove diacritical marks
                 .toLowerCase()
-                .replaceAll("[^a-z0-9\\s]", " ") // Solo letras, números y espacios
-                .replaceAll("\\s+", " ") // Normalizar espacios
+                .replaceAll("[^a-z0-9\\s]", " ") // Only letters, numbers, and spaces
+                .replaceAll("\\s+", " ") // Normalizing spaces
                 .trim();
     }
 

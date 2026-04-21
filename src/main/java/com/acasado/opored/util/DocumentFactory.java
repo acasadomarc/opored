@@ -21,7 +21,6 @@ public class DocumentFactory {
     }
 
     public static DocumentDTO createInvalidDocumentDTO() {
-        // Validation: Assuming Title is mandatory
         return new DocumentDTO(
                 null,
                 null,

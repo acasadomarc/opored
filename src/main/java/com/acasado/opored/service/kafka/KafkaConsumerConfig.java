@@ -34,7 +34,7 @@ public class KafkaConsumerConfig {
         JsonDeserializer<BoeAnnouncementDTO> valueDeserializer =
                 new JsonDeserializer<>(BoeAnnouncementDTO.class);
         valueDeserializer.addTrustedPackages("*");
-        valueDeserializer.ignoreTypeHeaders(); // Evita que intente buscar la clase BoeAnnouncementDTO en el otro proyecto
+        valueDeserializer.ignoreTypeHeaders(); // Prevent it from trying to look for the BoeAnnouncementDTO class in the scraping service
 
         return new DefaultKafkaConsumerFactory<>(
                 config,
@@ -61,7 +61,7 @@ public class KafkaConsumerConfig {
         JsonDeserializer<BocylAnnouncementDTO> valueDeserializer =
                 new JsonDeserializer<>(BocylAnnouncementDTO.class);
         valueDeserializer.addTrustedPackages("*");
-        valueDeserializer.ignoreTypeHeaders(); // Evita que intente buscar la clase BocylAnnouncementDTO en el otro proyecto
+        valueDeserializer.ignoreTypeHeaders(); // Prevent it from trying to look for the BocylAnnouncementDTO class in the scraping service
 
         return new DefaultKafkaConsumerFactory<>(
                 config,
@@ -88,7 +88,7 @@ public class KafkaConsumerConfig {
         JsonDeserializer<BorAnnouncementDTO> valueDeserializer =
                 new JsonDeserializer<>(BorAnnouncementDTO.class);
         valueDeserializer.addTrustedPackages("*");
-        valueDeserializer.ignoreTypeHeaders(); // Evita que intente buscar la clase BorAnnouncementDTO en el otro proyecto
+        valueDeserializer.ignoreTypeHeaders(); // Prevent it from trying to look for the BorAnnouncementDTO class in the scraping service
 
         return new DefaultKafkaConsumerFactory<>(
                 config,

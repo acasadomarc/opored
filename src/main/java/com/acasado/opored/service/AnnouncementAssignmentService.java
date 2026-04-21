@@ -24,8 +24,8 @@ public class AnnouncementAssignmentService {
     private Integer unassignedAnnouncementExaminationId;
 
     public void kafkaAnnouncementCategorization(KafkaAnnouncementDTO kafkaAnnouncementDTO) {
-        // Descartamos directamente los anuncios con un título genérico referidos a convocatorias de plazas en
-        // ayuntamientos de municipios o diputaciones
+        // We immediately exclude ads with generic titles referring to job openings at
+        // municipal governments or provincial councils
         if (kafkaAnnouncementDTO.getTitle().contains("referente a la convocatoria para proveer")) {
             return;
         }
@@ -42,7 +42,7 @@ public class AnnouncementAssignmentService {
 
         }
         else {
-            // En caso de que no coincida con ninguna de las oposiciones existentes, se añade a una oposición genérica, que tiene id 8
+            // If it does not match any of the existing public exams, it is added to a generic public exam
             PublicExaminationEntity publicExamination = publicExaminationRepository.findById(unassignedAnnouncementExaminationId).orElseThrow(EntityNotFoundException::new);
             BulletinBoardEntity bulletinBoard = publicExamination.getBulletinBoard();
             AnnouncementStagingEntity announcement = kafkaAnnouncementToAnnouncement(kafkaAnnouncementDTO, bulletinBoard, result.getConfidence());

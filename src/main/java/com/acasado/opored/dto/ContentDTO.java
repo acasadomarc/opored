@@ -38,7 +38,7 @@ public abstract class ContentDTO {
     @Schema(description = "ID of the associated course", example = "10")
     private Integer courseId;
 
-    ContentDTO() { }
+    protected ContentDTO() { }
 
     // Factory method
     public static ContentDTO fromEntity(ContentEntity content) {

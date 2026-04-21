@@ -3,7 +3,6 @@ package com.acasado.opored.service;
 import com.acasado.opored.dto.ContentDTO;
 import com.acasado.opored.dto.CourseDTO;
 import com.acasado.opored.dto.RatingCourseDTO;
-import com.acasado.opored.dto.StudentSummaryDTO;
 import com.acasado.opored.exception.ProfessorWithoutPermissionException;
 import com.acasado.opored.exception.RestrictedDeleteException;
 import com.acasado.opored.exception.UserWithoutPermissionException;
@@ -120,11 +119,6 @@ public class CourseService {
             changedOwnershipCourses.add(courseEntity);
         }
         courseRepository.saveAll(changedOwnershipCourses);
-    }
-
-    public Set<StudentSummaryDTO> getStudents(Integer courseId) {
-        CourseEntity course = courseRepository.findById(courseId).orElseThrow(() -> notFoundById(courseId));
-        return course.getPurchases().stream().map(PurchaseEntity::getStudent).map(StudentSummaryDTO::new).collect(Collectors.toSet());
     }
 
     private CourseDTO convertToCourseDTO(CourseEntity course) {

@@ -27,7 +27,7 @@ public class JwtUtils {
     public String createToken(Authentication authentication) {
         Algorithm algorithm = Algorithm.HMAC256(privateKey);
 
-        // En security context holder, principal es el encargado de guardar los datos del usuario
+        // principal stores user data in security context
         String user = authentication.getPrincipal().toString();
 
         String authorities = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(","));

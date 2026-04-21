@@ -35,7 +35,6 @@ public class PublicExaminationSummaryDTO {
         setName(publicExamination.getName());
         setDescription(publicExamination.getDescription());
         setVisible(publicExamination.isVisible());
-        // Null checks might be needed depending on your entity mapping, kept simple as per original
         if(publicExamination.getBulletinBoard() != null) {
             setBulletinBoardId(publicExamination.getBulletinBoard().getId());
         }

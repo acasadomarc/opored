@@ -3,8 +3,8 @@ package com.acasado.opored.util;
 import com.acasado.opored.dto.*;
 import com.acasado.opored.dto.auth.AuthCreateUserRequest;
 import com.acasado.opored.dto.auth.AuthResponse;
+import com.acasado.opored.enumeration.StatusEnum;
 import com.acasado.opored.model.*;
-import com.acasado.opored.dto.UserUpdateRequest;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
@@ -64,16 +64,8 @@ public class StudentFactory {
         return entity;
     }
 
-    public static UserUpdateRequest createUserUpdateRequest() {
-        return new UserUpdateRequest("StudentUpdated", "UserUpdated","alias", "newEncodedPass12A@d","photo");
-    }
-
     public static AuthResponse createAuthResponse() {
         return new AuthResponse(STUDENT_EMAIL, "Success", "jwt-token","refresh-token", 200);
-    }
-
-    public static Set<TopicSummaryDTO> createTopicSummarySet() {
-        return Set.of(new TopicSummaryDTO());
     }
 
     public static Set<TopicDTO> createTopicDTOSet() {
@@ -92,6 +84,7 @@ public class StudentFactory {
         TopicEntity topic = new TopicEntity();
         topic.setId(100);
         topic.setTitle("Maths");
+        topic.setStatus(StatusEnum.VISIBLE);
         return topic;
     }
 

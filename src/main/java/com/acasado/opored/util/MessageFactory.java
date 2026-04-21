@@ -27,7 +27,6 @@ public class MessageFactory {
     }
 
     public static MessageDTO createInvalidMessageDTO() {
-        // Validation: Content shouldn't be null
         return new MessageDTO(
                 null,
                 null,

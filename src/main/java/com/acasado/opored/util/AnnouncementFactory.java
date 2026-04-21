@@ -22,7 +22,6 @@ public class AnnouncementFactory {
     }
 
     public static AnnouncementDTO createInvalidAnnouncementDTO() {
-        // Validation: Assuming Title or Content cannot be null (based on Controller @NotNull @Valid)
         return new AnnouncementDTO(
                 null,
                 null, // Invalid null title
