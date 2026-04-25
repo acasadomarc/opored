@@ -27,7 +27,7 @@ public class CategoryDTO {
     private String description;
 
     @Schema(description = "List of public examinations in this category")
-    private Set<PublicExaminationSummaryDTO> publicExaminations;
+    private Set<PublicExaminationDTO> publicExaminations;
 
     public CategoryDTO(CategoryEntity category) {
         setId(category.getId());
@@ -35,7 +35,7 @@ public class CategoryDTO {
         setDescription(category.getDescription());
         if (category.getPublicExaminations() != null) {
             setPublicExaminations(category.getPublicExaminations().stream()
-                    .map(PublicExaminationSummaryDTO::new)
+                    .map(PublicExaminationDTO::new)
                     .collect(Collectors.toSet()));
         }
     }

@@ -92,6 +92,7 @@ public class StudentFactory {
         PublicExaminationEntity exam = new PublicExaminationEntity();
         exam.setId(200);
         exam.setName("Civil Service Exam 2024");
+        exam.setCategory(new CategoryEntity());
         return exam;
     }
 }

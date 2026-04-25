@@ -155,10 +155,10 @@ public class StudentService {
 
     // Student - Public Examination relation methods
 
-    public Set<PublicExaminationSummaryDTO> getEnrolledPublicExaminations() {
+    public Set<PublicExaminationDTO> getEnrolledPublicExaminations() {
         Integer currentId = getCurrentStudentUserId();
         StudentEntity student = studentRepository.findById(currentId).orElseThrow(() -> notFoundById(currentId));
-        return student.getPublicExaminations().stream().map(PublicExaminationSummaryDTO::new).collect(Collectors.toSet());
+        return student.getPublicExaminations().stream().map(PublicExaminationDTO::new).collect(Collectors.toSet());
     }
 
     public void signUpForPublicExamination(Integer publicExaminationId) {

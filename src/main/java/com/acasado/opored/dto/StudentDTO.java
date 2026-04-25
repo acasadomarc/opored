@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 public class StudentDTO extends UserDTO {
 
     @Schema(description = "List of public examinations the student is signed up for")
-    private Set<PublicExaminationSummaryDTO> publicExaminations;
+    private Set<PublicExaminationDTO> publicExaminations;
 
     public StudentDTO(StudentEntity student) {
         setId(student.getId());
@@ -31,6 +31,6 @@ public class StudentDTO extends UserDTO {
         setAccountNoExpired(student.isAccountNoExpired());
         setAccountNoLocked(student.isAccountNoLocked());
         setCredentialNoExpired(student.isCredentialNoExpired());
-        setPublicExaminations(student.getPublicExaminations().stream().map(PublicExaminationSummaryDTO::new).collect(Collectors.toSet()));
+        setPublicExaminations(student.getPublicExaminations().stream().map(PublicExaminationDTO::new).collect(Collectors.toSet()));
     }
 }

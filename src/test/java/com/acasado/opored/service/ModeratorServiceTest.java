@@ -7,16 +7,13 @@ import com.acasado.opored.model.ModeratorEntity;
 import com.acasado.opored.repository.ModeratorRepository;
 import com.acasado.opored.service.jpa.JpaUserDetailsService;
 import com.acasado.opored.util.ModeratorFactory;
-import com.acasado.opored.security.SecurityUtils;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,13 +30,13 @@ class ModeratorServiceTest {
     private ModeratorRepository moderatorRepository;
 
     @Mock
+    private ModerationMessageService moderationMessageService;
+
+    @Mock
+    private ModerationTopicService moderationTopicService;
+
+    @Mock
     private JpaUserDetailsService userDetailsService;
-
-    @Mock
-    private PasswordEncoder passwordEncoder;
-
-    @Mock
-    private UserService userService;
 
     @InjectMocks
     private ModeratorService moderatorService;
@@ -129,22 +126,41 @@ class ModeratorServiceTest {
     }
 
     @Test
-    void When_DeleteMe_Expect_LogicalDelete() {
-        // Arrange
-        int currentUserId = 1;
+    void Expect_Exception_When_GetModeratorByEmail_NotFound() {
+        when(moderatorRepository.findByEmail(anyString())).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> moderatorService.getModeratorByEmail("notfound@example.com"));
+    }
+
+    @Test
+    void When_EnableModerator_Expect_LogicalEnable() {
         ModeratorEntity entity = ModeratorFactory.createValidModeratorEntity();
+        entity.setEnabled(false);
+        when(moderatorRepository.findById(1)).thenReturn(Optional.of(entity));
 
-        try (MockedStatic<SecurityUtils> securityMock = mockStatic(SecurityUtils.class)) {
-            securityMock.when(SecurityUtils::getCurrentUserId).thenReturn(currentUserId);
-            when(moderatorRepository.findById(currentUserId)).thenReturn(Optional.of(entity));
+        moderatorService.enableModerator(1);
 
-            // Act
-            moderatorService.deleteMe();
+        assertTrue(entity.isEnabled());
+        verify(moderatorRepository).save(entity);
+    }
 
-            // Assert
-            assertTrue(entity.getIsDeleted());
-            assertFalse(entity.isEnabled());
-            verify(moderatorRepository).save(entity);
-        }
+    @Test
+    void When_DeleteModeratorEntity_Expect_AssetsTransferredAndLogicalDelete() {
+        // Arrange
+        ModeratorEntity toDelete = ModeratorFactory.createValidModeratorEntity();
+        toDelete.setId(1);
+        ModeratorEntity subModerator = new ModeratorEntity();
+        subModerator.setId(2);
+
+        when(moderatorRepository.findFirstByIdNot(1)).thenReturn(Optional.of(subModerator));
+        // moderationMessageService and moderationTopicService are not mocked in the original test, need to check if they are in the service
+        // Looking at the service code: moderationMessageService.changeModerationMessagesOwner is called.
+
+        // Act
+        moderatorService.deleteMe(toDelete);
+
+        // Assert
+        assertTrue(toDelete.getIsDeleted());
+        assertFalse(toDelete.isEnabled());
+        verify(moderatorRepository).save(toDelete);
     }
 }

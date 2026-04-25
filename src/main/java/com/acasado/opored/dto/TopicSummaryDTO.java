@@ -27,10 +27,18 @@ public class TopicSummaryDTO {
     @Schema(example = "2026-06-10")
     private LocalDate publicationDate;
 
+    @Schema(description = "ID of the forum this topic belongs to", example = "5")
+    private Integer forumId;
+
+    @Schema(description = "ID of the user who created the topic", example = "42")
+    private Integer userId;
+
     public TopicSummaryDTO(TopicEntity topic) {
         setId(topic.getId());
         setTitle(topic.getTitle());
         setStatus(topic.getStatus());
         setPublicationDate(topic.getPublicationDate());
+        setForumId(topic.getForum().getId());
+        setUserId(topic.getUser().getId());
     }
 }

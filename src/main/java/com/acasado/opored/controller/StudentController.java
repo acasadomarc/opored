@@ -126,7 +126,7 @@ public class StudentController {
     @Operation(summary = "Get enrolled public examinations")
     @ApiResponse(responseCode = "200", description = "Public examinations returned")
     @GetMapping("/me/publicExaminations")
-    public ResponseEntity<Set<PublicExaminationSummaryDTO>> getEnrolledPublicExaminations() {
+    public ResponseEntity<Set<PublicExaminationDTO>> getEnrolledPublicExaminations() {
         log.info("getEnrolledPublicExaminations by student");
         return ResponseEntity.ok(studentService.getEnrolledPublicExaminations());
     }

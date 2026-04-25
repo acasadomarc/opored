@@ -139,30 +139,72 @@ class ModerationTopicServiceTest {
         }
     }
 
-    // --- Delete (Restore Status) ---
     @Test
-    void When_DeleteModeration_Expect_VisibleStatus() {
-        // Arrange
-        int topicId = 200;
+    void Expect_Exception_When_GetById_NotFound() {
+        when(moderationTopicRepository.findById(any(ModerationTopicId.class))).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> moderationTopicService.getModerationTopicById(999, 999));
+    }
+
+    @Test
+    void Expect_Exception_When_Moderate_ModeratorNotFound() {
+        ModerationTopicDTO inputDto = ModerationTopicFactory.createValidModerationTopicDTO();
+        when(topicRepository.findById(anyInt())).thenReturn(Optional.of(new TopicEntity()));
+        when(moderatorRepository.findById(anyInt())).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> moderationTopicService.moderateTopic(inputDto));
+    }
+
+    @Test
+    void Expect_Exception_When_UpdateByMe_NotFound() {
+        try (MockedStatic<SecurityUtils> securityMock = mockStatic(SecurityUtils.class)) {
+            securityMock.when(SecurityUtils::getCurrentUserId).thenReturn(5);
+            when(moderationTopicRepository.findById(any(ModerationTopicId.class))).thenReturn(Optional.empty());
+
+            assertThrows(EntityNotFoundException.class, () -> moderationTopicService.updateModeratedTopicByMe(200, "Reason"));
+        }
+    }
+
+    @Test
+    void Expect_Exception_When_DeleteModeration_NotFound() {
+        when(moderationTopicRepository.findById(any(ModerationTopicId.class))).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> moderationTopicService.deleteModerationTopic(200, 5));
+    }
+
+    @Test
+    void When_DeleteMyModerationTopic_Expect_Success() {
         int modId = 5;
+        int topicId = 200;
         ModerationTopicEntity entity = ModerationTopicFactory.createValidModerationTopicEntity();
-        ModerationTopicId id = new ModerationTopicId(topicId, modId);
+        
+        // Match expectation of deleteMyModerationTopic
+        ModeratorEntity moderator = new ModeratorEntity();
+        moderator.setId(modId);
+        entity.setModerator(moderator);
+        
+        TopicEntity topic = new TopicEntity();
+        topic.setId(topicId);
+        
+        try (MockedStatic<SecurityUtils> securityMock = mockStatic(SecurityUtils.class)) {
+            securityMock.when(SecurityUtils::getCurrentUserId).thenReturn(modId);
+            when(moderationTopicRepository.findById(any(ModerationTopicId.class))).thenReturn(Optional.of(entity));
+            when(topicRepository.findById(anyInt())).thenReturn(Optional.of(topic));
 
-        TopicEntity topicProxy = new TopicEntity();
-        topicProxy.setId(topicId);
-        topicProxy.setStatus(StatusEnum.HIDDEN);
+            moderationTopicService.deleteMyModerationTopic(topicId);
 
-        when(moderationTopicRepository.findById(id)).thenReturn(Optional.of(entity));
-        when(topicRepository.getReferenceById(topicId)).thenReturn(topicProxy);
+            assertEquals(StatusEnum.VISIBLE, topic.getStatus());
+            verify(moderationTopicRepository).delete(entity);
+        }
+    }
 
-        // Act
-        moderationTopicService.deleteModerationTopic(topicId, modId);
+    @Test
+    void When_ChangeModerationTopicsOwner_Expect_UpdatedOwner() {
+        ModeratorEntity newModerator = new ModeratorEntity();
+        ModerationTopicEntity entity = ModerationTopicFactory.createValidModerationTopicEntity();
+        java.util.Set<ModerationTopicEntity> entities = new java.util.HashSet<>(List.of(entity));
 
-        // Assert
-        verify(moderationTopicRepository).delete(entity);
+        moderationTopicService.changeModerationTopicsOwner(entities, newModerator);
 
-        // Verify Status restored to VISIBLE
-        assertEquals(StatusEnum.VISIBLE, topicProxy.getStatus());
-        verify(topicRepository).save(topicProxy);
+        assertEquals(newModerator, entity.getModerator());
+        verify(moderationTopicRepository).saveAll(any());
     }
 }

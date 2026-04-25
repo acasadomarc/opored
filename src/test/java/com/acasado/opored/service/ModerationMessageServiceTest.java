@@ -140,32 +140,67 @@ class ModerationMessageServiceTest {
         }
     }
 
-    // --- Delete ---
     @Test
-    void When_DeleteModeration_Expect_LogicalDeleteAndVisibleStatus() {
-        // Arrange
-        int msgId = 100;
+    void Expect_Exception_When_GetById_NotFound() {
+        when(moderationMessageRepository.findById(any(ModerationMessageId.class))).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> moderationMessageService.getModerationMessageById(999, 999));
+    }
+
+    @Test
+    void Expect_Exception_When_Moderate_ModeratorNotFound() {
+        ModerationMessageDTO inputDto = ModerationMessageFactory.createValidModerationMessageDTO();
+        when(messageRepository.findById(anyInt())).thenReturn(Optional.of(new MessageEntity()));
+        when(moderatorRepository.findById(anyInt())).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> moderationMessageService.moderateMessage(inputDto));
+    }
+
+    @Test
+    void Expect_Exception_When_UpdateByMe_NotFound() {
+        try (MockedStatic<SecurityUtils> securityMock = mockStatic(SecurityUtils.class)) {
+            securityMock.when(SecurityUtils::getCurrentUserId).thenReturn(5);
+            when(moderationMessageRepository.findById(any(ModerationMessageId.class))).thenReturn(Optional.empty());
+
+            assertThrows(EntityNotFoundException.class, () -> moderationMessageService.updateModeratedMessageByMe(100, "Reason"));
+        }
+    }
+
+    @Test
+    void Expect_Exception_When_DeleteModeration_NotFound() {
+        when(moderationMessageRepository.findById(any(ModerationMessageId.class))).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> moderationMessageService.deleteModerationMessage(100, 5));
+    }
+
+    @Test
+    void When_DeleteMyModerationMessage_Expect_Success() {
         int modId = 5;
+        int msgId = 100;
         ModerationMessageEntity entity = ModerationMessageFactory.createValidModerationMessageEntity();
-        ModerationMessageId id = new ModerationMessageId(msgId, modId);
+        MessageEntity message = new MessageEntity();
+        message.setId(msgId);
+        entity.setMessage(message);
 
-        MessageEntity messageProxy = new MessageEntity();
-        messageProxy.setId(msgId);
-        messageProxy.setStatus(StatusEnum.HIDDEN);
+        try (MockedStatic<SecurityUtils> securityMock = mockStatic(SecurityUtils.class)) {
+            securityMock.when(SecurityUtils::getCurrentUserId).thenReturn(modId);
+            when(moderationMessageRepository.findById(any(ModerationMessageId.class))).thenReturn(Optional.of(entity));
+            when(messageRepository.findById(msgId)).thenReturn(Optional.of(message));
 
-        when(moderationMessageRepository.findById(id)).thenReturn(Optional.of(entity));
-        when(messageRepository.getReferenceById(msgId)).thenReturn(messageProxy);
+            moderationMessageService.deleteMyModerationMessage(msgId);
 
-        // Act
-        moderationMessageService.deleteModerationMessage(msgId, modId);
+            assertEquals(StatusEnum.VISIBLE, message.getStatus());
+            verify(moderationMessageRepository).delete(entity);
+        }
+    }
 
-        // Assert
-        // 1. Verify Logical Delete of Moderation
-        assertTrue(entity.getIsDeleted());
-        verify(moderationMessageRepository).save(entity);
+    @Test
+    void When_ChangeModerationMessagesOwner_Expect_UpdatedOwner() {
+        ModeratorEntity newModerator = new ModeratorEntity();
+        ModerationMessageEntity entity = ModerationMessageFactory.createValidModerationMessageEntity();
+        java.util.Set<ModerationMessageEntity> entities = new java.util.HashSet<>(List.of(entity));
 
-        // 2. Verify Message Restoration to Visible
-        assertEquals(StatusEnum.VISIBLE, messageProxy.getStatus());
-        verify(messageRepository).save(messageProxy);
+        moderationMessageService.changeModerationMessagesOwner(entities, newModerator);
+
+        assertEquals(newModerator, entity.getModerator());
+        verify(moderationMessageRepository).saveAll(any());
     }
 }

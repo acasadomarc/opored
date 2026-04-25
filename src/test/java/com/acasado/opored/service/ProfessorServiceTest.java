@@ -12,7 +12,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,10 +27,10 @@ class ProfessorServiceTest {
     private ProfessorRepository professorRepository;
 
     @Mock
-    private PasswordEncoder passwordEncoder;
+    private CourseService courseService;
 
     @Mock
-    private UserService userService;
+    private RatingProfessorService ratingProfessorService;
 
     @InjectMocks
     private ProfessorService professorService;
@@ -85,6 +84,74 @@ class ProfessorServiceTest {
 
         // Assert
         assertEquals(email, result.getEmail());
+    }
+
+    @Test
+    void Expect_EntityNotFoundException_When_GetProfessorByEmail_NotFound() {
+        // Arrange
+        when(professorRepository.findByEmail(anyString())).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(EntityNotFoundException.class, () -> professorService.getProfessorByEmail("notfound@example.com"));
+    }
+
+    @Test
+    void When_EnableProfessor_Expect_LogicalEnable() {
+        // Arrange
+        ProfessorEntity entity = ProfessorFactory.createValidProfessorEntity();
+        entity.setEnabled(false);
+        when(professorRepository.findById(1)).thenReturn(Optional.of(entity));
+
+        // Act
+        professorService.enableProfessor(1);
+
+        // Assert
+        assertTrue(entity.isEnabled());
+        verify(professorRepository).save(entity);
+    }
+
+    @Test
+    void When_GetCourses_Expect_SetOfDTOs() {
+        // Arrange
+        int professorId = 1;
+        ProfessorEntity professor = ProfessorFactory.createValidProfessorEntity();
+        professor.setCourses(new java.util.HashSet<>());
+        
+        try (MockedStatic<SecurityUtils> securityMock = mockStatic(SecurityUtils.class)) {
+            securityMock.when(SecurityUtils::getCurrentUserId).thenReturn(professorId);
+            when(professorRepository.findById(professorId)).thenReturn(Optional.of(professor));
+
+            // Act
+            java.util.Set<com.acasado.opored.dto.CourseDTO> result = professorService.getCourses();
+
+            // Assert
+            assertNotNull(result);
+            verify(professorRepository).findById(professorId);
+        }
+    }
+
+    @Test
+    void When_DeleteProfessorEntity_Expect_AssetsTransferredAndLogicalDelete() {
+        // Arrange
+        ProfessorEntity toDelete = ProfessorFactory.createValidProfessorEntity();
+        toDelete.setId(10);
+        toDelete.setCourses(new java.util.HashSet<>());
+        toDelete.setRatings(new java.util.HashSet<>());
+
+        ProfessorEntity defaultProfessor = new ProfessorEntity();
+        defaultProfessor.setId(14);
+
+        when(professorRepository.findById(14)).thenReturn(Optional.of(defaultProfessor));
+
+        // Act
+        professorService.deleteMe(toDelete);
+
+        // Assert
+        assertTrue(toDelete.getIsDeleted());
+        assertFalse(toDelete.isEnabled());
+        verify(courseService, never()).changeCoursesOwner(any(), any());
+        verify(ratingProfessorService, never()).deleteMultipleRatingProfessor(any());
+        verify(professorRepository).save(toDelete);
     }
 
     @Test

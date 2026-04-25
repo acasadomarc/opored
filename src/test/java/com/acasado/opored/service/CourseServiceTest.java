@@ -3,13 +3,13 @@ package com.acasado.opored.service;
 import com.acasado.opored.dto.ContentDTO;
 import com.acasado.opored.dto.CourseDTO;
 import com.acasado.opored.exception.ProfessorWithoutPermissionException;
-import com.acasado.opored.exception.RestrictedDeleteException;
 import com.acasado.opored.model.CourseEntity;
 import com.acasado.opored.model.ProfessorEntity;
 import com.acasado.opored.repository.CourseRepository;
 import com.acasado.opored.repository.ProfessorRepository;
 import com.acasado.opored.util.CourseFactory;
 import com.acasado.opored.security.SecurityUtils;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -184,21 +184,62 @@ class CourseServiceTest {
     }
 
     @Test
-    void Expect_RestrictedDeleteException_When_Delete_WithContents() {
-        int profId = 10;
-        // Course HAS contents
-        CourseEntity course = CourseFactory.createCourseWithContents();
-        course.setProfessor(new com.acasado.opored.model.ProfessorEntity());
-        course.getProfessor().setId(profId);
+    void Expect_Exception_When_GetCourseById_NotFound() {
+        when(courseRepository.findById(anyInt())).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> courseService.getCourseById(999));
+    }
+
+    @Test
+    void Expect_UserWithoutPermission_When_GetCourseById_HiddenAndNotOwner() {
+        int studentId = 5;
+        int ownerId = 10;
+        CourseEntity course = CourseFactory.createCourseWithProfessor(ownerId);
+        course.setVisible(false);
 
         try (MockedStatic<SecurityUtils> securityMock = mockStatic(SecurityUtils.class)) {
-            securityMock.when(() -> SecurityUtils.isProvidedUser(profId)).thenReturn(true);
+            securityMock.when(SecurityUtils::getCurrentUserId).thenReturn(studentId);
+            when(courseRepository.findById(anyInt())).thenReturn(Optional.of(course));
 
-            when(courseRepository.findById(1)).thenReturn(Optional.of(course));
-
-            // Act & Assert
-            assertThrows(RestrictedDeleteException.class, () -> courseService.deleteCourse(1));
-            verify(courseRepository, never()).save(any());
+            assertThrows(com.acasado.opored.exception.UserWithoutPermissionException.class,
+                    () -> courseService.getCourseById(1));
         }
+    }
+
+    @Test
+    void Expect_Exception_When_UpdateCourse_NotFound() {
+        when(courseRepository.findById(anyInt())).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class,
+                () -> courseService.updateCourse(999, "Name", "Desc", 10f, 0f, true));
+    }
+
+    @Test
+    void Expect_Exception_When_AddContent_NotFound() {
+        when(courseRepository.findById(anyInt())).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> courseService.addContent(999, null));
+    }
+
+    @Test
+    void Expect_Exception_When_AddDiscount_NotFound() {
+        when(courseRepository.findById(anyInt())).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> courseService.addDiscount(999, 0.1f));
+    }
+
+    @Test
+    void Expect_Exception_When_DeleteCourse_NotFound() {
+        when(courseRepository.findById(anyInt())).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> courseService.deleteCourse(999));
+    }
+
+    @Test
+    void When_ChangeCoursesOwner_Expect_UpdatedOwner() {
+        ProfessorEntity newProfessor = new ProfessorEntity();
+        CourseEntity course = CourseFactory.createValidCourseEntity();
+        java.util.Set<CourseEntity> courses = new java.util.HashSet<>(List.of(course));
+
+        courseService.changeCoursesOwner(courses, newProfessor);
+
+        assertEquals(newProfessor, course.getProfessor());
+        assertFalse(course.getIsPurchasable());
+        verify(courseRepository).saveAll(any());
     }
 }

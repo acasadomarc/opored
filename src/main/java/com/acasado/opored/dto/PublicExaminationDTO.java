@@ -1,5 +1,6 @@
 package com.acasado.opored.dto;
 
+import com.acasado.opored.model.PublicExaminationEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -35,4 +36,18 @@ public class PublicExaminationDTO {
 
     @Schema(description = "Associated Forum ID", example = "10")
     private Integer forumId;
+
+    public PublicExaminationDTO(PublicExaminationEntity publicExamination) {
+        setId(publicExamination.getId());
+        setName(publicExamination.getName());
+        setDescription(publicExamination.getDescription());
+        setVisible(publicExamination.isVisible());
+        setCategoryId(publicExamination.getCategory().getId());
+        if(publicExamination.getBulletinBoard() != null) {
+            setBulletinBoardId(publicExamination.getBulletinBoard().getId());
+        }
+        if(publicExamination.getForum() != null) {
+            setForumId(publicExamination.getForum().getId());
+        }
+    }
 }

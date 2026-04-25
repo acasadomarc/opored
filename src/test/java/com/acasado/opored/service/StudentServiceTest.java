@@ -339,7 +339,7 @@ class StudentServiceTest {
             when(studentRepository.findById(CURRENT_USER_ID)).thenReturn(Optional.of(student));
 
             // Act
-            Set<PublicExaminationSummaryDTO> result = studentService.getEnrolledPublicExaminations();
+            Set<PublicExaminationDTO> result = studentService.getEnrolledPublicExaminations();
 
             // Assert
             assertFalse(result.isEmpty());

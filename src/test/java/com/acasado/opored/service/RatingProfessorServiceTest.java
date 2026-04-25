@@ -150,20 +150,73 @@ class RatingProfessorServiceTest {
 
     // --- Delete (Security) ---
     @Test
-    void When_DeleteRating_Owner_Expect_LogicalDelete() {
-        int studentId = 5;
-        RatingProfessorEntity entity = RatingProfessorFactory.createValidRatingProfessorEntity();
+    void Expect_Exception_When_Create_ProfessorNotFound() {
+        RatingProfessorDTO inputDto = RatingProfessorFactory.createValidRatingProfessorDTO();
+        when(studentRepository.existsById(anyInt())).thenReturn(true);
+        when(professorRepository.existsById(anyInt())).thenReturn(false);
 
+        assertThrows(EntityNotFoundException.class, () -> ratingProfessorService.createRatingProfessor(inputDto));
+    }
+
+    @Test
+    void When_CreateRating_PreviouslyDeleted_Expect_Update() {
+        // Arrange
+        RatingProfessorDTO inputDto = RatingProfessorFactory.createValidRatingProfessorDTO();
+        int studentId = inputDto.getStudentId();
+        int profId = inputDto.getProfessorId();
+
+        ProfessorEntity professor = RatingProfessorFactory.createProfessorWithRatingByStudent(studentId);
+        RatingProfessorEntity existingDeletedRating = professor.getRatings().iterator().next();
+        existingDeletedRating.setId(100);
+        existingDeletedRating.setDeleted(true);
+
+        when(studentRepository.existsById(studentId)).thenReturn(true);
+        when(professorRepository.existsById(profId)).thenReturn(true);
+        when(professorRepository.getReferenceById(profId)).thenReturn(professor);
+        when(ratingProfessorRepository.findByStudentId(studentId)).thenReturn(Optional.of(existingDeletedRating));
+        
         try (MockedStatic<SecurityUtils> securityMock = mockStatic(SecurityUtils.class)) {
-            // Mock authorization success
-            securityMock.when(() -> SecurityUtils.isProvidedUser(studentId)).thenReturn(true);
+            securityMock.when(SecurityUtils::getCurrentUserId).thenReturn(studentId);
+            when(ratingProfessorRepository.findById(100)).thenReturn(Optional.of(existingDeletedRating));
+            when(ratingProfessorRepository.save(any())).thenReturn(existingDeletedRating);
 
-            when(ratingProfessorRepository.findById(1)).thenReturn(Optional.of(entity));
+            // Act
+            RatingProfessorDTO result = ratingProfessorService.createRatingProfessor(inputDto);
 
-            ratingProfessorService.deleteRatingProfessor(1);
-
-            assertTrue(entity.isDeleted());
-            verify(ratingProfessorRepository).save(entity);
+            // Assert
+            assertNotNull(result);
+            assertFalse(existingDeletedRating.isDeleted());
+            verify(ratingProfessorRepository).save(existingDeletedRating);
         }
+    }
+
+    @Test
+    void Expect_Exception_When_UpdateMyRating_NotFound() {
+        try (MockedStatic<SecurityUtils> securityMock = mockStatic(SecurityUtils.class)) {
+            securityMock.when(SecurityUtils::getCurrentUserId).thenReturn(5);
+            when(ratingProfessorRepository.findById(anyInt())).thenReturn(Optional.empty());
+
+            assertThrows(EntityNotFoundException.class, () -> 
+                ratingProfessorService.updateMyRatingProfessor(999, "Title", 5f, "Comment"));
+        }
+    }
+
+    @Test
+    void Expect_Exception_When_DeleteRating_NotFound() {
+        when(ratingProfessorRepository.findById(anyInt())).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> ratingProfessorService.deleteRatingProfessor(999));
+    }
+
+    @Test
+    void When_DeleteMultipleRatingProfessor_Expect_AllMarkedDeleted() {
+        RatingProfessorEntity r1 = new RatingProfessorEntity();
+        RatingProfessorEntity r2 = new RatingProfessorEntity();
+        java.util.Set<RatingProfessorEntity> ratings = new java.util.HashSet<>(List.of(r1, r2));
+
+        ratingProfessorService.deleteMultipleRatingProfessor(ratings);
+
+        assertTrue(r1.isDeleted());
+        assertTrue(r2.isDeleted());
+        verify(ratingProfessorRepository, times(2)).save(any());
     }
 }
