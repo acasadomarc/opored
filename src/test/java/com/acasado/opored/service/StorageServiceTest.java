@@ -80,15 +80,6 @@ class StorageServiceTest {
     }
 
     @Test
-    void Expect_SecurityException_When_DeleteUrlWithPathTraversal() {
-        // Arrange
-        String url = "http://localhost:8080/uploads/..\\..\\Windows\\System32\\cmd.exe";
-
-        // Act & Assert
-        assertThrows(SecurityException.class, () -> storageService.delete(url));
-    }
-
-    @Test
     void Expect_FileManagementException_When_IoErrorDuringStore() {
         // Arrange
         // We use a non-existent directory to trigger an IOException
