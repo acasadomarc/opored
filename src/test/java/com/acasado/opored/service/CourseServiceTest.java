@@ -1,6 +1,5 @@
 package com.acasado.opored.service;
 
-import com.acasado.opored.dto.ContentDTO;
 import com.acasado.opored.dto.CourseDTO;
 import com.acasado.opored.exception.ProfessorWithoutPermissionException;
 import com.acasado.opored.model.CourseEntity;
@@ -29,9 +28,6 @@ class CourseServiceTest {
 
     @Mock
     private CourseRepository courseRepository;
-
-    @Mock
-    private ContentService contentService;
 
     @Mock
     private ProfessorRepository professorRepository;
@@ -124,23 +120,6 @@ class CourseServiceTest {
         }
     }
 
-    // --- Add Content ---
-    @Test
-    void When_AddContent_OwnerProfessor_Expect_Success() {
-        int profId = 10;
-        CourseEntity course = CourseFactory.createCourseWithProfessor(profId);
-        ContentDTO content = CourseFactory.createValidContentDTO();
-
-        try (MockedStatic<SecurityUtils> securityMock = mockStatic(SecurityUtils.class)) {
-            securityMock.when(SecurityUtils::getCurrentUserId).thenReturn(profId);
-            when(courseRepository.findById(1)).thenReturn(Optional.of(course));
-            when(courseRepository.save(any(CourseEntity.class))).thenReturn(course);
-
-            CourseDTO result = courseService.addContent(1, content);
-            assertNotNull(result);
-        }
-    }
-
     // --- Add Discount ---
     @Test
     void When_AddDiscount_OwnerProfessor_Expect_CalculatedPrice() {
@@ -184,6 +163,104 @@ class CourseServiceTest {
     }
 
     @Test
+    void When_GetCourseById_VisibleCourse_Expect_DTO() {
+        // Arrange
+        int courseId = 1;
+        CourseEntity course = CourseFactory.createValidCourseEntity();
+        course.setVisible(true);
+
+        when(courseRepository.findById(courseId)).thenReturn(Optional.of(course));
+
+        // Act
+        CourseDTO result = courseService.getCourseById(courseId);
+
+        // Assert
+        assertNotNull(result);
+    }
+
+    @Test
+    void When_GetCourseById_HiddenCourse_Owner_Expect_DTO() {
+        // Arrange
+        int ownerId = 10;
+        int courseId = 1;
+        CourseEntity course = CourseFactory.createCourseWithProfessor(ownerId);
+        course.setVisible(false);
+
+        try (MockedStatic<SecurityUtils> securityMock = mockStatic(SecurityUtils.class)) {
+            securityMock.when(SecurityUtils::getCurrentUserId).thenReturn(ownerId);
+            when(courseRepository.findById(courseId)).thenReturn(Optional.of(course));
+
+            // Act
+            CourseDTO result = courseService.getCourseById(courseId);
+
+            // Assert
+            assertNotNull(result);
+        }
+    }
+
+    @Test
+    void When_UpdateCourse_Expect_Success() {
+        // Arrange
+        int profId = 10;
+        CourseEntity course = CourseFactory.createCourseWithProfessor(profId);
+        when(courseRepository.findById(1)).thenReturn(Optional.of(course));
+        when(courseRepository.save(any())).thenReturn(course);
+
+        try (MockedStatic<SecurityUtils> securityMock = mockStatic(SecurityUtils.class)) {
+            securityMock.when(SecurityUtils::getCurrentUserId).thenReturn(profId);
+
+            // Act
+            CourseDTO result = courseService.updateCourse(1, "New Name", "New Desc", 50f, 5f, true);
+
+            // Assert
+            assertEquals("New Name", result.getName());
+            verify(courseRepository).save(course);
+        }
+    }
+
+    @Test
+    void When_AddDiscount_Expect_NewPrice() {
+        // Arrange
+        int profId = 10;
+        CourseEntity course = CourseFactory.createCourseWithProfessor(profId);
+        course.setPrice(100f);
+
+        when(courseRepository.findById(1)).thenReturn(Optional.of(course));
+
+        try (MockedStatic<SecurityUtils> securityMock = mockStatic(SecurityUtils.class)) {
+            securityMock.when(SecurityUtils::getCurrentUserId).thenReturn(profId);
+
+            // Act
+            Float newPrice = courseService.addDiscount(1, 0.2f);
+
+            // Assert
+            assertEquals(80.0f, newPrice);
+            verify(courseRepository).save(course);
+        }
+    }
+
+    @Test
+    void When_DeleteCourse_Success_Expect_DeletedTrue() {
+        // Arrange
+        int profId = 10;
+        CourseEntity course = CourseFactory.createCourseWithProfessor(profId);
+        course.setContents(new java.util.HashSet<>());
+
+        when(courseRepository.findById(1)).thenReturn(Optional.of(course));
+
+        try (MockedStatic<SecurityUtils> securityMock = mockStatic(SecurityUtils.class)) {
+            securityMock.when(SecurityUtils::isUserAdmin).thenReturn(true);
+
+            // Act
+            courseService.deleteCourse(1);
+
+            // Assert
+            assertTrue(course.isDeleted());
+            verify(courseRepository).save(course);
+        }
+    }
+
+    @Test
     void Expect_Exception_When_GetCourseById_NotFound() {
         when(courseRepository.findById(anyInt())).thenReturn(Optional.empty());
         assertThrows(EntityNotFoundException.class, () -> courseService.getCourseById(999));
@@ -210,12 +287,6 @@ class CourseServiceTest {
         when(courseRepository.findById(anyInt())).thenReturn(Optional.empty());
         assertThrows(EntityNotFoundException.class,
                 () -> courseService.updateCourse(999, "Name", "Desc", 10f, 0f, true));
-    }
-
-    @Test
-    void Expect_Exception_When_AddContent_NotFound() {
-        when(courseRepository.findById(anyInt())).thenReturn(Optional.empty());
-        assertThrows(EntityNotFoundException.class, () -> courseService.addContent(999, null));
     }
 
     @Test

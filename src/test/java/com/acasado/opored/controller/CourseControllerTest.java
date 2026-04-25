@@ -52,8 +52,6 @@ class CourseControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("$.id").value(1));
     }
 
-
-
     @Test
     void When_AddDiscount_Expect_OkAndNewPrice() throws Exception {
         // Arrange
@@ -81,4 +79,4 @@ class CourseControllerTest extends BaseControllerTest {
                 // Assert
                 .andExpect(status().isNoContent());
     }
-}
+    }

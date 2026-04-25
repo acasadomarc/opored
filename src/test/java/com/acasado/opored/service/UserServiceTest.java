@@ -39,7 +39,7 @@ class UserServiceTest {
     @Mock
     private TopicService topicService;
     @Mock
-    private MessageService messageService;
+    private AdministratorService administratorService;
     @Mock
     private UserRepository userRepository;
     @Mock
@@ -199,10 +199,94 @@ class UserServiceTest {
     }
 
     @Test
-    void When_DeleteMe_Expect_TransferAssetsAndLogicalDelete() {
+    void When_DisableUser_AsProfessor_Expect_ProfessorServiceCalled() {
+        // Arrange
+        ProfessorEntity professor = new ProfessorEntity();
+        setupBaseUserFields(professor, 4, RoleEnum.PROFESSOR, "profAlias");
+        when(userRepository.findById(4)).thenReturn(Optional.of(professor));
+
+        // Act
+        userService.disableUser(4);
+
+        // Assert
+        verify(professorService).disableProfessor(4);
+    }
+
+    @Test
+    void When_EnableUser_AsProfessor_Expect_ProfessorServiceCalled() {
+        // Arrange
+        ProfessorEntity professor = new ProfessorEntity();
+        setupBaseUserFields(professor, 4, RoleEnum.PROFESSOR, "profAlias");
+        when(userRepository.findById(4)).thenReturn(Optional.of(professor));
+
+        // Act
+        userService.enableUser(4);
+
+        // Assert
+        verify(professorService).enableProfessor(4);
+    }
+
+    @Test
+    void When_EnableUser_AsStudent_Expect_StudentServiceCalled() {
+        // Arrange
+        StudentEntity student = createMockStudent(5);
+        when(userRepository.findById(5)).thenReturn(Optional.of(student));
+
+        // Act
+        userService.enableUser(5);
+
+        // Assert
+        verify(studentService).enableStudent(5);
+    }
+
+    @Test
+    void When_UpdateMe_WithEmptyPassword_Expect_NoPasswordEncoding() {
         // Arrange
         StudentEntity student = createMockStudent(CURRENT_USER_ID);
-        student.getMessages().add(new MessageEntity());
+        UserUpdateRequest request = new UserUpdateRequest("Name", "Surname", student.getAlias(), "", null);
+
+        try (MockedStatic<SecurityUtils> securityUtilsMock = mockStatic(SecurityUtils.class)) {
+            securityUtilsMock.when(SecurityUtils::getCurrentUserId).thenReturn(CURRENT_USER_ID);
+            securityUtilsMock.when(() -> SecurityUtils.publicUserAliasValidation(student.getAlias())).thenReturn(true);
+
+            when(userRepository.findById(CURRENT_USER_ID)).thenReturn(Optional.of(student));
+            when(userRepository.save(any(UserEntity.class))).thenReturn(student);
+
+            // Act
+            userService.updateMe(request);
+
+            // Assert
+            verify(passwordEncoder, never()).encode(anyString());
+        }
+    }
+
+    @Test
+    void When_UpdateMe_AsPrivilegedUser_Expect_PrivilegedAliasValidation() {
+        // Arrange
+        ModeratorEntity moderator = createMockModerator();
+        UserUpdateRequest request = new UserUpdateRequest("Name", "Surname", "modAlias", "ValidPass1@", null);
+
+        try (MockedStatic<SecurityUtils> securityUtilsMock = mockStatic(SecurityUtils.class)) {
+            securityUtilsMock.when(SecurityUtils::getCurrentUserId).thenReturn(3);
+            securityUtilsMock.when(() -> SecurityUtils.privilegedUserAliasValidation("modAlias")).thenReturn(true);
+            securityUtilsMock.when(() -> SecurityUtils.passwordValidation(anyString())).thenReturn(true);
+
+            when(userRepository.findById(3)).thenReturn(Optional.of(moderator));
+            when(userRepository.save(any(UserEntity.class))).thenReturn(moderator);
+
+            // Act
+            userService.updateMe(request);
+
+            // Assert
+            securityUtilsMock.verify(() -> SecurityUtils.privilegedUserAliasValidation("modAlias"));
+            securityUtilsMock.verify(() -> SecurityUtils.publicUserAliasValidation(anyString()), never());
+        }
+    }
+
+    @Test
+    void When_DeleteMe_WithTopicsOnly_Expect_TransferTopics() {
+        // Arrange
+        StudentEntity student = createMockStudent(CURRENT_USER_ID);
         student.getTopics().add(new TopicEntity());
 
         UserEntity defaultUser = createMockStudent(DEFAULT_DELETED_USER_ID);
@@ -217,11 +301,48 @@ class UserServiceTest {
             userService.deleteMe();
 
             // Assert
-            assertTrue(student.getRefreshTokens().isEmpty());
-            verify(messageService).changeMessagesOwner(student.getMessages(), defaultUser);
-            // topicService.changeTopicsOwner should NOT be called because it's an else-if in the code
-            verify(topicService, never()).changeTopicsOwner(any(), any());
+            verify(topicService).changeTopicsOwner(student.getTopics(), defaultUser);
             verify(studentService).deleteMe(student);
+        }
+    }
+
+    @Test
+    void When_DeleteMe_AsProfessor_Expect_ProfessorServiceDeleteMe() {
+        // Arrange
+        ProfessorEntity professor = new ProfessorEntity();
+        setupBaseUserFields(professor, 6, RoleEnum.PROFESSOR, "profAlias");
+        
+        when(userRepository.findById(6)).thenReturn(Optional.of(professor));
+        when(userRepository.findById(DEFAULT_DELETED_USER_ID)).thenReturn(Optional.of(createMockStudent(1)));
+
+        try (MockedStatic<SecurityUtils> securityUtilsMock = mockStatic(SecurityUtils.class)) {
+            securityUtilsMock.when(SecurityUtils::getCurrentUserId).thenReturn(6);
+
+            // Act
+            userService.deleteMe();
+
+            // Assert
+            verify(professorService).deleteMe(professor);
+        }
+    }
+
+    @Test
+    void When_DeleteMe_AsAdmin_Expect_AdminServiceDeleteMe() {
+        // Arrange
+        AdministratorEntity admin = createMockAdmin();
+        admin.setId(7);
+        
+        when(userRepository.findById(7)).thenReturn(Optional.of(admin));
+        when(userRepository.findById(DEFAULT_DELETED_USER_ID)).thenReturn(Optional.of(createMockStudent(1)));
+
+        try (MockedStatic<SecurityUtils> securityUtilsMock = mockStatic(SecurityUtils.class)) {
+            securityUtilsMock.when(SecurityUtils::getCurrentUserId).thenReturn(7);
+
+            // Act
+            userService.deleteMe();
+
+            // Assert
+            verify(administratorService).deleteMe(admin);
         }
     }
 

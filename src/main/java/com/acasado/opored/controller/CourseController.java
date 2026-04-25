@@ -1,6 +1,5 @@
 package com.acasado.opored.controller;
 
-import com.acasado.opored.dto.ContentDTO;
 import com.acasado.opored.dto.CourseDTO;
 import com.acasado.opored.service.CourseService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -79,22 +78,6 @@ public class CourseController {
                 courseDTO.getDiscountPercentage(),
                 courseDTO.getIsVisible()
         );
-        return ResponseEntity.ok(courseDTOUpdated);
-    }
-
-    @PreAuthorize("hasAuthority(@authorities.PROFESSOR_UPDATE)")
-    @Operation(summary = "Add content to course")
-    @ApiResponse(responseCode = "200", description = "Content added")
-    @ApiResponse(responseCode = "404", description = "Course not found")
-    @PutMapping("/id/{id}/content")
-    public ResponseEntity<CourseDTO> addContent(
-            @Parameter(description = "Course ID", example = "1")
-            @PathVariable @NotNull Integer id,
-
-            @Parameter(description = "Content entity to add")
-            @RequestParam @NotNull ContentDTO content) {
-        log.info("addContent to course with id {}", id);
-        CourseDTO courseDTOUpdated = courseService.addContent(id, content);
         return ResponseEntity.ok(courseDTOUpdated);
     }
 

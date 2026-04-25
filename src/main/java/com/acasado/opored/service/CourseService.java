@@ -66,22 +66,6 @@ public class CourseService {
         return convertToCourseDTO(updatedCourse);
     }
 
-
-    public CourseDTO addContent(Integer id, ContentDTO contentDTO) {
-        CourseEntity course = courseRepository.findById(id).orElseThrow(() -> notFoundById(id));
-
-        if (!course.getProfessor().getId().equals(getCurrentUserId())) {
-            throw notPermissionToUpdate();
-        }
-
-        ContentEntity content = contentService.convertToEntity(contentDTO);
-
-        course.getContents().add(content);
-        CourseEntity updatedCourse = courseRepository.save(course);
-
-        return convertToCourseDTO(updatedCourse);
-    }
-
     public Float addDiscount(Integer id, Float percentage) {
         CourseEntity course = courseRepository.findById(id).orElseThrow(() -> notFoundById(id));
 
