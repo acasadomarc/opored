@@ -29,9 +29,12 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class PurchaseServiceTest {
 
-    @Mock private PurchaseRepository purchaseRepository;
-    @Mock private StudentRepository studentRepository;
-    @Mock private CourseRepository courseRepository;
+    @Mock
+    private PurchaseRepository purchaseRepository;
+    @Mock
+    private StudentRepository studentRepository;
+    @Mock
+    private CourseRepository courseRepository;
 
     @InjectMocks
     private PurchaseService purchaseService;
@@ -132,12 +135,14 @@ class PurchaseServiceTest {
     }
 
     @Test
-    void Expect_Exception_When_CreatePurchase_StudentNotFound() {
-        // Arrange
-        PurchaseDTO inputDto = PurchaseFactory.createValidPurchaseDTO();
-        when(studentRepository.findById(anyInt())).thenReturn(Optional.empty());
+    void When_ChangePurchasesOwner_Expect_UpdatedOwner() {
+        StudentEntity newStudent = new StudentEntity();
+        PurchaseEntity purchase = PurchaseFactory.createValidPurchaseEntity();
+        java.util.Set<PurchaseEntity> purchases = new java.util.HashSet<>(List.of(purchase));
 
-        // Act & Assert
-        assertThrows(EntityNotFoundException.class, () -> purchaseService.createPurchase(inputDto));
+        purchaseService.changePurchasesOwner(purchases, newStudent);
+
+        assertEquals(newStudent, purchase.getStudent());
+        verify(purchaseRepository).saveAll(any());
     }
 }

@@ -1,18 +1,19 @@
 package com.acasado.opored.service;
 
 import com.acasado.opored.dto.TopicDTO;
-import com.acasado.opored.dto.StudentSummaryDTO;
 import com.acasado.opored.enumeration.StatusEnum;
 import com.acasado.opored.exception.UserWithoutPermissionException;
 import com.acasado.opored.model.ForumEntity;
 import com.acasado.opored.model.StudentEntity;
 import com.acasado.opored.model.TopicEntity;
+import com.acasado.opored.model.UserEntity;
 import com.acasado.opored.repository.ForumRepository;
 import com.acasado.opored.repository.StudentRepository;
 import com.acasado.opored.repository.TopicRepository;
 import com.acasado.opored.repository.UserRepository;
 import com.acasado.opored.security.SecurityUtils;
 import com.acasado.opored.util.TopicFactory;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,7 +23,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -136,7 +136,7 @@ class TopicServiceTest {
         int studentId = entity.getStudentsFollowing().iterator().next().getId();
 
         try (MockedStatic<SecurityUtils> securityMock = mockStatic(SecurityUtils.class)) {
-            // Mock authorization (e.g., as Root)
+            // Mock authorization
             securityMock.when(SecurityUtils::isUserAdmin).thenReturn(true);
 
             when(topicRepository.findById(1)).thenReturn(Optional.of(entity));
@@ -158,11 +158,37 @@ class TopicServiceTest {
 
     // --- Get Students Following ---
     @Test
-    void When_GetStudentsFollowing_Expect_Set() {
-        TopicEntity entity = TopicFactory.createTopicWithMessagesAndFollowers();
-        when(topicRepository.findById(1)).thenReturn(Optional.of(entity));
+    void Expect_Exception_When_Create_ForumNotFound() {
+        TopicDTO inputDto = TopicFactory.createValidTopicDTO();
+        when(forumRepository.existsById(anyInt())).thenReturn(false);
 
-        Set<StudentSummaryDTO> result = topicService.getStudentsFollowing(1);
-        assertFalse(result.isEmpty());
+        assertThrows(EntityNotFoundException.class, () -> topicService.createTopic(inputDto));
+    }
+
+    @Test
+    void Expect_Exception_When_Create_UserNotFound() {
+        TopicDTO inputDto = TopicFactory.createValidTopicDTO();
+        when(forumRepository.existsById(anyInt())).thenReturn(true);
+        when(userRepository.findById(anyInt())).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> topicService.createTopic(inputDto));
+    }
+
+    @Test
+    void Expect_Exception_When_UpdateMyTopic_NotFound() {
+        when(topicRepository.findById(anyInt())).thenReturn(Optional.empty());
+        assertThrows(EntityNotFoundException.class, () -> topicService.updateMyTopic(999, "Title", "VISIBLE"));
+    }
+
+    @Test
+    void When_ChangeTopicsOwner_Expect_UpdatedOwner() {
+        UserEntity newUser = new StudentEntity();
+        TopicEntity topic = TopicFactory.createValidTopicEntity();
+        java.util.Set<TopicEntity> topics = new java.util.HashSet<>(List.of(topic));
+
+        topicService.changeTopicsOwner(topics, newUser);
+
+        assertEquals(newUser, topic.getUser());
+        verify(topicRepository).saveAll(any());
     }
 }

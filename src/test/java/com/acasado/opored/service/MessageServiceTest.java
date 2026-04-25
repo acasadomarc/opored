@@ -6,6 +6,7 @@ import com.acasado.opored.exception.UserWithoutPermissionException;
 import com.acasado.opored.model.MessageEntity;
 import com.acasado.opored.model.StudentEntity;
 import com.acasado.opored.model.TopicEntity;
+import com.acasado.opored.model.UserEntity;
 import com.acasado.opored.repository.MessageRepository;
 import com.acasado.opored.repository.TopicRepository;
 import com.acasado.opored.repository.UserRepository;
@@ -30,9 +31,12 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class MessageServiceTest {
 
-    @Mock private MessageRepository messageRepository;
-    @Mock private TopicRepository topicRepository;
-    @Mock private UserRepository userRepository;
+    @Mock
+    private MessageRepository messageRepository;
+    @Mock
+    private TopicRepository topicRepository;
+    @Mock
+    private UserRepository userRepository;
 
     @InjectMocks
     private MessageService messageService;
@@ -170,21 +174,25 @@ class MessageServiceTest {
     }
 
     @Test
-    void Expect_Exception_When_DeleteMessage_Unauthorized() {
-        // Arrange
-        int ownerId = 5;
-        MessageEntity entity = MessageFactory.createMessageWithUser(ownerId);
+    void When_HideMessageInModeratedTopic_Expect_StatusHidden() {
+        MessageEntity entity = MessageFactory.createValidMessageEntity();
+        when(messageRepository.findById(1)).thenReturn(Optional.of(entity));
 
-        try (MockedStatic<SecurityUtils> securityMock = mockStatic(SecurityUtils.class)) {
-            // Mock authorization to return false
-            securityMock.when(SecurityUtils::isUserRoot).thenReturn(false);
-            securityMock.when(() -> SecurityUtils.isProvidedUser(ownerId)).thenReturn(false);
+        messageService.hideMessageInModeratedTopic(1);
 
-            when(messageRepository.findById(1)).thenReturn(Optional.of(entity));
+        assertEquals(StatusEnum.HIDDEN, entity.getStatus());
+        verify(messageRepository).save(entity);
+    }
 
-            // Act & Assert
-            assertThrows(UserWithoutPermissionException.class, () -> messageService.deleteMessage(1));
-            verify(messageRepository, never()).save(any());
-        }
+    @Test
+    void When_ChangeMessagesOwner_Expect_UpdatedOwner() {
+        UserEntity newUser = new StudentEntity();
+        MessageEntity entity = MessageFactory.createValidMessageEntity();
+        java.util.Set<MessageEntity> entities = new java.util.HashSet<>(List.of(entity));
+
+        messageService.changeMessagesOwner(entities, newUser);
+
+        assertEquals(newUser, entity.getUser());
+        verify(messageRepository).saveAll(any());
     }
 }

@@ -7,16 +7,13 @@ import com.acasado.opored.model.AdministratorEntity;
 import com.acasado.opored.repository.AdministratorRepository;
 import com.acasado.opored.service.jpa.JpaUserDetailsService;
 import com.acasado.opored.util.AdministratorFactory;
-import com.acasado.opored.security.SecurityUtils;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,12 +30,6 @@ class AdministratorServiceTest {
 
     @Mock
     private JpaUserDetailsService userDetailsService;
-
-    @Mock
-    private PasswordEncoder passwordEncoder;
-
-    @Mock
-    private UserService userService;
 
     @InjectMocks
     private AdministratorService administratorService;
@@ -131,22 +122,16 @@ class AdministratorServiceTest {
     }
 
     @Test
-    void When_DeleteMe_Expect_LogicalDelete() {
+    void When_DeleteMeWithEntity_Expect_LogicalDelete() {
         // Arrange
-        int currentUserId = 1;
         AdministratorEntity entity = AdministratorFactory.createValidAdministratorEntity();
 
-        try (MockedStatic<SecurityUtils> securityUtilsMock = mockStatic(SecurityUtils.class)) {
-            securityUtilsMock.when(SecurityUtils::getCurrentUserId).thenReturn(currentUserId);
-            when(administratorRepository.findById(currentUserId)).thenReturn(Optional.of(entity));
+        // Act
+        administratorService.deleteMe(entity);
 
-            // Act
-            administratorService.deleteMe();
-
-            // Assert
-            assertTrue(entity.getIsDeleted());
-            assertFalse(entity.isEnabled());
-            verify(administratorRepository).save(entity);
-        }
+        // Assert
+        assertTrue(entity.getIsDeleted());
+        assertFalse(entity.isEnabled());
+        verify(administratorRepository).save(entity);
     }
-}
+    }

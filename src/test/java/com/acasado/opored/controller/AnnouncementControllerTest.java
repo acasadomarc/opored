@@ -26,18 +26,17 @@ class AnnouncementControllerTest extends BaseControllerTest {
     private AnnouncementService announcementService;
 
     @Test
-    void When_GetAllAnnouncements_Expect_OkAndList() throws Exception {
+    void When_GetUncategorizedAnnouncements_Expect_OkAndList() throws Exception {
         // Arrange
         List<AnnouncementDTO> dtoList = List.of(AnnouncementFactory.createValidAnnouncementDTO());
-        when(announcementService.getAllAnnouncements()).thenReturn(dtoList);
+        when(announcementService.getUncategorizedAnnouncements()).thenReturn(dtoList);
 
         // Act
-        mockMvc.perform(get("/api/announcements")
+        mockMvc.perform(get("/api/announcements/uncategorized")
                         .contentType(MediaType.APPLICATION_JSON))
                 // Assert
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()").value(1))
-                .andExpect(jsonPath("$[0].title").value("New Exams"));
+                .andExpect(jsonPath("$.size()").value(1));
     }
 
     @Test

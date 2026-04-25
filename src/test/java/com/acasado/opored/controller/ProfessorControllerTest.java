@@ -14,7 +14,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -69,17 +68,18 @@ class ProfessorControllerTest extends BaseControllerTest {
     }
 
     @Test
-    void When_GetProfessorByEmail_Expect_OkAndDTO() throws Exception {
+    void When_GetCourses_Expect_OkAndSet() throws Exception {
         // Arrange
-        ProfessorDTO dto = ProfessorFactory.createValidProfessorDTO();
-        when(professorService.getProfessorByEmail(anyString())).thenReturn(dto);
+        com.acasado.opored.dto.CourseDTO course = new com.acasado.opored.dto.CourseDTO();
+        course.setId(1);
+        when(professorService.getCourses()).thenReturn(java.util.Set.of(course));
 
         // Act
-        mockMvc.perform(get("/api/professors/email/{email}", "prof@example.com")
+        mockMvc.perform(get("/api/professors/me/courses")
                         .contentType(MediaType.APPLICATION_JSON))
                 // Assert
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.email").value(dto.getEmail()));
+                .andExpect(jsonPath("$.size()").value(1));
     }
 
     @Test

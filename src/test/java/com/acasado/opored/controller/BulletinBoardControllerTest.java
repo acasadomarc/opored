@@ -43,17 +43,19 @@ class BulletinBoardControllerTest extends BaseControllerTest {
     }
 
     @Test
-    void When_GetBulletinBoardById_Expect_OkAndDTO() throws Exception {
+    void When_GetAllBulletinBoardsSummarized_Expect_OkAndList() throws Exception {
         // Arrange
-        BulletinBoardDTO dto = BulletinBoardFactory.createValidBulletinBoardDTO();
-        when(bulletinBoardService.getBulletinBoardById(anyInt())).thenReturn(dto);
+        com.acasado.opored.dto.BulletinBoardSummaryDTO dto = new com.acasado.opored.dto.BulletinBoardSummaryDTO();
+        dto.setId(1);
+        dto.setName("Summary");
+        when(bulletinBoardService.getAllBulletinBoardsSummarized()).thenReturn(List.of(dto));
 
         // Act
-        mockMvc.perform(get("/api/bulletinBoards/{id}", 1)
+        mockMvc.perform(get("/api/bulletinBoards/summarized")
                         .contentType(MediaType.APPLICATION_JSON))
                 // Assert
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1));
+                .andExpect(jsonPath("$.size()").value(1));
     }
 
     @Test
