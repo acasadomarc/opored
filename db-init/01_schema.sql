@@ -317,7 +317,7 @@ CREATE TABLE `messages` (
                             `id` int(11) NOT NULL AUTO_INCREMENT,
                             `content` text NOT NULL,
                             `status` enum('VISIBLE','HIDDEN') NOT NULL,
-                            `publication_date` date NOT NULL,
+                            `publication_date` datetime NOT NULL,
                             `is_deleted` bit(1) DEFAULT b'0',
                             `parent_message_id` int(11) DEFAULT NULL,
                             `topic_id` int(11) NOT NULL,
@@ -536,7 +536,7 @@ CREATE TABLE `quizzes` (
                          `score_to_pass` int(11) DEFAULT NULL,
                          `max_score` int(11) NOT NULL,
                          PRIMARY KEY (`id`),
-                         CONSTRAINT `tests_ibfk_1` FOREIGN KEY (`id`) REFERENCES `contents` (`id`)
+                         CONSTRAINT `quizzes_ibfk_1` FOREIGN KEY (`id`) REFERENCES `contents` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 
@@ -565,12 +565,12 @@ DROP TABLE IF EXISTS `questions`;
 CREATE TABLE `questions` (
                              `id` int(11) NOT NULL AUTO_INCREMENT,
                              `statement` text DEFAULT NULL,
+                             `quiz_id` int(11) NOT NULL,
                              `position` tinyint(4) NOT NULL,
-                             `test_id` int(11) NOT NULL,
                              `is_deleted` bit(1) NOT NULL DEFAULT b'0',
                              PRIMARY KEY (`id`),
-                             KEY `questions_ibfk_1` (`test_id`),
-                             CONSTRAINT `questions_ibfk_1` FOREIGN KEY (`test_id`) REFERENCES `quizzes` (`id`)
+                             KEY `questions_ibfk_1` (`quiz_id`),
+                             CONSTRAINT `questions_ibfk_1` FOREIGN KEY (`quiz_id`) REFERENCES `quizzes` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 
