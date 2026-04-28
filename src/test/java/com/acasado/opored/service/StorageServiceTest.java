@@ -39,7 +39,7 @@ class StorageServiceTest {
 
         // Assert
         assertNotNull(url);
-        assertTrue(url.contains("http://localhost:8080/uploads/"));
+        assertTrue(url.contains("/uploads/"));
         String filename = url.substring(url.lastIndexOf("/") + 1);
         assertTrue(Files.exists(tempDir.resolve(filename)));
     }
@@ -63,7 +63,7 @@ class StorageServiceTest {
         // Arrange
         Path file = tempDir.resolve("to-delete.txt");
         Files.write(file, "content".getBytes());
-        String url = "http://localhost:8080/uploads/to-delete.txt";
+        String url = "/uploads/to-delete.txt";
 
         // Act
         storageService.delete(url);
