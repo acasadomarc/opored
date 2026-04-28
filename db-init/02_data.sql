@@ -1,5 +1,7 @@
 USE opored;
 
+-- Core data --
+
 INSERT INTO bulletin_boards
 (id, name, description, is_deleted)
 VALUES(1, 'Tablón de Auxiliar Administrativo Junta de Castilla y León', NULL, 0);
@@ -777,3 +779,138 @@ VALUES(1, 22);
 INSERT INTO roles_permissions
 (role_id, permission_id)
 VALUES(6, 22);
+
+INSERT INTO announcements_classification_keywords
+(id, main_tags, secondary_tags, exclusion_tags, public_examination_id)
+VALUES(10, 'policia nacional,escala basica policia,escala ejecutiva policia,cuerpo nacional policia', 'cnp,escala superior policia,subinspeccion,inspector policia', 'policia local,policia municipal,guardia civil,policia autonomica,mossos,ertzaintza', 10);
+INSERT INTO announcements_classification_keywords
+(id, main_tags, secondary_tags, exclusion_tags, public_examination_id)
+VALUES(11, 'guardia civil,escala cabos guardias,guardia civil escala', 'cuerpo guardia civil,plaza guardia civil,escala suboficiales guardia', 'policia nacional,policia local,policia municipal,cnp', 13);
+INSERT INTO announcements_classification_keywords
+(id, main_tags, secondary_tags, exclusion_tags, public_examination_id)
+VALUES(12, 'policia local,policia municipal,agente policia local', 'plaza policia municipal,cabo policia local,oficial policia local', 'policia nacional,guardia civil,policia autonomica', 11);
+INSERT INTO announcements_classification_keywords
+(id, main_tags, secondary_tags, exclusion_tags, public_examination_id)
+VALUES(13, 'bombero,conductor bombero,cabo bombero', 'plaza bombero,sargento bombero,oficial bombero', 'policia,guardia,proteccion civil', 12);
+INSERT INTO announcements_classification_keywords
+(id, main_tags, secondary_tags, exclusion_tags, public_examination_id)
+VALUES(14, 'auxiliar administrativo,auxiliar administracion general,escala auxiliar administrativa', 'grupo c2 administrativo,subgrupo c2 auxiliar,plaza auxiliar administrativo, auxiliar', 'administrativo grupo c1,tecnico administrativo,gestion administrativa,tramitacion procesal,auxilio judicial', 14);
+INSERT INTO announcements_classification_keywords
+(id, main_tags, secondary_tags, exclusion_tags, public_examination_id)
+VALUES(15, 'administrativo grupo c1,cuerpo administrativo,escala administrativa grupo c1,administrativo administracion general', 'subgrupo c1 administrativo,gestion administrativa,plaza administrativo c1, administrativo', 'auxiliar administrativo,tecnico administrativo,gestion procesal,tramitacion procesal,grupo a', 15);
+INSERT INTO announcements_classification_keywords
+(id, main_tags, secondary_tags, exclusion_tags, public_examination_id)
+VALUES(16, 'tecnico gestion,tecnico administracion general,grupo a2 gestion,escala gestion', 'subgrupo a2 tecnico,tecnico superior gestion,gestor administracion', 'superior administracion,grupo a1,tecnico medio,grupo c', 16);
+INSERT INTO announcements_classification_keywords
+(id, main_tags, secondary_tags, exclusion_tags, public_examination_id)
+VALUES(17, 'superior administracion general,tecnico superior administracion,grupo a1 administracion,escala superior administracion', 'subgrupo a1 administracion,superior gestion,licenciado administracion', 'tecnico gestion,grupo a2,grupo c,tecnico medio', 17);
+INSERT INTO announcements_classification_keywords
+(id, main_tags, secondary_tags, exclusion_tags, public_examination_id)
+VALUES(18, 'auxilio judicial,cuerpo auxilio judicial,escala auxilio judicial', 'plaza auxilio judicial,auxiliar administracion justicia', 'tramitacion procesal,gestion procesal,medico forense,administrativo', 18);
+INSERT INTO announcements_classification_keywords
+(id, main_tags, secondary_tags, exclusion_tags, public_examination_id)
+VALUES(19, 'tramitacion procesal,cuerpo tramitacion procesal,escala tramitacion procesal administrativa', 'plaza tramitacion procesal,tramitacion administracion justicia', 'gestion procesal,auxilio judicial,medico forense', 19);
+INSERT INTO announcements_classification_keywords
+(id, main_tags, secondary_tags, exclusion_tags, public_examination_id)
+VALUES(20, 'gestion procesal,cuerpo gestion procesal,escala gestion procesal administrativa', 'plaza gestion procesal,gestion administracion justicia', 'tramitacion procesal,auxilio judicial,superior administracion', 20);
+INSERT INTO announcements_classification_keywords
+(id, main_tags, secondary_tags, exclusion_tags, public_examination_id)
+VALUES(21, 'celador,celador sanitario,plaza celador', 'personal celador,celador instituciones sanitarias,celador servicio salud', 'tcae,auxiliar enfermeria,enfermero,sanitario titulado', 21);
+INSERT INTO announcements_classification_keywords
+(id, main_tags, secondary_tags, exclusion_tags, public_examination_id)
+VALUES(22, 'tcae,tecnico cuidados auxiliares enfermeria,auxiliar enfermeria', 'tecnico auxiliar enfermeria,auxiliar sanitario,plaza tcae', 'enfermero,celador,medico,fisioterapeuta', 22);
+INSERT INTO announcements_classification_keywords
+(id, main_tags, secondary_tags, exclusion_tags, public_examination_id)
+VALUES(23, 'enfermero,enfermera,diplomado enfermeria,graduado enfermeria,enfermero/a', 'plaza enfermero,due,enfermeria servicio salud,especialista', 'tcae,auxiliar enfermeria,celador,medico,matrona', 23);
+INSERT INTO announcements_classification_keywords
+(id, main_tags, secondary_tags, exclusion_tags, public_examination_id)
+VALUES(24, 'medico familia,facultativo medicina familia,medico atencion primaria', 'especialista medicina familiar,medico eap,plaza medico familia', 'pediatra,cirujano,radiologo,cardiologo,enfermero,tcae', 24);
+INSERT INTO announcements_classification_keywords
+(id, main_tags, secondary_tags, exclusion_tags, public_examination_id)
+VALUES(25, 'maestro educacion infantil,maestro infantil,profesor educacion infantil, cuerpo de maestros', 'plaza maestro infantil,docente infantil, educación', 'maestro primaria,profesor secundaria,profesor universidad,educador infantil', 25);
+INSERT INTO announcements_classification_keywords
+(id, main_tags, secondary_tags, exclusion_tags, public_examination_id)
+VALUES(26, 'maestro educacion primaria,maestro primaria,profesor educacion primaria, cuerpo de maestros', 'plaza maestro primaria,docente primaria, educación', 'maestro infantil,profesor secundaria,profesor universidad', 26);
+INSERT INTO announcements_classification_keywords
+(id, main_tags, secondary_tags, exclusion_tags, public_examination_id)
+VALUES(27, 'profesor secundaria,profesor educacion secundaria,catedratico secundaria', 'eso bachillerato,profesor instituto,docente secundaria, educación', 'maestro primaria,maestro infantil,profesor universidad', 27);
+INSERT INTO announcements_classification_keywords
+(id, main_tags, secondary_tags, exclusion_tags, public_examination_id)
+VALUES(28, 'tecnico informatica,informatico,programador,analista programador', 'tecnico sistemas,administrador sistemas,plaza informatico,tecnico superior informatica', 'auxiliar informatica,operario informatica', 28);
+INSERT INTO announcements_classification_keywords
+(id, main_tags, secondary_tags, exclusion_tags, public_examination_id)
+VALUES(29, 'ingeniero tecnico,arquitecto tecnico,aparejador,ingeniero obras publicas', 'tecnico obras,ingeniero caminos,plaza ingeniero tecnico', 'ingeniero superior,arquitecto superior,delineante,peon obras', 29);
+INSERT INTO announcements_classification_keywords
+(id, main_tags, secondary_tags, exclusion_tags, public_examination_id)
+VALUES(30, 'trabajador social,trabajadora social,diplomado trabajo social', 'plaza trabajador social,asistente social,graduado trabajo social', 'educador social,psicologo,monitor', 30);
+INSERT INTO announcements_classification_keywords
+(id, main_tags, secondary_tags, exclusion_tags, public_examination_id)
+VALUES(31, 'bibliotecario,facultativo bibliotecas,tecnico bibliotecas', 'plaza bibliotecario,ayudante bibliotecas,archivero bibliotecario', 'auxiliar bibliotecas,archivero,documentalista', 31);
+INSERT INTO announcements_classification_keywords
+(id, main_tags, secondary_tags, exclusion_tags, public_examination_id)
+VALUES(32, 'conductor,conductor vehiculos,conductor mecanico', 'plaza conductor,operario conductor,conductor limpieza', 'peon,operario servicios multiples,mecanico', 32);
+INSERT INTO announcements_classification_keywords
+(id, main_tags, secondary_tags, exclusion_tags, public_examination_id)
+VALUES(33, 'operario servicios multiples,oficial servicios multiples,peon servicios multiples', 'plaza operario multiples,trabajador servicios multiples,operario mantenimiento', 'conductor,peon limpieza,oficial primera,jardinero', 33);
+INSERT INTO announcements_classification_keywords
+(id, main_tags, secondary_tags, exclusion_tags, public_examination_id)
+VALUES(34, 'limpiador,personal limpieza,operario limpieza', 'plaza limpiador,peon limpieza,oficial limpieza', 'operario servicios multiples,conductor,celador', 34);
+INSERT INTO announcements_classification_keywords
+(id, main_tags, secondary_tags, exclusion_tags, public_examination_id)
+VALUES(35, 'enfermero sacyl,enfermera servicio salud castilla leon,personal estatutario enfermeria castilla', 'due sacyl,gerencia regional salud enfermeria,plaza enfermero castilla leon', 'tcae,auxiliar enfermeria,celador,medico,rioja,servicio salud madrid', 35);
+INSERT INTO announcements_classification_keywords
+(id, main_tags, secondary_tags, exclusion_tags, public_examination_id)
+VALUES(36, 'tcae sacyl,auxiliar enfermeria servicio salud castilla leon,tecnico cuidados sacyl', 'personal estatutario tcae castilla,gerencia regional salud tcae', 'enfermero,celador,rioja,servicio salud madrid', 36);
+INSERT INTO announcements_classification_keywords
+(id, main_tags, secondary_tags, exclusion_tags, public_examination_id)
+VALUES(37, 'tecnico superior anatomia patologica sacyl,tecnico superior higiene bucodental sacyl,tecnico superior radiodiagnostico sacyl', 'personal estatutario tecnico superior castilla leon,gerencia regional salud tecnico superior', 'tcae,auxiliar,enfermero,celador', 37);
+INSERT INTO announcements_classification_keywords
+(id, main_tags, secondary_tags, exclusion_tags, public_examination_id)
+VALUES(38, 'tecnico administracion general castilla leon,cuerpo tecnico junta castilla leon,grupo a2 junta castilla', 'tecnico gestion junta castilla,subgrupo a2 comunidad castilla leon', 'superior administracion general,auxiliar,grupo c1,ayuntamiento,diputacion', 38);
+INSERT INTO announcements_classification_keywords
+(id, main_tags, secondary_tags, exclusion_tags, public_examination_id)
+VALUES(39, 'superior administracion general castilla leon,cuerpo superior junta castilla leon,grupo a1 junta castilla', 'subgrupo a1 comunidad castilla leon,licenciado junta castilla', 'tecnico administracion,grupo a2,auxiliar,ayuntamiento,diputacion', 39);
+INSERT INTO announcements_classification_keywords
+(id, main_tags, secondary_tags, exclusion_tags, public_examination_id)
+VALUES(40, 'gestion administracion general castilla leon,cuerpo gestion junta castilla leon,grupo c1 junta castilla', 'administrativo junta castilla leon,subgrupo c1 comunidad castilla', 'auxiliar administrativo,tecnico administracion,grupo a2,ayuntamiento,diputacion', 40);
+INSERT INTO announcements_classification_keywords
+(id, main_tags, secondary_tags, exclusion_tags, public_examination_id)
+VALUES(41, 'auxiliar administracion general castilla leon,cuerpo auxiliar junta castilla leon,grupo c2 junta castilla', 'subgrupo c2 comunidad castilla leon,auxiliar administrativo junta castilla', 'administrativo grupo c1,tecnico administracion,ayuntamiento,diputacion', 41);
+INSERT INTO announcements_classification_keywords
+(id, main_tags, secondary_tags, exclusion_tags, public_examination_id)
+VALUES(42, 'superior administracion general rioja,cuerpo superior gobierno rioja,grupo a1 comunidad rioja', 'subgrupo a1 rioja,licenciado gobierno rioja', 'tecnico administracion,grupo a2,ayuntamiento,diputacion,castilla leon', 45);
+INSERT INTO announcements_classification_keywords
+(id, main_tags, secondary_tags, exclusion_tags, public_examination_id)
+VALUES(43, 'gestion administracion general rioja,cuerpo gestion gobierno rioja,grupo c1 comunidad rioja', 'administrativo gobierno rioja,subgrupo c1 rioja', 'auxiliar administrativo,tecnico administracion,ayuntamiento,diputacion,castilla leon', 46);
+INSERT INTO announcements_classification_keywords
+(id, main_tags, secondary_tags, exclusion_tags, public_examination_id)
+VALUES(44, 'auxiliar administracion general rioja,cuerpo auxiliar rioja,grupo c2 junta rioja', 'subgrupo c2 comunidad rioja,auxiliar administrativo junta rioja', 'administrativo grupo c1,tecnico administracion,ayuntamiento,diputacion', 47);
+INSERT INTO announcements_classification_keywords
+(id, main_tags, secondary_tags, exclusion_tags, public_examination_id)
+VALUES(45, 'profesor secundaria castilla leon,docente secundaria junta castilla,catedratico secundaria castilla', 'eso bachillerato castilla leon,profesor instituto castilla leon', 'maestro primaria,maestro infantil,profesor universidad,madrid,rioja', 44);
+INSERT INTO announcements_classification_keywords
+(id, main_tags, secondary_tags, exclusion_tags, public_examination_id)
+VALUES(46, 'maestro infantil castilla leon,maestro educacion infantil junta castilla', 'docente infantil castilla leon,plaza maestro infantil castilla', 'maestro primaria,profesor secundaria,madrid,rioja', 42);
+INSERT INTO announcements_classification_keywords
+(id, main_tags, secondary_tags, exclusion_tags, public_examination_id)
+VALUES(47, 'maestro primaria castilla leon,maestro educacion primaria junta castilla', 'docente primaria castilla leon,plaza maestro primaria castilla', 'maestro infantil,profesor secundaria,madrid,rioja', 43);
+INSERT INTO announcements_classification_keywords
+(id, main_tags, secondary_tags, exclusion_tags, public_examination_id)
+VALUES(48, 'educador social,educadora social,tecnico educacion social', 'plaza educador social,tecnico superior educacion social', 'trabajador social,psicologo,monitor,maestro', 48);
+INSERT INTO announcements_classification_keywords
+(id, main_tags, secondary_tags, exclusion_tags, public_examination_id)
+VALUES(49, 'tecnico servicios sociales,diplomado trabajo social,graduado trabajo social', 'trabajador social servicios sociales,asistente social', 'educador social,psicologo,auxiliar ayuda domicilio', 49);
+INSERT INTO announcements_classification_keywords
+(id, main_tags, secondary_tags, exclusion_tags, public_examination_id)
+VALUES(50, 'tecnico medio ambiente,ingeniero tecnico forestal,tecnico forestal', 'tecnico gestion ambiental,ingeniero montes,agente medioambiental', 'ingeniero superior,peon forestal,jardinero', 50);
+INSERT INTO announcements_classification_keywords
+(id, main_tags, secondary_tags, exclusion_tags, public_examination_id)
+VALUES(51, 'agente medioambiental,agente forestal,guarda forestal', 'celador medioambiental,vigilante medioambiental', 'ingeniero montes,tecnico forestal,peon forestal', 51);
+INSERT INTO announcements_classification_keywords
+(id, main_tags, secondary_tags, exclusion_tags, public_examination_id)
+VALUES(52, '', 'libre designación, concurso de traslados, relación definitiva de aspirantes, sistema general de acceso libre, acceso a plazas', 'administrativo, fuerzas de seguridad del estado, sanidad', 52);
+INSERT INTO announcements_classification_keywords
+(id, main_tags, secondary_tags, exclusion_tags, public_examination_id)
+VALUES(53, 'facultativo especialista,medicina,rioja', 'area,salud', 'estado,educacion', 53);
+
+-- Mock data --

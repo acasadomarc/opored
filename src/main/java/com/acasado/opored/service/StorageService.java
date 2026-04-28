@@ -24,7 +24,7 @@ public class StorageService{
 
     public String store(MultipartFile file) {
         // Path where the file can be searched for
-        final String BASE_URL = "http://localhost:8080/uploads/";
+        final String BASE_URL = "/uploads/";
 
         try {
             if (file.isEmpty()) {

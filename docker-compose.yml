@@ -75,6 +75,8 @@ services:
         condition: service_healthy
       kafka:                      
         condition: service_healthy
+    volumes:
+      - ./uploads:/storage/uploads
     environment:
       SPRING_DATASOURCE_URL: jdbc:mariadb://${DB_HOST}:${DB_PORT}/${DB_NAME}
       SPRING_DATASOURCE_USERNAME: ${DB_USER}
