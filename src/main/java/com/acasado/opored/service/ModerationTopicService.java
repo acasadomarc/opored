@@ -97,9 +97,11 @@ public class ModerationTopicService {
         // If the moderator is not the creator of the entity, this will throw an exception
         ModerationTopicEntity toDeleteModerationTopic = moderationTopicRepository.findById(moderationTopicId).orElseThrow(() -> notFoundById(id));
 
-        Integer topicId = toDeleteModerationTopic.getModerator().getId();
-        TopicEntity topic = topicRepository.findById(topicId).orElseThrow(() -> notFoundById(topicId));
+        TopicEntity topic = topicRepository.findById(id).orElseThrow(() -> notFoundById(id));
         topic.setStatus(StatusEnum.VISIBLE);
+
+        // Recover the messages
+        topic.getMessages().forEach(message -> message.setStatus(StatusEnum.VISIBLE));
 
         // Hard delete
         moderationTopicRepository.delete(toDeleteModerationTopic);

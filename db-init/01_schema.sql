@@ -11,7 +11,7 @@ CREATE TABLE `roles` (
                          `id` int(11) NOT NULL AUTO_INCREMENT,
                          `name` enum('SUPER_ADMIN','ADMIN','PROFESSOR','MODERATOR','STUDENT') NOT NULL,
                          PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 
 --
@@ -25,7 +25,7 @@ CREATE TABLE `permissions` (
                                `id` int(11) NOT NULL AUTO_INCREMENT,
                                `name` enum('USER_CREATE','USER_UPDATE','USER_DELETE','STUDENT_READ','STUDENT_CREATE','STUDENT_UPDATE','STUDENT_DELETE','MODERATION_READ','MODERATION_CREATE','MODERATION_UPDATE','MODERATION_DELETE','ADMINISTRATION_READ','ADMINISTRATION_CREATE','ADMINISTRATION_UPDATE','ADMINISTRATION_DELETE','PROFESSOR_READ','PROFESSOR_CREATE','PROFESSOR_UPDATE','PROFESSOR_DELETE','ROOT','USER_READ') NOT NULL,
                                PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=123 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 
 --
@@ -71,7 +71,7 @@ CREATE TABLE `users` (
                          UNIQUE KEY `email` (`email`),
                          KEY `users_ibfk_1` (`role`),
                          CONSTRAINT `users_ibfk_1` FOREIGN KEY (`role`) REFERENCES `roles` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 
 --
@@ -127,7 +127,7 @@ CREATE TABLE `professors` (
                               `id` int(11) NOT NULL AUTO_INCREMENT,
                               PRIMARY KEY (`id`),
                               CONSTRAINT `professors_ibfk_1` FOREIGN KEY (`id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 
 --
@@ -143,7 +143,7 @@ CREATE TABLE `categories` (
                               `description` text DEFAULT NULL,
                               `is_deleted` bit(1) NOT NULL DEFAULT b'0',
                               PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 
 --
@@ -159,7 +159,7 @@ CREATE TABLE `forums` (
                           `description` text DEFAULT NULL,
                           `is_deleted` bit(1) DEFAULT b'0',
                           PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 
 --
@@ -175,7 +175,7 @@ CREATE TABLE `bulletin_boards` (
                                    `description` text DEFAULT NULL,
                                    `is_deleted` bit(1) DEFAULT b'0',
                                    PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 
 --
@@ -203,7 +203,7 @@ CREATE TABLE `public_examinations` (
                                        CONSTRAINT `public_examinations_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`),
                                        CONSTRAINT `public_examinations_ibfk_2` FOREIGN KEY (`bulletin_board_id`) REFERENCES `bulletin_boards` (`id`),
                                        CONSTRAINT `public_examinations_ibfk_3` FOREIGN KEY (`forum_id`) REFERENCES `forums` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1001 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 
 --
@@ -242,7 +242,7 @@ CREATE TABLE `announcements` (
                                  PRIMARY KEY (`id`),
                                  KEY `bulletin_board_id` (`bulletin_board_id`),
                                  CONSTRAINT `announcements_ibfk_1` FOREIGN KEY (`bulletin_board_id`) REFERENCES `bulletin_boards` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1507 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 
 --
@@ -285,7 +285,7 @@ CREATE TABLE `topics` (
                           KEY `topics_users_FK` (`user_id`),
                           CONSTRAINT `topics_ibfk_1` FOREIGN KEY (`forum_id`) REFERENCES `forums` (`id`),
                           CONSTRAINT `topics_users_FK` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 
 --
@@ -316,7 +316,7 @@ DROP TABLE IF EXISTS `messages`;
 CREATE TABLE `messages` (
                             `id` int(11) NOT NULL AUTO_INCREMENT,
                             `content` text NOT NULL,
-                            `status` enum('VISIBLE','HIDDEN') NOT NULL,
+                            `status` enum('VISIBLE','HIDDEN','DELETED') NOT NULL,
                             `publication_date` datetime NOT NULL,
                             `is_deleted` bit(1) DEFAULT b'0',
                             `parent_message_id` int(11) DEFAULT NULL,
@@ -327,7 +327,7 @@ CREATE TABLE `messages` (
                             KEY `messages_users_FK` (`user_id`),
                             CONSTRAINT `messages_ibfk_1` FOREIGN KEY (`topic_id`) REFERENCES `topics` (`id`),
                             CONSTRAINT `messages_users_FK` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 
 --
@@ -392,7 +392,7 @@ CREATE TABLE `courses` (
                            PRIMARY KEY (`id`),
                            KEY `professor_id` (`professor_id`),
                            CONSTRAINT `courses_ibfk_1` FOREIGN KEY (`professor_id`) REFERENCES `professors` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 
 --
@@ -566,7 +566,6 @@ CREATE TABLE `questions` (
                              `id` int(11) NOT NULL AUTO_INCREMENT,
                              `statement` text DEFAULT NULL,
                              `quiz_id` int(11) NOT NULL,
-                             `position` tinyint(4) NOT NULL,
                              `is_deleted` bit(1) NOT NULL DEFAULT b'0',
                              PRIMARY KEY (`id`),
                              KEY `questions_ibfk_1` (`quiz_id`),
@@ -628,7 +627,7 @@ CREATE TABLE `announcements_classification_keywords` (
                                                          PRIMARY KEY (`id`),
                                                          UNIQUE KEY `public_examination_id` (`public_examination_id`),
                                                          CONSTRAINT `announcements_classification_keywords_ibfk_1` FOREIGN KEY (`public_examination_id`) REFERENCES `public_examinations` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 --
 -- Table structure for table `refresh_tokens`
@@ -643,7 +642,7 @@ CREATE TABLE `refresh_tokens` (
                                   PRIMARY KEY (`id`),
                                   KEY `refresh_tokens_users_FK` (`user_id`),
                                   CONSTRAINT `refresh_tokens_users_FK` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=82 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 
 

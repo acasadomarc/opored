@@ -405,8 +405,8 @@ INSERT INTO public_examinations
 (id, name, description, is_deleted, category_id, bulletin_board_id, forum_id)
 VALUES(8, 'Resto de oposiciones', 'Oposiciones sin grupo específico', 0, 2, 8, 8);
 INSERT INTO public_examinations
-(id, name, description, is_deleted, category_id, bulletin_board_id, forum_id)
-VALUES(9, 'Oposición para anuncios sin categorizar', 'Oposición oculta para recoger los anuncios no categorizados', 0, 4, 53, 53);
+(id, name, description, is_deleted, is_visible, category_id, bulletin_board_id, forum_id)
+VALUES(9, 'Oposición para anuncios sin categorizar', 'Oposición oculta para recoger los anuncios no categorizados', 0, 0, 4, 53, 53);
 INSERT INTO public_examinations
 (id, name, description, is_deleted, category_id, bulletin_board_id, forum_id)
 VALUES(10, 'Policía Nacional', 'Preparación de oposiciones para el cuerpo de Policía Nacional', 0, 11, 10, 10);
@@ -914,3 +914,12 @@ INSERT INTO announcements_classification_keywords
 VALUES(53, 'facultativo especialista,medicina,rioja', 'area,salud', 'estado,educacion', 53);
 
 -- Mock data --
+
+-- Default account for deleted users
+
+INSERT INTO users
+(id, name, surname, alias, email, password, registration_date, is_enabled, account_no_expired, account_no_locked, credential_no_expired, is_deleted, `role`, profile_photo)
+VALUES(1, 'Usuario', 'Eliminado', 'Usuario eliminado', 'usuarioEliminado@email.com', '$2a$10$OC0h1/ulIYed7ZJX.6LCz.lovMcv1j4cL3IGQhmFz8Vv6ndxiz/4.', '1970-01-01', 0, 0, 0, 0, 0, 4, NULL);
+INSERT INTO users
+(id, name, surname, alias, email, password, registration_date, is_enabled, account_no_expired, account_no_locked, credential_no_expired, is_deleted, `role`, profile_photo)
+VALUES(2, 'Cuenta', 'Eliminada', 'Cuenta eliminada', 'cuentaEliminada@email.com', '$2a$10$OC0h1/ulIYed7ZJX.6LCz.lovMcv1j4cL3IGQhmFz8Vv6ndxiz/4.', '1970-01-01', 0, 0, 0, 0, 0, 6, NULL);
