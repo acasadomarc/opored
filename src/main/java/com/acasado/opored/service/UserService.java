@@ -9,9 +9,11 @@ import com.acasado.opored.repository.UserRepository;
 import com.acasado.opored.security.SecurityUtils;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -19,6 +21,7 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
     private final ModeratorService moderatorService;
     private final StudentService studentService;
@@ -33,6 +36,7 @@ public class UserService {
 
     private static final Integer DEFAULT_DELETED_USER_ID = 1;
 
+    @Transactional(readOnly = true)
     public List<UserDTO> getAllUsers() {
         // Admins are not treated as normal users
         List<UserDTO> users = new LinkedList<>();
@@ -109,31 +113,33 @@ public class UserService {
         }
     }
 
+    @Transactional
     public void deleteMe() {
         Integer currentId = getCurrentUserId();
         UserEntity toDeleteUser = userRepository.findById(currentId)
                 .orElseThrow(() -> notFoundById(currentId));
-
+        log.info("Deleting me {}", toDeleteUser.getName());
         // Clean the actual tokens
         toDeleteUser.getRefreshTokens().clear();
-
+        log.info("Tokens cleared");
         // User to reference in the existent topics and messages
         UserEntity defaultDeletedUser = userRepository.findById(DEFAULT_DELETED_USER_ID).orElseThrow(() -> notFoundById(DEFAULT_DELETED_USER_ID));
-
+        log.info("Deleted user selected");
         if (!toDeleteUser.getMessages().isEmpty()) {
             messageService.changeMessagesOwner(toDeleteUser.getMessages(), defaultDeletedUser);
         }
-
+        log.info("Mensajes cambiados");
         if (!toDeleteUser.getTopics().isEmpty()) {
             topicService.changeTopicsOwner(toDeleteUser.getTopics(), defaultDeletedUser);
         }
-
+        log.info("Temas cambiados");
         switch (toDeleteUser.getRole().getName()) {
             case MODERATOR -> moderatorService.deleteMe((ModeratorEntity) toDeleteUser);
             case PROFESSOR -> professorService.deleteMe((ProfessorEntity) toDeleteUser);
             case ADMIN -> administratorService.deleteMe((AdministratorEntity) toDeleteUser);
             default -> studentService.deleteMe((StudentEntity) toDeleteUser);
         }
+        log.info("Actuación según rol llevada a cabo");
     }
 
     private EntityNotFoundException notFoundById(Integer id) {
