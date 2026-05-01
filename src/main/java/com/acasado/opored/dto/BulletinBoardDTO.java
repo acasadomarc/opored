@@ -27,7 +27,7 @@ public class BulletinBoardDTO {
     private String description;
 
     @Schema(description = "List of announcements posted on this board")
-    private Set<AnnouncementSummaryDTO> announcements;
+    private Set<AnnouncementDTO> announcements;
 
     public BulletinBoardDTO(BulletinBoardEntity bulletinBoard) {
         setId(bulletinBoard.getId());
@@ -35,7 +35,7 @@ public class BulletinBoardDTO {
         setDescription(bulletinBoard.getDescription());
         if (bulletinBoard.getAnnouncements() != null) {
             setAnnouncements(bulletinBoard.getAnnouncements().stream()
-                    .map(AnnouncementSummaryDTO::new)
+                    .map(AnnouncementDTO::new)
                     .collect(Collectors.toSet()));
         }
     }

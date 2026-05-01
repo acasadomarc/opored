@@ -1,5 +1,6 @@
 package com.acasado.opored.dto;
 
+import com.acasado.opored.model.AnnouncementEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -34,4 +35,13 @@ public class AnnouncementDTO {
 
     @Schema(description = "ID of the associated Bulletin Board", example = "5")
     private Integer bulletinBoardId;
+
+    public AnnouncementDTO(AnnouncementEntity announcement) {
+        setId(announcement.getId());
+        setTitle(announcement.getTitle());
+        setContent(announcement.getContent());
+        setRelatedLinks(announcement.getRelatedLinks());
+        setPublicationDate(announcement.getPublicationDate());
+        setBulletinBoardId(announcement.getBulletinBoard().getId());
+    }
 }
