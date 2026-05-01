@@ -118,12 +118,13 @@ public class UserService {
         Integer currentId = getCurrentUserId();
         UserEntity toDeleteUser = userRepository.findById(currentId)
                 .orElseThrow(() -> notFoundById(currentId));
+
+        UserEntity defaultDeletedUser = userRepository.findById(DEFAULT_DELETED_USER_ID).orElseThrow(() -> notFoundById(DEFAULT_DELETED_USER_ID));
+
         log.info("Deleting me {}", toDeleteUser.getName());
         // Clean the actual tokens
         toDeleteUser.getRefreshTokens().clear();
         log.info("Tokens cleared");
-        // User to reference in the existent topics and messages
-        UserEntity defaultDeletedUser = userRepository.findById(DEFAULT_DELETED_USER_ID).orElseThrow(() -> notFoundById(DEFAULT_DELETED_USER_ID));
         log.info("Deleted user selected");
         if (!toDeleteUser.getMessages().isEmpty()) {
             messageService.changeMessagesOwner(toDeleteUser.getMessages(), defaultDeletedUser);
