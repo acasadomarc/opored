@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -110,7 +109,6 @@ public class UserService {
         }
     }
 
-    @Transactional // Avoid inconsistency due to uncompleted operations
     public void deleteMe() {
         Integer currentId = getCurrentUserId();
         UserEntity toDeleteUser = userRepository.findById(currentId)
