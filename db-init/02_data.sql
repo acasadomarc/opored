@@ -920,6 +920,8 @@ VALUES(53, 'facultativo especialista,medicina,rioja', 'area,salud', 'estado,educ
 INSERT INTO users
 (id, name, surname, alias, email, password, registration_date, is_enabled, account_no_expired, account_no_locked, credential_no_expired, is_deleted, `role`, profile_photo)
 VALUES(1, 'Usuario', 'Eliminado', 'Usuario eliminado', 'usuarioEliminado@email.com', '$2a$10$OC0h1/ulIYed7ZJX.6LCz.lovMcv1j4cL3IGQhmFz8Vv6ndxiz/4.', '1970-01-01', 0, 0, 0, 0, 0, 4, NULL);
+INSERT INTO students (id) VALUES(1);
 INSERT INTO users
 (id, name, surname, alias, email, password, registration_date, is_enabled, account_no_expired, account_no_locked, credential_no_expired, is_deleted, `role`, profile_photo)
 VALUES(2, 'Cuenta', 'Eliminada', 'Cuenta eliminada', 'cuentaEliminada@email.com', '$2a$10$OC0h1/ulIYed7ZJX.6LCz.lovMcv1j4cL3IGQhmFz8Vv6ndxiz/4.', '1970-01-01', 0, 0, 0, 0, 0, 6, NULL);
+INSERT INTO professors (id) VALUES(2);
