@@ -68,7 +68,6 @@ CREATE TABLE `users` (
                          `is_deleted` bit(1) DEFAULT b'0',
                          `role` int(11) NOT NULL DEFAULT 5,
                          PRIMARY KEY (`id`),
-                         UNIQUE KEY `email` (`email`),
                          KEY `users_ibfk_1` (`role`),
                          CONSTRAINT `users_ibfk_1` FOREIGN KEY (`role`) REFERENCES `roles` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
