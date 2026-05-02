@@ -5,6 +5,7 @@ import com.acasado.opored.dto.UserUpdateRequest;
 import com.acasado.opored.enumeration.RoleEnum;
 import com.acasado.opored.exception.AliasAlreadyRegisteredException;
 import com.acasado.opored.model.*;
+import com.acasado.opored.repository.RefreshTokenRepository;
 import com.acasado.opored.repository.UserRepository;
 import com.acasado.opored.security.SecurityUtils;
 import jakarta.persistence.EntityNotFoundException;
@@ -32,6 +33,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     private static final Integer DEFAULT_DELETED_USER_ID = 1;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     public List<UserDTO> getAllUsers() {
         // Admins are not treated as normal users
@@ -117,7 +119,9 @@ public class UserService {
         UserEntity defaultDeletedUser = userRepository.findById(DEFAULT_DELETED_USER_ID).orElseThrow(() -> notFoundById(DEFAULT_DELETED_USER_ID));
 
         // Clean the actual tokens
+        refreshTokenRepository.deleteAll(toDeleteUser.getRefreshTokens());
         toDeleteUser.getRefreshTokens().clear();
+
         if (!toDeleteUser.getMessages().isEmpty()) {
             messageService.changeMessagesOwner(toDeleteUser.getMessages(), defaultDeletedUser);
         }
