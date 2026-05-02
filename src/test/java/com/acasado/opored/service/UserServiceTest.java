@@ -5,6 +5,7 @@ import com.acasado.opored.dto.UserUpdateRequest;
 import com.acasado.opored.enumeration.RoleEnum;
 import com.acasado.opored.exception.AliasAlreadyRegisteredException;
 import com.acasado.opored.model.*;
+import com.acasado.opored.repository.RefreshTokenRepository;
 import com.acasado.opored.repository.UserRepository;
 import com.acasado.opored.security.SecurityUtils;
 import jakarta.persistence.EntityNotFoundException;
@@ -44,6 +45,8 @@ class UserServiceTest {
     private UserRepository userRepository;
     @Mock
     private StorageService storageService;
+    @Mock
+    private RefreshTokenRepository refreshTokenRepository;
     @Mock
     private PasswordEncoder passwordEncoder;
 
