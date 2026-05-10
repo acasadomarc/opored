@@ -925,3 +925,24 @@ INSERT INTO users
 (id, name, surname, alias, email, password, registration_date, is_enabled, account_no_expired, account_no_locked, credential_no_expired, is_deleted, `role`, profile_photo)
 VALUES(2, 'Cuenta', 'Eliminada', 'Cuenta eliminada', 'cuentaEliminada@email.com', '$2a$10$OC0h1/ulIYed7ZJX.6LCz.lovMcv1j4cL3IGQhmFz8Vv6ndxiz/4.', '1970-01-01', 0, 0, 0, 0, 0, 6, NULL);
 INSERT INTO professors (id) VALUES(2);
+
+
+-- Example users
+
+INSERT INTO users
+(id, name, surname, alias, email, password, profile_photo, registration_date, is_enabled, account_no_expired, account_no_locked, credential_no_expired, is_deleted, `role`)
+VALUES(4, 'Usuario', 'Estudiante', 'UsuarioEstudiante', 'estudiante@email.com', '$2a$10$4Ibxd5lwfVNvspMalIB1c.85ohvpY9kp5hF/zJ3xdiWxkBQgDI8Au', NULL, '2026-05-02', 1, 1, 1, 1, 0, 4);
+INSERT INTO users
+(id, name, surname, alias, email, password, profile_photo, registration_date, is_enabled, account_no_expired, account_no_locked, credential_no_expired, is_deleted, `role`)
+VALUES(5, 'Usuario', 'Profesor', 'UsuarioProfesor', 'profesor@email.com', '$2a$10$3k7bawA2D20YYRvX72LbbeDYGC/gh3P6/nkHeWVPE9XF077omIyhe', NULL, '2026-05-02', 1, 1, 1, 1, 0, 6);
+INSERT INTO users
+(id, name, surname, alias, email, password, profile_photo, registration_date, is_enabled, account_no_expired, account_no_locked, credential_no_expired, is_deleted, `role`)
+VALUES(6, 'Usuario', 'Moderador', 'UsuarioModerador', 'moderador@email.com', '$2a$10$9w7r.2X5U2ONTs1hDjzhGOy..euHBbZsLCoddiBSrhOMkBep7JKs2', NULL, '2026-05-02', 1, 1, 1, 1, 0, 3);
+INSERT INTO users
+(id, name, surname, alias, email, password, profile_photo, registration_date, is_enabled, account_no_expired, account_no_locked, credential_no_expired, is_deleted, `role`)
+VALUES(7, 'Usuario', 'Administrador', 'UsuarioAdministrador', 'administrador@email.com', '$2a$10$UoDVhgMH87xdIC/efKZto.y8fQSc.KRamqcDf/blGwUaPY603CNsu', NULL, '2026-05-02', 1, 1, 1, 1, 0, 2);
+
+INSERT INTO students (id) VALUES(4);
+INSERT INTO professors (id) VALUES(5);
+INSERT INTO moderators (id) VALUES(6);
+INSERT INTO administrators (id) VALUES(7);

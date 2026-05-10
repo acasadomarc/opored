@@ -530,12 +530,12 @@ DROP TABLE IF EXISTS `quizzes`;
 
 
 CREATE TABLE `quizzes` (
-                         `id` int(11) NOT NULL,
-                         `time_limit` int(11) DEFAULT NULL,
-                         `score_to_pass` int(11) DEFAULT NULL,
-                         `max_score` int(11) NOT NULL,
-                         PRIMARY KEY (`id`),
-                         CONSTRAINT `quizzes_ibfk_1` FOREIGN KEY (`id`) REFERENCES `contents` (`id`)
+                           `id` int(11) NOT NULL,
+                           `time_limit` int(11) DEFAULT NULL,
+                           `score_to_pass` int(11) DEFAULT NULL,
+                           `max_score` int(11) NOT NULL,
+                           PRIMARY KEY (`id`),
+                           CONSTRAINT `quizzes_ibfk_1` FOREIGN KEY (`id`) REFERENCES `contents` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 
